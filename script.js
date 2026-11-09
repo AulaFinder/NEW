@@ -473,6 +473,7 @@
       select.innerHTML=entries.map(id=>`<option value="${escapeHtml(id)}">${escapeHtml(label(kind,id))}</option>`).join('');
       if(!entries.includes(state.selection)) state.selection=entries[0];
       select.value=state.selection;
+      $('#orariFilterRow').hidden=false;
       $('#scheduleControls').hidden=false;
       scheduleSearch.value='';scheduleQuickResults.hidden=true;
       $('#scheduleTeacherSortWrap').hidden=kind!=='teachers';
@@ -481,6 +482,7 @@
       scheduleSearch.setAttribute('aria-label',scheduleSearch.placeholder);
       $('#scheduleFilterCaption').hidden=true;
     }else{
+      $('#orariFilterRow').hidden=true;
       $('#scheduleControls').hidden=true;scheduleQuickResults.hidden=true;
       $('#scheduleTeacherSortWrap').hidden=true;
       state.selection='';
@@ -507,7 +509,7 @@
     const weekdays=DATA.days;
     const columns=weekdays.map(day=>`<div class="weekly-day ${day===date()?'is-today':''}">${escapeHtml(day.slice(0,3))}</div>`).join('');
     const rows=Array.from({length:6},(_,i)=>
-      `<div class="weekly-number">${i+1}<span>ª ora</span></div>`+
+      `<div class="weekly-number">${i+1}</div>`+
       weekdays.map(day=>weeklyCell(kind,item.days[day][i],day,i)).join('')
     ).join('');
     const tag=kind==='rooms'?'room':kind==='classes'?'class':'teacher';
@@ -600,9 +602,9 @@
   function renderFreeTeachers(){
     const day=date(),index=hour()-1;
     const columns=DATA.days.map(d=>`<div class="weekly-day ${d===day?'is-today':''}">${escapeHtml(d.slice(0,3))}</div>`).join('');
-    const rows=Array.from({length:6},(_,i)=>`<div class="weekly-number">${i+1}<span>ª ora</span></div>`+
+    const rows=Array.from({length:6},(_,i)=>`<div class="weekly-number">${i+1}</div>`+
       DATA.days.map(d=>{const avail=freeTeachersAt(d,i),active=d===day&&index===i;
-        return `<button type="button" class="weekly-cell free-teacher-slot ${active?'is-current':''}" data-free-slot-day="${escapeHtml(d)}" data-free-slot-hour="${i+1}" aria-pressed="${active}" aria-label="${escapeHtml(d)}, ${i+1}ª ora: ${avail.length} professori senza lezione prevista"><strong>${avail.length} docenti</strong><small>${active?'Selezionata':'Visualizza elenco'}</small></button>`;
+        return `<button type="button" class="weekly-cell free-teacher-slot ${active?'is-current':''}" data-free-slot-day="${escapeHtml(d)}" data-free-slot-hour="${i+1}" aria-pressed="${active}" aria-label="${escapeHtml(d)}, ora ${i+1}: ${avail.length} professori senza lezione prevista"><strong>${avail.length} docenti</strong><small>${active?'Selezionata':'Visualizza elenco'}</small></button>`;
       }).join('')).join('');
     return `<article class="result-card type-free full-schedule orari-weekly-card">
       <div class="result-banner"><span class="banner-icon" aria-hidden="true">${coffeeIcon}</span><h2>Professori liberi</h2></div>
@@ -679,6 +681,7 @@
   });
 
   $('#menuButton').addEventListener('click',()=>$('#sidebar').classList.contains('is-open')?closeMenu():openMenu());
+  $('#sidebarClose').addEventListener('click',()=>{closeMenu();$('#menuButton').focus()});
   $('#sidebarBackdrop').addEventListener('click',()=>{closeMenu();$('#menuButton').focus();});
   window.addEventListener('resize',()=>{if(window.innerWidth>680 && document.body.classList.contains('mobile-menu-open'))closeMenu();});
   window.addEventListener('resize',()=>{const box=$('#searchSuggestions');if(!box.hidden)fitSuggestions(box);});
@@ -733,14 +736,16 @@
       openSchedule(btn.dataset.fullSchedule,btn.dataset.entity);
       return;
     }
-    // Primo clic: apre Orari. Secondo clic: richiude soltanto il sottomenu.
-    // Su smartphone lasciamo il cassetto aperto per scegliere subito una voce.
+    // Su mobile il clic su Orari entra nella pagina e CHIUDE il menu.
+    // Su desktop il sottomenu può essere espanso/richiuso come in precedenza.
     if(btn.matches('.side-link[data-page="orari"]')){
-      if(!$('#scheduleSubnav').hidden){
+      if(window.matchMedia('(max-width:680px)').matches){
+        openSchedule(state.schedule || 'classes');
+        closeMenu();
+      }else if(!$('#scheduleSubnav').hidden){
         setScheduleSubnavExpanded(false);
       }else{
         openSchedule(state.schedule || 'classes');
-        if(window.matchMedia('(max-width:680px)').matches) openMenu();
       }
       return;
     }

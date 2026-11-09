@@ -33,3 +33,22 @@ Il navigatore ora visualizza lo stesso puntino sul punto di accesso alle scale o
 - Navigatore: punto pieno = partenza / uscita verso scale o ascensore; cerchio vuoto = destinazione / arrivo dal collegamento verticale.
 - Simboli in primo piano rispetto alle stanze delle piantine; legenda affiancata su desktop e sotto la mappa su mobile.
 - Service worker aggiornato alla cache V33. Gli orari, le mappe, l'algoritmo di percorso e le immagini non sono stati alterati.
+
+
+## V34 · Navigazione e mobile
+- La Palestra mantiene entrambe le geometrie di accesso (terra e seminterrato); il percorso sceglie la variante raggiungibile con costo minore.
+- Algoritmo dei corridoi: Dijkstra con penalizzazione della vicinanza ai muri, senza uscire dalla superficie transitabile.
+- Ore scolastiche visualizzate come 1, 2, 3, 4, 5, 6.
+- Menu mobile: il pulsante hamburger scompare quando il pannello è aperto, pulsante × interno per chiudere, e la sezione Orari chiude il pannello.
+- Professori liberi: la fascia dei filtri vuota è nascosta.
+- Dropdown di selezione orari ripristinato su mobile, accanto alla ricerca digitata.
+- Cognome Nome sostituisce Cognome / sigla nell'ordinamento dei professori.
+- Schermata di caricamento provvisoria con il logo originale, adattiva, in attesa dell'immagine di riferimento non presente fra gli allegati di questa richiesta.
+
+
+## Video di apertura fornito dagli studenti
+- Il filmato `assets/aulafinder-caricamento.mp4` è una copia **identica** del video caricato, non rielaborata.
+- Schermata responsive con logo al centro su PC e mobile, audio silenziato per permettere autoplay e `playsinline` per evitare il lettore a schermo intero sui telefoni.
+- Al termine del filmato la schermata si chiude. In caso di restrizioni autoplay, errore o connessione lenta, l'app non resta bloccata. Chi ha attivato la riduzione del movimento visualizza soltanto una schermata statica per un breve momento.
+- Il file poster JPG è ricavato direttamente da un fotogramma del video. La PWA memorizza il poster ma lascia gestire lo streaming MP4 al browser per rispettare le richieste HTTP Range.
+- Test: verificati poster/riproduzione in Chromium tramite anteprima a 1366 e 390 px; orari e percorso S.01 → Palestra già verificati nell'insieme di test V34. Non verificati Safari e dispositivi fisici.

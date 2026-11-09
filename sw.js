@@ -2,7 +2,7 @@
    Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
    A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v33-route-legend';
+const CACHE_NAME = 'aulafinder-pwa-v34-video-loading';
 const APP_SHELL = [
   "./index.html",
   "./style.css",
@@ -14,6 +14,8 @@ const APP_SHELL = [
   "./navigator.js",
   "./footer.js",
   "./pwa.js",
+  "./loading.js",
+  "./assets/aulafinder-caricamento.jpg",
   "./manifest.webmanifest",
   "./assets/logo-aulafinder.png",
   "./assets/liceo-grassi-carboncino.png",
@@ -47,6 +49,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
+  // File MP4: lascia al browser le richieste Range (206) necessarie alla riproduzione.
+  if (request.headers.has('range') || new URL(request.url).pathname.endsWith('.mp4')) return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   // Keep requests outside the app's actual folder untouched.

@@ -68,11 +68,18 @@
       const bounds=boundsOf(box,floor);
       if(!bounds||!bounds.width||!bounds.height)return;
       const x=bounds.x,y=bounds.y,w=bounds.width,h=bounds.height;
-      locations.push({id:text,floor,description:(g.dataset.t||'').split('·').slice(1).join('·').trim(),cx:Number(g.dataset.cx),cy:Number(g.dataset.cy),rect:{x,y,w,h}});
+      // La Palestra è raggiungibile da entrambe le mappe. Il punto di
+      // instradamento è l'accesso sul corridoio, NON il centro del locale:
+      // il rettangolo della palestra resta fuori dal grafo transitabile.
+      const gymEntry=text==='Palestra' ? (floor==='sotto'?{x:781,y:255}:
+        floor==='terra'?{x:407,y:475}:null) : null;
+      locations.push({id:text,floor,description:(g.dataset.t||'').split('·').slice(1).join('·').trim(),cx:gymEntry?.x??Number(g.dataset.cx),cy:gymEntry?.y??Number(g.dataset.cy),rect:{x,y,w,h}});
     });
   });
   const uniq=new Map();
-  // Palestra compare su sotterraneo e terra: scelto il piano terra come ingresso convenzionale.
+  // La Palestra ha due ingressi, seminterrato e terra. Le due geometrie
+  // sono mantenute in locations e confrontate dal navigatore; solo il testo
+  // del suggerimento utilizza un identificativo singolo.
   locations.forEach(r=>{const key=canon(r.id);if(!uniq.has(key)||r.id==='Palestra'&&r.floor==='terra')uniq.set(key,r);});
   const selectable=[...uniq.values()].sort((a,b)=>floors.indexOf(a.floor)-floors.indexOf(b.floor)||a.id.localeCompare(b.id,'it',{numeric:true}));
   // Every room visible on the plans is available in text search, including specialist labs.
@@ -232,7 +239,7 @@
     const svg=document.querySelector('#'+floor+' svg.plan');
     const corridor=geometryCorridors.get(floor);
     if(!svg||!corridor||typeof corridor.isPointInFill!=='function')return null;
-    const vb=svg.viewBox.baseVal,step=1.25;
+    const vb=svg.viewBox.baseVal,step=1.6;
     const nx=Math.ceil(vb.width/step)+1,ny=Math.ceil(vb.height/step)+1;
     const rooms=locations.filter(loc=>loc.floor===floor).map(loc=>{const r=loc.rect;return{
       x:r.x+.20,y:r.y+.20,x2:r.x+r.w-.20,y2:r.y+r.h-.20
@@ -243,26 +250,65 @@
       if(rooms.some(r=>p.x>=r.x&&p.x<=r.x2&&p.y>=r.y&&p.y<=r.y2))continue;
       if(corridor.isPointInFill(new DOMPoint(p.x,p.y)))valid[i]=1;
     }
-    const grid={nx,ny,valid,coord};walkGridCache.set(floor,grid);return grid;
+    // Distanza approssimata dai muri (celle). Favorisce il centro del corridoio.
+    const clearance=new Uint16Array(valid.length);
+    clearance.fill(60000);
+    for(let i=0;i<valid.length;i++)if(!valid[i])clearance[i]=0;
+    // Due passaggi Manhattan; il bordo della viewBox conta come ostacolo.
+    for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
+      const i=y*nx+x;
+      clearance[i]=Math.min(clearance[i],x===0||y===0?0:60000,
+        x>0?clearance[i-1]+1:60000,y>0?clearance[i-nx]+1:60000);
+    }
+    for(let y=ny-1;y>=0;y--)for(let x=nx-1;x>=0;x--){
+      const i=y*nx+x;
+      clearance[i]=Math.min(clearance[i],x===nx-1||y===ny-1?0:60000,
+        x<nx-1?clearance[i+1]+1:60000,y<ny-1?clearance[i+nx]+1:60000);
+    }
+    const grid={nx,ny,valid,coord,clearance};walkGridCache.set(floor,grid);return grid;
   }
   function actualHall(floor,start,end){
     const grid=walkingGrid(floor);if(!grid)return undefined;
-    const {nx,ny,valid,coord}=grid;
+    const {nx,ny,valid,coord,clearance}=grid;
     function nearest(loc){let best=-1,dist=Infinity;
       for(let i=0;i<valid.length;i++)if(valid[i]){const p=coord(i),d=(p.x-loc.cx)**2+(p.y-loc.cy)**2;
-        if(d<dist){dist=d;best=i}}
+        if(d<dist){dist=d;best=i;}}
       return best;
     }
     const source=nearest(start),target=nearest(end);
     if(source<0||target<0)return null;
+    // Dijkstra con costo maggiore accanto a muri e porte: linea piu centrale.
     const prev=new Int32Array(valid.length);prev.fill(-1);
-    const queue=new Int32Array(valid.length);
+    const cost=new Float64Array(valid.length);cost.fill(Infinity);
     const visited=new Uint8Array(valid.length);
-    let head=0,tail=0;queue[tail++]=source;visited[source]=1;
-    while(head<tail && !visited[target]){
-      const u=queue[head++],x=u%nx,y=(u-x)/nx;
-      const neighbors=[x>0?u-1:-1,x<nx-1?u+1:-1,y>0?u-nx:-1,y<ny-1?u+nx:-1];
-      for(const v of neighbors)if(v>=0&&valid[v]&&!visited[v]){visited[v]=1;prev[v]=u;queue[tail++]=v;}
+    const heap=[];
+    const tx=target%nx,ty=(target-tx)/nx;
+    const push=(i,g)=>{
+      const x=i%nx,y=(i-x)/nx,h=Math.abs(x-tx)+Math.abs(y-ty);
+      const item=[i,g,g+h];let k=heap.length;heap.push(item);
+      while(k>0){const p=(k-1)>>1;if(heap[p][2]<=item[2])break;heap[k]=heap[p];k=p;}heap[k]=item;
+    };
+    const pop=()=>{
+      const top=heap[0],last=heap.pop();
+      if(heap.length){let k=0;while(true){let c=k*2+1;if(c>=heap.length)break;
+        if(c+1<heap.length&&heap[c+1][2]<heap[c][2])c++;
+        if(heap[c][2]>=last[2])break;heap[k]=heap[c];k=c;
+      }heap[k]=last;}return top;
+    };
+    cost[source]=0;push(source,0);
+    while(heap.length){
+      const [u,d]=pop();if(visited[u]||d>cost[u]+1e-7)continue;
+      visited[u]=1;if(u===target)break;
+      const x=u%nx,y=(u-x)/nx;
+      const near=[x>0?u-1:-1,x<nx-1?u+1:-1,y>0?u-nx:-1,y<ny-1?u+nx:-1];
+      for(const v of near){if(v<0||!valid[v]||visited[v])continue;
+        const wallDistance=Math.max(0.25,clearance[v]);
+        // Le prime/ultime celle possono essere vicino alla porta; dentro il
+        // corridoio preferiamo 2-4 celle di distanza dai bordi quando possibile.
+        const penalty=4.7/(wallDistance+0.8);
+        const candidate=d+1+penalty;
+        if(candidate<cost[v]){cost[v]=candidate;prev[v]=u;push(v,candidate);}
+      }
     }
     if(!visited[target])return null;
     const cells=[];for(let u=target;u>=0;u=prev[u]){cells.push(u);if(u===source)break;}
@@ -274,7 +320,7 @@
       }
       compressed.push(points[i]);
     }
-    // La linea termina ai bordi delle stanze, senza attraversare il testo delle aule.
+    // Il tracciato segue il corridoio privilegiandone il centro; le estremità si accostano alle porte.
     return compressed.filter((p,i)=>i===0||!close(p,compressed[i-1]));
   }
   function shortestHall(floor,start,end){
@@ -363,6 +409,15 @@
     // Include both gym levels: underground is a valid arrival without climbing to ground.
     const starts=variants(a.id).length?variants(a.id):[a];
     const ends=variants(b.id).length?variants(b.id):[b];
+    // Percorso sullo stesso piano: nessun bisogno di interrogare tutte le
+    // scale. Scegli anche l'ingresso sotterraneo della Palestra quando utile.
+    for(const origin of starts)for(const destination of ends){
+      if(origin.floor!==destination.floor)continue;
+      const direct=cachedHall(origin.floor,origin,destination);
+      if(direct&&direct.length) return {a:origin,b:destination,mode,
+        stages:[{floor:origin.floor,points:direct,start:origin,end:destination,transfer:false}],
+        cost:routeLength(direct),sameFloorGym:origin.id==='Palestra'||destination.id==='Palestra'};
+    }
     let best=null;
     for(const origin of starts)for(const destination of ends){
       const fi=floors.indexOf(origin.floor),ti=floors.indexOf(destination.floor);
@@ -429,8 +484,12 @@
       if(!stages.length)stages.push({floor:origin.floor,points:[point(origin.cx,origin.cy)],start:origin,end:destination,transfer:false});
       stages[0].start=origin;
       stages[stages.length-1].end=destination;
-      const choice={a:origin,b:destination,mode,stages,cost:costs.at(-1)};
-      if(!best||choice.cost<best.cost)best=choice;
+      // Se esiste un ingresso della Palestra sullo stesso piano di partenza,
+      // preferiamo quello: non aggiungere scale a un percorso tutto in piano.
+      const sameFloorGym=(a.id==='Palestra'||b.id==='Palestra')&&origin.floor===destination.floor;
+      const choice={a:origin,b:destination,mode,stages,cost:costs.at(-1),sameFloorGym};
+      if(!best || (sameFloorGym&&!best.sameFloorGym) ||
+        (sameFloorGym===best.sameFloorGym && choice.cost<best.cost))best=choice;
     }
     return best;
   }

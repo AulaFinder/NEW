@@ -1157,3 +1157,64 @@ html[data-theme="dark"] .navigator-map .nav-point-arrival{fill:#153640;stroke:#9
   .nav-route-legend>strong{width:100%}
   .nav-route-legend-item{max-width:100%;flex:1 1 128px}
 }
+
+/* V34 · interazioni mobile, caricamento e selettori orari */
+#orariFilterRow[hidden]{display:none!important}
+.sidebar-close{display:none}
+.app-loading{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;
+ background:linear-gradient(120deg,#071F29 0%,#19404A 35%,#26A7A9 72%,#9DE8D7 100%);color:#E4F6F2;text-align:center;
+ transition:opacity .28s ease,visibility .28s ease}
+.app-loading[hidden]{display:none!important}
+.app-loading.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.app-loading-inner{display:flex;align-items:center;flex-direction:column;gap:12px;max-width:330px;width:min(100%,330px)}
+.app-loading img{height:clamp(88px,25vw,118px);width:clamp(88px,25vw,118px);object-fit:contain;filter:drop-shadow(0 0 20px #9DE8D755)}
+.app-loading strong{font-size:clamp(25px,6vw,37px);color:#fff;letter-spacing:-.045em}
+.app-loading strong span{background:linear-gradient(110deg,#FFF,#9DE8D7,#26A7A9);background-clip:text;-webkit-background-clip:text;color:transparent}
+.app-loading p{margin:0;color:#E4F6F2;font-size:13px}
+.app-loading-track{height:5px;width:80%;border-radius:8px;background:#E4F6F239;overflow:hidden}
+.app-loading-track i{display:block;width:40%;height:100%;border-radius:8px;background:#9DE8D7;animation:aulafinder-loading 1.15s ease-in-out infinite alternate}
+@keyframes aulafinder-loading{from{transform:translateX(-55%)}to{transform:translateX(205%)}}
+@media(max-width:680px){
+  body.mobile-menu-open #menuButton{visibility:hidden!important;pointer-events:none!important}
+  .sidebar-close{display:grid;place-items:center;position:sticky;top:10px;left:calc(100% - 52px);margin:8px 10px 0 auto;
+    z-index:45;flex:0 0 40px;width:40px;height:40px;border:1px solid #89C8C0;border-radius:11px;background:#E4F6F2;color:#071F29;font-size:26px;cursor:pointer}
+  #orariPage #scheduleEntity{display:block!important;max-width:100%;min-height:40px}
+  #orariPage .schedule-entity-field{gap:7px}
+  #orariPage .schedule-entity-field .schedule-quick-results{top:calc(100% - 48px)}
+}
+@media(prefers-reduced-motion:reduce){.app-loading-track i{animation:none}.app-loading{transition:none}}
+
+/* V34 · Intro video originale AulaFinder (PC e smartphone). */
+.app-loading{
+  padding:0!important;
+  background:radial-gradient(circle at 60% 30%,#126c86,#092b4b 60%,#071F29 100%)!important;
+  overflow:hidden;
+}
+.app-loading-video{
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 50%;
+  background:transparent;
+}
+@media(max-width:680px){
+  .app-loading-video{
+    /* Video 16:9, adattato al telefono preservando interamente il logo centrale. */
+    position:relative;
+    inset:auto;
+    width:100%;
+    height:min(75svh,540px);
+    min-height:240px;
+    object-fit:cover;
+    object-position:center center;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .app-loading-video{display:none}
+  .app-loading{
+    background:#071F29 url('assets/aulafinder-caricamento.jpg') center / cover no-repeat!important;
+  }
+}
