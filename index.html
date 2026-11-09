@@ -98,7 +98,32 @@
 
     <div class="workspace">
       <aside id="sidebar" class="sidebar" aria-label="Navigazione principale">
-        <button type="button" id="sidebarClose" class="sidebar-close" aria-label="Chiudi menu">×</button>
+        <!-- V35: intestazione del menu identica al marchio, cliccabile per tornare alla Home. -->
+<button type="button" id="sidebarClose" class="sidebar-brand" aria-label="AulaFinder: torna alla Home e chiudi il menu">
+  <img class="sidebar-brand-logo" src="assets/logo-aulafinder.png" alt="" aria-hidden="true">
+  <span class="brand-title sidebar-brand-title"><span class="brand-aula"><span class="brand-aula-letters">Aula</span><svg class="brand-aula-orbit" aria-hidden="true" viewBox="0 0 160 76" focusable="false">
+              <defs>
+                <linearGradient id="brandOrbitGradient-sidebar" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#ecffff"/><stop offset="0.28" stop-color="#75ffee"/><stop offset="0.63" stop-color="#2ff0ed"/><stop offset="1" stop-color="#faffff"/>
+                </linearGradient>
+                <radialGradient id="brandOrbitOrb-sidebar" cx="0.38" cy="0.27" r="0.73">
+                  <stop stop-color="#ffffff"/><stop offset="0.2" stop-color="#cafff5"/><stop offset="0.54" stop-color="#5cfbe4"/><stop offset="0.82" stop-color="#00cbbb"/><stop offset="1" stop-color="#007a85"/>
+                </radialGradient>
+                <filter id="brandOrbitGlow-sidebar" x="-80%" y="-140%" width="260%" height="380%"><feGaussianBlur stdDeviation="3.2"/></filter>
+              </defs>
+              <g class="orbit-back">
+                <path class="orbit-glow" d="M13 41 C-2 18 52 9 103 27 C146 41 157 55 138 61 C103 74 53 47 13 41"/>
+                <path class="orbit-rail" d="M13 41 C-2 18 52 9 103 27 C146 41 157 55 138 61 C103 74 53 47 13 41"/>
+              </g>
+              <g class="orbit-front">
+                <path class="orbit-glow" d="M29 42 C53 50 89 71 126 66 C145 63 149 53 139 46"/>
+                <path class="orbit-rail" d="M29 42 C53 50 89 71 126 66 C145 63 149 53 139 46"/>
+                <circle cx="29" cy="42" r="11" fill="#5cffea" opacity=".5" filter="url(#brandOrbitGlow-sidebar)"/>
+                <circle cx="29" cy="42" r="9" fill="url(#brandOrbitOrb-sidebar)" stroke="#eaffff" stroke-width="1.6"/>
+                <ellipse cx="25.5" cy="38" rx="2.9" ry="1.5" transform="rotate(-40 25.5 38)" fill="white" opacity=".9"/>
+              </g>
+            </svg></span><span class="brand-finder">Finder</span></span>
+</button>
         <nav class="side-navigation" aria-label="Menu di AulaFinder">
           <button type="button" class="side-link" data-page="home"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></svg> Home</button>
           <button type="button" class="side-link" data-page="tutorial"><svg viewBox="0 0 24 24" aria-hidden="true" class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4V8Z"/></svg> Tutorial</button>

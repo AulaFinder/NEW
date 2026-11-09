@@ -1218,3 +1218,47 @@ html[data-theme="dark"] .navigator-map .nav-point-arrival{fill:#153640;stroke:#9
     background:#071F29 url('assets/aulafinder-caricamento.jpg') center / cover no-repeat!important;
   }
 }
+
+/* V35 · solo intestazione del menu mobile e raccordo della schermata video. */
+.sidebar-brand { display:none; }
+@media (max-width:680px) {
+  /* Stesso marchio originale dell'header, al posto dello spazio vuoto e della X. */
+  #sidebar .sidebar-brand {
+    display:flex; align-items:center; justify-content:flex-start;
+    box-sizing:border-box; gap:8px; width:100%; min-height:76px;
+    padding:13px 12px 12px 14px; margin:0;
+    border:0; border-bottom:1px solid #9DE8D731; border-radius:0;
+    background:#12343E; color:#fff; text-align:left; cursor:pointer;
+    position:sticky; top:0; z-index:45; overflow:visible;
+  }
+  #sidebar .sidebar-brand-logo { display:block; width:45px; height:45px; flex:0 0 45px; object-fit:contain; }
+  #sidebar .sidebar-brand-title {
+    display:inline-flex; align-items:center; flex:0 1 auto; min-width:0;
+    font-size:clamp(18px,5vw,23px); line-height:1.12; letter-spacing:-.05em;
+  }
+  #sidebar .sidebar-brand .brand-aula {color:#fff;}
+  #sidebar .sidebar-brand .brand-finder {color:#9DE8D7;}
+  #sidebar {justify-content:flex-start;}
+  #sidebar .side-navigation {padding-top:9px;}
+  #sidebar .sidebar-brand:focus-visible {outline:2px solid #9DE8D7; outline-offset:-4px;}
+
+  /* Video 16:9 su schermo verticale: la sfocatura replica i colori reali
+     negli spazi esterni; una maschera dissolve il bordo superiore e inferiore. */
+  .app-loading { background:#061F31!important; isolation:isolate; }
+  .app-loading::before {
+    content:''; position:absolute; inset:-45px; z-index:0; pointer-events:none;
+    background:#07334B url('assets/aulafinder-caricamento.jpg') center center / cover no-repeat;
+    filter:blur(58px) brightness(.70) saturate(1.22);
+    transform:scale(1.13);
+  }
+  .app-loading-video {
+    position:relative; z-index:1;
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 85%,transparent 100%);
+    mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 85%,transparent 100%);
+  }
+}
+@media(max-width:355px){
+  #sidebar .sidebar-brand{gap:6px;padding-left:10px;padding-right:8px}
+  #sidebar .sidebar-brand-logo{width:39px;height:39px;flex-basis:39px}
+  #sidebar .sidebar-brand-title{font-size:19px}
+}

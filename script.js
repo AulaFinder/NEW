@@ -681,7 +681,7 @@
   });
 
   $('#menuButton').addEventListener('click',()=>$('#sidebar').classList.contains('is-open')?closeMenu():openMenu());
-  $('#sidebarClose').addEventListener('click',()=>{closeMenu();$('#menuButton').focus()});
+  $('#sidebarClose').addEventListener('click',()=>go('home'));
   $('#sidebarBackdrop').addEventListener('click',()=>{closeMenu();$('#menuButton').focus();});
   window.addEventListener('resize',()=>{if(window.innerWidth>680 && document.body.classList.contains('mobile-menu-open'))closeMenu();});
   window.addEventListener('resize',()=>{const box=$('#searchSuggestions');if(!box.hidden)fitSuggestions(box);});

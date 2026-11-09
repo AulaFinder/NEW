@@ -52,3 +52,8 @@ Il navigatore ora visualizza lo stesso puntino sul punto di accesso alle scale o
 - Al termine del filmato la schermata si chiude. In caso di restrizioni autoplay, errore o connessione lenta, l'app non resta bloccata. Chi ha attivato la riduzione del movimento visualizza soltanto una schermata statica per un breve momento.
 - Il file poster JPG è ricavato direttamente da un fotogramma del video. La PWA memorizza il poster ma lascia gestire lo streaming MP4 al browser per rispettare le richieste HTTP Range.
 - Test: verificati poster/riproduzione in Chromium tramite anteprima a 1366 e 390 px; orari e percorso S.01 → Palestra già verificati nell'insieme di test V34. Non verificati Safari e dispositivi fisici.
+
+## V35 · Ritocchi mirati
+- Nel menu mobile, al posto della X compare il logo originale e la scritta AulaFinder con effetto orbitale, coerenti con l'intestazione. Toccare il marchio chiude il menu e torna alla Home; restano disponibili il tocco sullo sfondo e il tasto Esc.
+- Il filmato originale di caricamento è invariato. Sul mobile, per eliminare lo stacco netto fra video e bande, il filmato sfuma ai margini superiore/inferiore sopra uno sfondo coordinato e sfocato ricavato dal poster originale.
+- Cache PWA aggiornata. Nessuna modifica agli orari, alle piantine o all'algoritmo del navigatore.
