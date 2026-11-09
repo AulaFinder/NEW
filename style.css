@@ -1,0 +1,1064 @@
+/* AulaFinder | Layout basato sui wireframe PC e smartphone.
+   Palette: #071F29 #19404A #9DE8D7 #26A7A9 #FF8A6B #E4F6F2 #568DB8 */
+:root {
+  --navy:#071F29; --petrol:#19404A; --mint:#9DE8D7;
+  --teal:#26A7A9; --coral:#FF8A6B; --ice:#E4F6F2;
+  --blue:#568DB8; --ink:#08171C; --muted:#3D5861;
+  --line:#CEE5E2; --page:#F3FAF8; --white:#FFFFFF;
+  --hero-gradient:linear-gradient(120deg,#071F29 0%,#19404A 35%,#26A7A9 72%,#9DE8D7 100%);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {margin:0;background:#EEF6F4;color:var(--ink);font-size:15px}
+button,input,select {font:inherit}
+button {cursor:pointer}
+a {color:#0B5678}
+p {color:#000;line-height:1.65}
+h1,h2,h3,p {margin-top:0}
+h1 {font-size:clamp(24px,2.7vw,35px);letter-spacing:-.045em;line-height:1.15}
+h2 {font-size:18px;letter-spacing:-.02em}
+:focus-visible {outline:3px solid #26A7A9;outline-offset:3px}
+[hidden] {display:none!important}
+.sr-only {position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.app-shell {max-width:1560px;min-height:100vh;margin:auto;background:var(--white);border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 15px 55px #05262b10}
+.site-header {min-height:92px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px 28px;background:var(--hero-gradient);color:white;border-bottom:3px solid var(--mint)}
+.brand {display:flex;align-items:center;gap:14px;min-width:0}
+.logo-button {width:62px;height:62px;flex-shrink:0;display:block;overflow:hidden;padding:0;border:2px solid #c8fff09c;border-radius:50%;background:#091921;box-shadow:0 5px 18px #00151d55;transition:transform .18s}
+.logo-button:hover {transform:scale(1.06)}
+.logo-button img {width:100%;height:100%;object-fit:contain;display:block;border-radius:50%}
+.brand-title {border:0;padding:0;background:transparent;color:#fff;font-size:clamp(21px,2.4vw,32px);font-weight:800;letter-spacing:-.045em}
+.header-controls {display:flex;align-items:center;gap:13px;margin-left:auto}
+.header-control {display:flex;flex-direction:column;gap:5px;font-size:11px;color:#fff;font-weight:700;letter-spacing:.02em}
+.header-control select {height:40px;min-width:145px;border:1px solid #c2f5e7;background:#fff;color:var(--ink);border-radius:11px;padding:0 12px;font-weight:700}
+.header-hour select {min-width:106px}
+.admin-button {height:40px;margin-top:16px;padding:0 22px;border:1px solid #c2f5e7;background:#f8fffd;color:var(--ink);border-radius:11px;font-weight:700}
+.menu-button {display:none}
+.workspace {display:flex;align-items:stretch;min-height:calc(100vh - 92px)}
+.sidebar {width:263px;flex:0 0 263px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,#EAF5F3,#F6FBFA);border-right:1px solid var(--line)}
+.side-navigation {padding:22px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.side-link {width:100%;min-height:51px;display:flex;align-items:center;gap:13px;border:1px solid #c6ddd9;background:#fff;color:var(--ink);border-radius:12px;text-align:left;font-weight:700;padding:9px 14px;transition:.2s}
+.side-link:hover,.side-link.is-active {background:var(--petrol);color:white;border-color:var(--petrol)}
+.nav-icon {width:27px;height:27px;flex:0 0 27px;display:block}
+.schedule-subnav {display:flex;flex-direction:column;gap:6px;margin:-2px 0 3px 20px;padding-left:12px;border-left:2px solid #aad3ca}
+.schedule-subnav button {background:transparent;border:0;text-align:left;padding:9px 8px;font-size:13px;font-weight:650;color:var(--petrol);border-radius:6px}
+.schedule-subnav button:hover,.schedule-subnav button.is-active {background:#d7efea}
+.history-block {margin-top:2px;min-height:150px;padding:15px;border:1px solid #c6ddd9;border-radius:12px;background:#fff}
+.history-block h2 {font-size:15px;margin-bottom:12px}
+.history-list {display:flex;flex-direction:column;gap:4px}
+.history-item {border:0;border-radius:7px;padding:8px 4px;background:transparent;text-align:left;color:#123e4a;font-size:13px;overflow-wrap:anywhere}
+.history-item:hover {background:#eaf6f2}
+.clear-history-button {width:100%;margin-top:12px;min-height:38px;border:1px solid #69BBB4;border-radius:9px;background:#fff7f5;color:#6f2f20;font-size:12px;font-weight:750;transition:background .15s}
+.clear-history-button:not(:disabled):hover {background:#ffe4dc}
+.clear-history-button:disabled {opacity:.45;cursor:not-allowed}
+.small-muted {color:#587078;font-size:13px;line-height:1.4;margin:0}
+.about-block {padding:22px 23px 25px;border-top:1px solid var(--line)}
+.about-toggle {background:none;border:0;padding:0;color:var(--ink);font-weight:800;text-align:left;font-size:15px}
+.about-block p {margin:10px 0 0;font-size:12px;line-height:1.55}
+.main-content {min-width:0;flex:1;padding:20px 25px 30px;background:var(--white)}
+.page {width:100%}
+.school-image {height:clamp(215px,26vw,336px);border-radius:18px;overflow:hidden;background:#F4F4F1;border:1px solid var(--line);box-shadow:0 5px 19px #0c343010}
+.school-image img {width:100%;height:100%;object-fit:cover;object-position:center 53%;display:block}
+.home-search-area {max-width:960px;margin:22px auto 0}
+.home-intro {margin-bottom:16px}
+.home-intro h1 {margin:0 0 4px}
+.home-intro p {margin:0;font-size:14px;color:#000}
+.search-form {display:flex;align-items:center;gap:8px;position:relative;min-height:71px;padding:9px 10px 9px 19px;border:2px solid var(--teal);border-radius:15px;background:white;box-shadow:0 8px 25px #0e787b10}
+.search-form:focus-within {border-color:#167f91;box-shadow:0 0 0 4px #26a7a924}
+.search-glyph {font-size:36px;line-height:1;color:var(--petrol)}
+.search-form input {min-width:0;flex:1;border:0;outline:none;background:transparent;color:var(--ink);font-size:clamp(14px,1.7vw,18px)}
+.search-form input::placeholder {color:#58676c;opacity:1}
+.search-submit {border:0;background:var(--petrol);color:white;border-radius:10px;padding:15px 23px;font-weight:750}
+.search-submit:hover {background:#0D606D}
+.search-suggestions {position:relative;margin:6px 0 0;border:1px solid var(--line);border-radius:11px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:white;box-shadow:0 9px 18px #17373a17}
+.search-suggestions button {display:block;width:100%;padding:12px 14px;background:#fff;border:0;text-align:left;color:var(--ink)}
+.search-suggestions button+button {border-top:1px solid #edf3f2}
+.search-suggestions button:hover {background:var(--ice)}
+.search-suggestions::-webkit-scrollbar {width:10px}
+.search-suggestions::-webkit-scrollbar-track {background:var(--ice)}
+.search-suggestions::-webkit-scrollbar-thumb {background:var(--teal);border-radius:8px;border:2px solid var(--ice)}
+@supports not selector(::-webkit-scrollbar) {.search-suggestions {scrollbar-width:thin;scrollbar-color:var(--teal) var(--ice)}}
+.free-rooms-shortcut {margin-top:14px;width:100%;min-height:44px;border:1px solid var(--teal);border-radius:12px;background:var(--ice);color:#092b34;font-weight:800;transition:.15s}
+.free-rooms-shortcut:hover {background:var(--mint)}
+.content-page {padding:8px 0;max-width:1030px;margin:0 auto}
+.page-topline {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 22px}
+.page-topline h1 {margin:0}
+.back-link {order:2;background:#eaf4f2;border:0;border-radius:9px;color:var(--petrol);font-size:13px;font-weight:700;padding:9px 12px}
+.schedule-home-buttons {display:flex;flex-direction:column;gap:17px}
+.schedule-home-buttons button {min-height:90px;display:flex;align-items:center;justify-content:flex-start;padding:18px 24px;gap:12px;border:1px solid #a8d8cf;background:linear-gradient(100deg,#EAF7F5,#F7FBFA);border-radius:16px;color:var(--petrol);font-size:21px;font-weight:800;box-shadow:0 7px 18px #0d48450d}
+.schedule-home-buttons button:hover {border-color:var(--teal);background:#def4ef}
+.schedule-home-buttons .group-arrow {font-size:22px;color:#2b8588;margin-left:auto}
+.schedule-controls {display:flex;align-items:end;gap:18px;flex-wrap:wrap;margin-bottom:21px}
+.schedule-controls label {display:flex;flex-direction:column;gap:7px;font-weight:700;color:var(--petrol)}
+.schedule-controls select {min-height:42px;min-width:min(360px,75vw);border:1px solid #acd3cc;border-radius:10px;padding:8px 10px;background:white;color:var(--ink)}
+.schedule-controls a {display:inline-flex;align-items:center;min-height:42px;border:1px solid #a1cfc8;padding:9px 13px;border-radius:9px;text-decoration:none;color:var(--petrol);font-weight:750}
+.schedule-controls a:hover {background:var(--ice)}
+.result-card {border:1px solid var(--card-stroke);border-radius:17px;background:#fff;box-shadow:0 7px 24px #16364014;overflow:hidden;margin:0 0 18px}
+.result-card.type-room {--card:#216BB2;--card-light:#ECF4FC;--card-stroke:#B3D3ED;--card-ink:#08436C}
+.result-card.type-class {--card:#0A8777;--card-light:#E6F5F0;--card-stroke:#A4D8C9;--card-ink:#085549}
+.result-card.type-teacher {--card:#19404A;--card-light:#F0F8F5;--card-stroke:#A6CAC7;--card-ink:#143E48}
+.result-card.type-free {--card:#0D847F;--card-light:#E4F6F2;--card-stroke:#9ED7D2;--card-ink:#075252}
+.result-banner {min-height:71px;display:flex;align-items:center;gap:12px;padding:13px 18px;background:var(--card);color:white}
+.result-banner .banner-icon {width:29px;height:29px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.result-banner .entity-icon {width:100%;height:100%}
+.result-banner h2 {margin:0;font-size:21px;color:white;overflow-wrap:anywhere}
+.result-body {padding:20px}
+.result-header {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.result-header strong {font-size:19px;color:var(--card-ink)}
+.status-pill {padding:8px 12px;border-radius:999px;background:#ffdb85;color:#35270b;font-size:12px;font-weight:800;white-space:nowrap}
+.status-pill.free {background:#dbf4df;color:#125a33}
+.current-lesson {background:var(--card-light);border-radius:10px;padding:16px 18px;margin-bottom:21px;min-height:102px}
+.current-lesson .eyebrow {color:var(--card-ink);font-size:13px;margin:0 0 5px}
+.current-lesson h3 {font-size:20px;margin:0 0 5px;color:var(--card-ink)}
+.current-lesson p {margin:0;color:#000;font-size:14px}
+.daily-heading {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;color:var(--card-ink)}
+.daily-heading h3 {margin:0;font-size:17px;color:var(--card-ink)}
+.daily-heading span {font-size:13px;color:#4b6570}
+.hours-list {display:flex;flex-direction:column;gap:9px}
+.hour-row {display:flex;align-items:center;gap:14px;min-height:61px;padding:11px 13px;border:1px solid #D6E4E7;border-radius:12px;background:#fff}
+.hour-row.is-selected {background:var(--card);border-color:var(--card);box-shadow:0 3px 8px #0c494820;color:#fff}
+.hour-number {flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;background:var(--card-light);border-radius:50%;font-size:18px;font-weight:850;color:var(--card-ink)}
+.hour-row.is-selected .hour-number {background:#ffffff33;color:#fff}
+.hour-data {flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.hour-data strong {font-size:14px;color:inherit}
+.hour-data small {font-size:12px;color:#526c75}
+.hour-row.is-selected .hour-data small {color:#fff}
+.hour-location {max-width:38%;margin-left:auto;text-align:right;font-size:12px;color:#386478;font-weight:700;overflow-wrap:anywhere}
+.hour-row.is-selected .hour-location {color:white}
+.empty-value {color:#657a81}
+.result-note {font-size:12px;color:#435b64;margin-top:15px}
+.free-room-list {display:flex;flex-wrap:wrap;gap:8px}
+.room-chip {padding:9px 12px;border:1px solid #9acfc7;background:#fff;color:#0e4452;border-radius:10px;font-size:13px;font-weight:750}
+.room-chip:hover {background:var(--mint)}
+.result-choices {display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.choice-button {width:100%;text-align:left;padding:13px;border:1px solid #b1d4cb;border-radius:11px;background:var(--ice);font-weight:700;color:var(--petrol)}
+.choice-button:hover {background:var(--mint)}
+.no-results {border:1px solid var(--line);padding:20px;border-radius:14px;background:var(--ice)}
+.no-results h2 {margin-bottom:8px}
+.no-results p {margin-bottom:0}
+.empty-page {min-height:440px}
+.about-page {max-width:700px}
+.about-page p {font-size:16px}
+.about-card {padding:clamp(20px,4vw,48px);border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,#F4FCFA 0%,#fff 80%);box-shadow:0 7px 22px #0e323214}
+.about-card h1 {color:var(--petrol);margin-bottom:25px}
+.about-card p {font-size:17px;max-width:65ch;line-height:1.75}
+.about-card p:last-child {margin-bottom:0}
+.mobile-footer {display:none}
+.sidebar-backdrop {display:none}
+.logo-dialog {position:fixed;max-width:min(90vw,520px);width:520px;border:0;border-radius:50%;padding:15px;background:#071F29;box-shadow:0 14px 50px #0007}
+.logo-dialog::backdrop {background:#06191ec9}
+.logo-dialog img {width:100%;display:block;border-radius:50%;aspect-ratio:1;object-fit:contain}
+@media (max-width:900px) {
+  .sidebar {width:228px;flex-basis:228px}
+  .site-header {padding-left:17px;padding-right:17px}
+  .main-content {padding:17px}
+  .header-control select {min-width:120px}
+  .school-image {height:280px}
+}
+@media (max-width:680px) {
+  .app-shell {border:0;min-height:100vh}
+  .site-header {position:relative;flex-wrap:wrap;gap:10px;min-height:0;padding:12px 14px 13px}
+  .brand {flex:1;gap:10px}
+  .logo-button {width:50px;height:50px}
+  .brand-title {font-size:23px}
+  .header-controls {order:3;flex:0 0 100%;margin:0;gap:9px}
+  .header-control {flex:1;font-size:11px}
+  .header-control select,.header-hour select {min-width:0;width:100%;height:37px}
+  .admin-button {display:none}
+  .menu-button {display:grid;place-items:center;min-width:43px;height:43px;border:1px solid #c7fff3;border-radius:11px;background:#e7fcf4;color:#071F29;font-size:23px;position:relative;z-index:22}
+  .workspace {display:block;min-height:calc(100vh - 140px)}
+  .sidebar {position:fixed;z-index:20;top:0;bottom:0;left:0;width:min(310px,86vw);overflow-y:auto;transform:translateX(-105%);transition:transform .22s;box-shadow:12px 0 30px #05262b30;pointer-events:none}
+  .sidebar.is-open {transform:translateX(0);pointer-events:auto}
+  .side-navigation {padding-top:26px}
+  .sidebar-backdrop:not([hidden]) {display:block;position:fixed;inset:0;z-index:19;background:#071f2999}
+  .main-content {padding:13px 13px 80px;min-height:calc(100vh - 146px);display:flex;flex-direction:column}
+  .school-image {height:clamp(172px,49vw,235px);border-radius:14px}
+  .home-search-area {margin:15px 0 0}
+  .home-intro {margin-bottom:12px}
+  .home-intro h1 {font-size:24px}
+  .search-form {min-height:58px;padding:6px 7px 6px 12px;border-radius:12px}
+  .search-glyph {font-size:28px}
+  .search-form input {font-size:14px}
+  .search-submit {padding:11px 12px;font-size:13px}
+  .free-rooms-shortcut {margin-top:11px}
+  .content-page {padding:5px 1px 16px}
+  .schedule-home-buttons {gap:16px}
+  .schedule-home-buttons button {min-height:77px;font-size:17px}
+  .page-topline {margin-bottom:17px}
+  .page-topline h1 {font-size:27px}
+  .result-body {padding:13px}
+  .result-banner {padding:12px 14px;min-height:62px}
+  .result-banner h2 {font-size:18px}
+  .result-header strong {font-size:17px}
+  .current-lesson {padding:13px;min-height:0}
+  .current-lesson h3 {font-size:17px}
+  .hour-row {padding:9px 10px;gap:9px}
+  .hour-number {width:32px;height:32px;flex-basis:32px;font-size:16px}
+  .hour-data strong {font-size:13px}
+  .hour-location {font-size:11px;max-width:33%}
+  .schedule-controls {align-items:stretch;gap:10px}
+  .schedule-controls label,.schedule-controls select {width:100%;min-width:0}
+  .mobile-footer {display:flex;align-items:stretch;justify-content:space-around;margin-top:auto;border-top:1px solid var(--line);background:#eff8f5;border-radius:12px;min-height:67px}
+  .mobile-footer button {flex:1;border:0;background:transparent;font-weight:750;color:var(--petrol)}
+  .mobile-footer button+button {border-left:1px solid #bbd4cf}
+  .empty-page {min-height:250px}
+}
+@media (prefers-reduced-motion:reduce) {*,*::before,*::after {transition:none!important;scroll-behavior:auto!important}}
+.free-hour-item {border:1px solid #D5E8E4;padding:13px;margin-bottom:11px;border-radius:12px}
+.free-hour-item.is-highlighted {border:2px solid var(--teal);background:#f0faf7}
+.free-hour-item h3 {font-size:15px;color:#153c45;margin:0 0 12px}
+.free-hour-item h3 small {font-size:12px;font-weight:500;color:#4a6368}
+/* Il contenitore Main riceve focus via JS per la navigazione, senza bordo decorativo. */
+.main-content:focus {outline:none}
+
+/* Pulsante dalla ricerca all'orario settimanale specifico */
+.complete-schedule-button {width:100%;min-height:50px;margin-top:16px;border:0;border-radius:11px;background:var(--card);color:#fff;font-size:15px;font-weight:800}
+.complete-schedule-button:hover {filter:brightness(.88)}
+/* Griglia settimanale completa: sei ore, cinque giorni */
+.weekly-title {margin:0 0 18px;color:var(--card-ink);font-size:18px}
+.weekly-scroll {max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:6px}
+.weekly-grid {display:grid;grid-template-columns:46px repeat(5,minmax(142px,1fr));gap:7px;min-width:785px}
+.weekly-corner,.weekly-day,.weekly-number {display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:750}
+.weekly-corner,.weekly-day {padding:13px 4px;border-radius:9px;background:var(--card-light);color:var(--card-ink)}
+.weekly-number {border-radius:9px;color:var(--card-ink);background:var(--card-light);font-size:17px}
+.weekly-cell {min-height:91px;border:1px solid #dce6e8;border-radius:10px;background:#fff;display:flex;flex-direction:column;gap:5px;padding:10px 9px;line-height:1.3;color:var(--ink);overflow-wrap:anywhere}
+.weekly-cell strong {font-size:12px;font-weight:800}
+.weekly-cell small {font-size:11px;color:#46575e}
+.weekly-cell .weekly-location {margin-top:auto;text-align:right;color:var(--card-ink);font-weight:800}
+.weekly-cell.is-empty {background:#f6f9f8;color:#8b999b}
+.weekly-cell.is-current {border:2px solid var(--card);background:var(--card-light);box-shadow:inset 4px 0 var(--teal)}
+.weekly-cell.is-current strong {color:var(--card-ink)}
+@media (max-width:680px){
+ .weekly-grid{min-width:720px;grid-template-columns:36px repeat(5,131px);gap:6px}
+ .weekly-cell{min-height:86px;padding:8px}
+ .about-card p{font-size:15px}
+}
+
+/* Iconografia coerente: lo stesso SVG per ogni categoria in tutto il sito. */
+.icon-inline,.group-entity-icon,.menu-entity-icon {display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-inline {width:20px;height:20px;vertical-align:middle;margin-right:8px}
+.icon-inline .entity-icon {width:100%;height:100%}
+.menu-entity-icon {width:18px;height:18px;margin-right:6px}
+.menu-entity-icon .entity-icon {width:100%;height:100%}
+.group-entity-icon {width:32px;height:32px;color:var(--petrol);margin-right:8px}
+.group-entity-icon .entity-icon {width:100%;height:100%}
+.schedule-subnav button {display:flex;align-items:center;gap:3px}
+.schedule-home-buttons .group-arrow {font-weight:650}
+.history-item,.search-suggestions button,.choice-button {display:flex;align-items:center;gap:5px}
+.daily-heading h3 {display:flex;align-items:center;gap:3px}
+.weekly-cell .room-names {font-size:11px;color:#345861;line-height:1.35;overflow-wrap:anywhere}
+.free-weekly-cell {gap:8px}
+@media (max-width:680px) {
+ .schedule-home-buttons button {padding:13px 18px}
+ .group-entity-icon {width:27px;height:27px}
+}
+
+.nav-clock{width:27px;height:27px;flex:0 0 27px;display:inline-flex;align-items:center;justify-content:center}
+.nav-clock .entity-icon{width:100%;height:100%}
+.search-glyph {width:29px;height:29px;display:flex;align-items:center;justify-content:center;flex:0 0 29px}
+.search-glyph .entity-icon{width:100%;height:100%}
+
+/* V8: logo ufficiale originale in PNG ad alta risoluzione, nessun ridisegno. */
+.logo-button { background: transparent; border-color: transparent; box-shadow: 0 5px 18px #00151d55; }
+.logo-button img { width: 100%; height: 100%; display: block; object-fit: contain; border-radius: 0; }
+.logo-dialog { border-radius: 20px; background: transparent; padding: 0; overflow: visible; box-shadow: none; }
+.logo-dialog img { width: 100%; height: auto; border-radius: 0; object-fit: contain; }
+
+/* V7: solo Finder ha lo stesso gradiente verde acqua / menta dello sfondo.
+   Aula resta bianco e la tipografia, la dimensione e il layout non cambiano. */
+.brand-title .brand-aula { color: #ffffff; }
+.brand-title .brand-finder { color: #9DE8D7; }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .brand-title .brand-finder {
+    background: linear-gradient(120deg, #9DE8D7 0%, #26A7A9 48%, #E4F6F2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* V8: correzioni funzionali e accessibilità mobile, estetica V7 invariata. */
+@media (max-width:680px) {
+  body.mobile-menu-open { overflow: hidden; }
+  .sidebar { overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+  .sidebar.is-open { visibility:visible; }
+  .search-form input { font-size:16px; } /* Evita zoom automatico di Safari su iPhone */
+  .schedule-controls select, .header-control select { font-size:16px; }
+  .weekly-scroll { -webkit-overflow-scrolling:touch; }
+  .logo-dialog { max-width:calc(100vw - 24px); max-height:calc(100dvh - 36px); }
+  .logo-dialog img { max-height:calc(100dvh - 40px); }
+}
+@media (max-width:360px) {
+  .brand-title {font-size:21px;}
+  .brand {gap:7px;}
+  .search-form {gap:6px;padding-left:9px;}
+  .search-submit {padding-left:10px;padding-right:10px;}
+  .search-glyph {width:25px;flex-basis:25px;}
+}
+
+/* AulaFinder V9: schede palestra multi-classe e nomi docenti più lunghi. */
+.result-card .result-banner h2,.result-card .result-header strong,.hour-data,.weekly-cell {overflow-wrap:anywhere}
+.hour-data small {line-height:1.5}
+.result-card .result-banner h2 {font-size:clamp(17px,2.2vw,23px)}
+.weekly-cell .gym-group {display:block;line-height:1.3}
+.weekly-cell .gym-group+.gym-group {border-top:1px solid #dae7ea;padding-top:4px;margin-top:4px}
+.teacher-subject-tag {white-space:normal}
+@media(max-width:680px){.result-card .result-banner h2 {font-size:18px}.result-card .result-header strong {font-size:18px}.weekly-cell .gym-group{font-size:10px}}
+
+/* V10 - Effetto "Aula": due fili orbitali luce turchese, globo e riflesso,
+   ispirati all'orbita del logo. Titolo accessibile come testo HTML. */
+.brand-title { overflow: visible; white-space: nowrap; }
+.brand-title .brand-aula {
+  position:relative; isolation:isolate; display:inline-block; z-index:0;
+  color:#fff; text-shadow:0 0 3px #ffffffa6,0 0 10px #a2fff2a6,0 0 17px #33efeb57;
+}
+.brand-aula-letters {position:relative;z-index:2;}
+.brand-aula-orbit {
+  position:absolute;left:-31%;top:50%;width:157%;height:240%;
+  transform:translateY(-50%);overflow:visible;z-index:3;
+  pointer-events:none;filter:drop-shadow(0 0 2px #63fff3b5);
+}
+.brand-aula-orbit .orbit-rail {
+  fill:none;stroke:url(#brandOrbitGradient);stroke-width:2.75;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.brand-aula-orbit .orbit-glow {
+  fill:none;stroke:#45fff0;stroke-width:7;opacity:.56;
+  filter:url(#brandOrbitGlow);stroke-linecap:round;
+}
+/* Il lato posteriore dell'orbita resta dietro al testo per l'effetto 3D. */
+.brand-aula-orbit .orbit-back {opacity:.58;}
+.brand-aula-orbit .orbit-front {opacity:.92;}
+@media (max-width:680px){
+ .brand-aula-orbit{width:157%;height:220%;left:-29%;}
+ .brand-title .brand-aula{text-shadow:0 0 3px #ffffffb8,0 0 8px #85fff2b3;}
+}
+
+
+/* AulaFinder V11: unico intervento visivo, icona Home in navigazione. */
+.home-icon {width:27px;height:27px;flex:0 0 27px;display:block}
+.mobile-home-button {display:none}
+
+/* Elimina il riquadro bianco imposto da alcuni browser mobili al dialog nativo.
+   L'immagine PNG ufficiale resta identica e mantiene la propria trasparenza. */
+.logo-dialog,
+.logo-dialog:modal {
+  -webkit-appearance:none;
+  appearance:none;
+  background-color:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  outline:0;
+  padding:0 !important;
+  box-shadow:none !important;
+}
+.logo-dialog img {background:transparent !important;}
+.logo-dialog::backdrop {background:#06191ed9;}
+@media (max-width:680px) {
+  .mobile-home-button {
+    display:grid;
+    place-items:center;
+    flex:0 0 43px;
+    width:43px;
+    height:43px;
+    border:1px solid #c7fff3;
+    border-radius:11px;
+    color:#071F29;
+    background:#e7fcf4;
+  }
+  .mobile-home-button .home-icon {width:23px;height:23px;flex-basis:23px;}
+  .mobile-home-button:active {background:#9DE8D7;}
+  .logo-dialog,
+  .logo-dialog:modal {background-color:transparent !important;}
+}
+
+/* === V15: footer responsivo ispirato alla bozza Excalidraw (sotto TUTTE le pagine) === */
+.site-footer {
+  position:relative; isolation:isolate; color:#EAFEF9;
+  background:linear-gradient(120deg,rgba(7,31,41,.12) 0%,rgba(7,31,41,.30) 35%,rgba(7,31,41,.59) 72%,rgba(7,31,41,.72) 100%),var(--hero-gradient);
+  border-top:4px solid #26A7A9;
+  padding:clamp(30px,4.2vw,58px) clamp(20px,5vw,76px) 22px;
+  overflow:hidden;
+}
+.site-footer::before{
+  content:"";position:absolute;z-index:-1;left:-7%;top:-30px;width:114%;height:45px;
+  background:linear-gradient(90deg,transparent,#24e9e5 24%,#9de8d7 63%,transparent);
+  filter:blur(20px);opacity:.42;pointer-events:none;
+}
+.site-footer h2{color:#A7FFF1;font-size:clamp(17px,1.7vw,22px);letter-spacing:-.025em;margin:0 0 12px}
+.site-footer p{color:#E5F4F2;line-height:1.65;margin:0 0 9px}
+.site-footer strong{color:#FFF}
+.footer-upper{display:flex;justify-content:space-between;gap:32px;align-items:start;flex-wrap:wrap}
+.footer-intro,.footer-purpose{flex:1 1 320px;max-width:680px}
+.footer-middle{display:flex;align-items:center;justify-content:space-between;gap:35px;margin:27px 0 35px;flex-wrap:wrap}
+.team-area{flex:1 1 430px;min-width:0}
+.team-list{display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;gap:clamp(10px,2vw,28px);padding:27px 4px 24px}
+.team-member{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  flex:0 1 112px;max-width:112px;min-width:0;aspect-ratio:1;
+  padding:0;border:3px solid #BDFBF5;border-radius:50%;
+  background:#76cef0;box-shadow:0 0 0 2px #0c3448,0 5px 20px #021b25a8;
+  transition:transform .20s ease, box-shadow .20s ease, border-color .20s ease;
+  outline-offset:5px;cursor:pointer;
+}
+.team-member img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center}
+.team-member .team-name {
+  position:absolute;bottom:calc(100% + 12px);left:50%;transform:translate(-50%,6px);
+  display:block;padding:7px 11px;border:1px solid #61f6e5;border-radius:9px;
+  background:#E8FFFA;color:#071F29;font-size:13px;font-weight:800;
+  white-space:nowrap;box-shadow:0 7px 20px #001e2780;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;
+}
+@media (hover:hover) and (pointer:fine){
+ .team-member:hover{transform:scale(1.10);border-color:#FFF;box-shadow:0 0 0 2px #23FFE3,0 0 25px #26FFEB96}
+ .team-member:hover .team-name{opacity:1;visibility:visible;transform:translate(-50%,0)}
+}
+.team-member:focus-visible,.team-member.is-selected{
+  transform:scale(1.10);border-color:#FFF;box-shadow:0 0 0 2px #23FFE3,0 0 25px #26FFEB96;
+}
+.team-member:focus-visible .team-name,.team-member.is-selected .team-name{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.team-selected-name{display:none}
+.footer-info{flex:1 1 320px;min-width:0;max-width:500px}
+.footer-info p{font-size:14px}
+.footer-mail-link{color:#B8FFF1;text-decoration:underline;text-decoration-color:#7DE9DB;text-underline-offset:3px;font-weight:700}
+.footer-mail-link:hover,.footer-mail-link:focus-visible{color:#FFF;text-decoration-color:#FFF}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid #A6FFF14F;padding-top:20px}
+.footer-brand{display:flex;align-items:center;gap:14px;min-width:0}
+.footer-logo{display:block;width:62px;height:62px;object-fit:contain;flex-shrink:0}
+.footer-title{font-size:clamp(21px,2.2vw,31px)}
+.footer-admin-button{
+  flex:0 0 auto;min-height:44px;padding:9px 26px;border:2px solid #6BE3D6;
+  background:#0B3A47;color:#FFF;border-radius:999px;font-weight:800;
+  box-shadow:0 5px 16px #0523285c;transition:background .18s,transform .18s;
+}
+.footer-admin-button:hover{background:#166875;transform:translateY(-2px)}
+.footer-admin-button:active{transform:none}
+.admin-notice{margin-top:12px;color:var(--muted)}
+@media (max-width:680px){
+  .main-content{padding-bottom:25px}
+  .site-footer{padding:30px 15px 23px}
+  .footer-upper{gap:18px}
+  .footer-intro,.footer-purpose,.footer-info{flex:1 1 100%;max-width:none}
+  .footer-middle{gap:19px;margin:22px 0}
+  .team-area{flex:1 1 100%}
+  .team-list{gap:clamp(8px,2vw,14px);padding:13px 0 9px;justify-content:space-evenly}
+  .team-member{flex:0 1 79px;max-width:min(21vw,79px);border-width:2px}
+  /* Su touch i nomi si vedono SOLO dopo il tap, in un'area comune leggibile. */
+  .team-member .team-name{display:none}
+  .team-selected-name:not([hidden]){display:block;text-align:center;margin:13px 0 0;color:#B5FFF0;font-size:14px;font-weight:800}
+  .footer-brand{gap:8px}
+  .footer-logo{width:46px;height:46px}
+  .footer-title{font-size:clamp(20px,5vw,26px)}
+  .footer-bottom{gap:9px;justify-content:space-between}
+  .footer-admin-button{min-height:40px;padding:7px 13px;font-size:13px}
+}
+@media (max-width:355px){
+  .footer-logo{width:39px;height:39px}
+  .footer-title{font-size:19px}
+  .footer-admin-button{padding:7px 10px}
+}
+
+/* === Tema automatico: segue sempre la preferenza del sistema operativo === */
+
+  html[data-theme="dark"]{color-scheme:dark;--ink:#EDF9F8;--muted:#BDDBD8;--line:#385C62;--page:#0B252E;--white:#102D36}
+  html[data-theme="dark"],html[data-theme="dark"] body{background:#071A21;color:#EDF9F8}
+  html[data-theme="dark"] body p,html[data-theme="dark"] .main-content p{color:#E3F2EF}
+  html[data-theme="dark"] .app-shell{background:#102D36;border-color:#31565F;box-shadow:0 0 35px #0006}
+  html[data-theme="dark"] .workspace,html[data-theme="dark"] .main-content{background:#102D36}
+  html[data-theme="dark"] .sidebar{background:linear-gradient(180deg,#153640,#0B2730);border-color:#365C63}
+  html[data-theme="dark"] .side-link,html[data-theme="dark"] .history-block{background:#183942;color:#E8FAF5;border-color:#3E6971}
+  html[data-theme="dark"] .side-link:hover,html[data-theme="dark"] .side-link.is-active{background:#1C5B64;color:#FFF}
+  html[data-theme="dark"] .schedule-subnav button{color:#B5F9E8}
+  html[data-theme="dark"] .schedule-subnav button:hover,html[data-theme="dark"] .schedule-subnav button.is-active{background:#20535A}
+  html[data-theme="dark"] .history-block h2,html[data-theme="dark"] .history-item{color:#E5F7F5}
+  html[data-theme="dark"] .history-item:hover{background:#24525A}
+  html[data-theme="dark"] .small-muted{color:#BDDBD8}
+  html[data-theme="dark"] .clear-history-button{background:#442F34;border-color:#69BBB4;color:#FFECE6}
+  html[data-theme="dark"] .clear-history-button:not(:disabled):hover{background:#603A3D}
+  html[data-theme="dark"] .school-image{background:#112C35;border-color:#3E6971}
+  html[data-theme="dark"] .school-image img{filter:brightness(.76) contrast(1.07)}
+  html[data-theme="dark"] .home-intro p{color:#C7E2DC}
+  html[data-theme="dark"] .search-form,html[data-theme="dark"] .search-suggestions{background:#183943;border-color:#4AB3B0}
+  html[data-theme="dark"] .search-form input,html[data-theme="dark"] .search-suggestions button{color:#F2FFFB;background:#183943}
+  html[data-theme="dark"] .search-form input::placeholder{color:#C3DBD9}
+  html[data-theme="dark"] .search-suggestions button+button{border-color:#385C62}
+  html[data-theme="dark"] .search-suggestions button:hover{background:#23515A}
+  html[data-theme="dark"] .free-rooms-shortcut{background:#164C50;color:#E9FFFA;border-color:#4FC8BF}
+  html[data-theme="dark"] .free-rooms-shortcut:hover{background:#226B70}
+  html[data-theme="dark"] .back-link,html[data-theme="dark"] .schedule-controls a,html[data-theme="dark"] .room-chip{background:#1F4A53;border-color:#5C9C9D;color:#EAFEF9}
+  html[data-theme="dark"] .schedule-home-buttons button{background:linear-gradient(100deg,#193A44,#224E56);border-color:#527C7F;color:#D1FFF0}
+  html[data-theme="dark"] .schedule-home-buttons button:hover{background:#286068}
+  html[data-theme="dark"] .schedule-controls label{color:#C3F9E7}
+  html[data-theme="dark"] .schedule-controls select{background:#153640;color:#F5FFFD;border-color:#527C7F}
+  html[data-theme="dark"] .result-card{background:#16343D;border-color:var(--card-stroke)}
+  html[data-theme="dark"] .result-card.type-room{--card-light:#1F435E;--card-ink:#B8E6FF;--card-stroke:#3C7392}
+  html[data-theme="dark"] .result-card.type-class{--card-light:#164C45;--card-ink:#B9FFF2;--card-stroke:#3A8A76}
+  html[data-theme="dark"] .result-card.type-teacher{--card-light:#224B52;--card-ink:#CCF8F5;--card-stroke:#639094}
+  html[data-theme="dark"] .result-card.type-free{--card-light:#174D50;--card-ink:#D0FFF0;--card-stroke:#50998D}
+  html[data-theme="dark"] .current-lesson{background:var(--card-light)}
+  html[data-theme="dark"] .result-card .result-note,html[data-theme="dark"] .result-card .hour-data small{color:#C5E1DF}
+  html[data-theme="dark"] .hour-row,html[data-theme="dark"] .free-hour-item{border-color:#42616A;background:#173943;color:#EDF7F5}
+  html[data-theme="dark"] .hour-row.is-selected{background:var(--card)}
+  html[data-theme="dark"] .hour-row.is-selected small,html[data-theme="dark"] .hour-row.is-selected .hour-location{color:#FFF}
+  html[data-theme="dark"] .hour-number{background:var(--card-light)}
+  html[data-theme="dark"] .choice-button,html[data-theme="dark"] .no-results{background:#184650;color:#E5FFF5;border-color:#519288}
+  html[data-theme="dark"] .room-chip:hover{background:#28666C}
+  html[data-theme="dark"] .weekly-cell{background:#193B45;color:#F0FFFD;border-color:#426973}
+  html[data-theme="dark"] .weekly-cell small,html[data-theme="dark"] .weekly-cell .room-names{color:#C5E1DF}
+  html[data-theme="dark"] .weekly-cell.is-empty{background:#142C34;color:#91AEAD}
+  html[data-theme="dark"] .weekly-cell.is-current{background:var(--card-light)}
+  html[data-theme="dark"] .weekly-cell .gym-group+.gym-group{border-color:#426973}
+  html[data-theme="dark"] .free-hour-item.is-highlighted{background:#164C50}
+  html[data-theme="dark"] .free-hour-item h3,html[data-theme="dark"] .free-hour-item h3 small{color:#E7FAF3}
+  html[data-theme="dark"] .plan-link-button{background:var(--card-light);color:var(--card-ink)}
+  html[data-theme="dark"] .admin-notice{color:#C6DFDC}
+  /* Piantine: grafica interna in tonalità scure, testi ad alto contrasto. */
+  html[data-theme="dark"] #piantinaPage .floor-filter{background:#163740;border-color:#4B727A}
+  html[data-theme="dark"] #piantinaPage .filter-heading h2,html[data-theme="dark"] #piantinaPage .filter-status{color:#E5F8F4}
+  html[data-theme="dark"] #piantinaPage .floor-option,html[data-theme="dark"] #piantinaPage .filter-actions button.secondary{background:#20454E;color:#F1FFF8;border-color:#537E84}
+  html[data-theme="dark"] #piantinaPage .floor-option:has(input:checked){background:#1D5B60;color:#E5FFF6;border-color:#48C0B5}
+  html[data-theme="dark"] #piantinaPage .plan-card{background:#17343F;border-color:#4F7A82}
+  html[data-theme="dark"] #piantinaPage .plan-body{background:linear-gradient(180deg,#132F39,#0C222C)}
+  html[data-theme="dark"] #piantinaPage .room .box{fill:#2A515E!important;stroke:#95C6C8!important}
+  html[data-theme="dark"] #piantinaPage .room .room-number{fill:#F4FFFE!important}
+  html[data-theme="dark"] #piantinaPage .room .room-name-hidden{fill:#E2F7F1!important}
+  html[data-theme="dark"] #piantinaPage .sel-clone .box{fill:#26A7A9!important;stroke:#CFFFF6!important}
+  html[data-theme="dark"] #piantinaPage .sel-clone .room-number{fill:#071F29!important}
+  html[data-theme="dark"] #piantinaPage svg.plan>path[fill="#4D9EFF"],html[data-theme="dark"] #piantinaPage svg.plan>path[fill="#5BA9FF"],html[data-theme="dark"] #piantinaPage svg.plan>path[fill="#A5D8FF"]{fill:#163E54!important;stroke:#65A7C1!important}
+  html[data-theme="dark"] #piantinaPage svg.plan text:not(.room-number):not(.room-name-hidden){fill:#E7F9F8}
+
+/* Rifiniture leggibilità dei controlli quando il sistema usa il tema scuro. */
+
+ html[data-theme="dark"] .header-control select,html[data-theme="dark"] .header-hour select{background:#173E48!important;color:#F4FFFC!important;border-color:#79CFCA!important}
+ html[data-theme="dark"] .search-glyph,html[data-theme="dark"] .search-glyph .entity-icon{color:#9DE8D7}
+ html[data-theme="dark"] .search-submit{background:#237984;color:#FFFFFF}
+ html[data-theme="dark"] .search-submit:hover{background:#2C969B}
+ html[data-theme="dark"] .header-control select option{background:#173E48;color:#FFFFFF}
+
+
+/* AulaFinder V18: pulsante Torna su, visibile dopo lo scorrimento.
+   Si integra con il gradiente già usato nell'header e nel footer. */
+.back-to-top {
+  position:fixed;
+  right:max(18px,env(safe-area-inset-right));
+  bottom:calc(82px + env(safe-area-inset-bottom, 0px));
+  z-index:18;
+  display:grid;
+  place-items:center;
+  width:52px;
+  height:52px;
+  border:1px solid #A8FFF0;
+  border-radius:50%;
+  background:linear-gradient(135deg,#19404A 0%,#126B78 60%,#26A7A9 100%);
+  color:#FFFFFF;
+  box-shadow:0 5px 20px #071F2960, inset 0 0 0 2px #FFFFFF12;
+  cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.back-to-top[hidden] {display:none!important;}
+.back-to-top svg {width:25px;height:25px;}
+.back-to-top:hover {transform:translateY(-3px);box-shadow:0 8px 22px #071F2970;}
+.back-to-top:active {transform:translateY(-1px);}
+.mobile-menu-open .back-to-top {display:none!important;}
+@media(max-width:680px){
+  .back-to-top {
+    width:47px;height:47px;
+    right:16px;
+    bottom:calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+  .back-to-top svg {width:23px;height:23px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .back-to-top {transition:none!important;}
+}
+
+
+/* AulaFinder V19: giorno e ora senza evidenziazione rosso/arancione.
+   Focus accessibile con la palette originale (turchese). */
+.header-control select {
+  -webkit-tap-highlight-color:transparent;
+  accent-color:#26A7A9;
+}
+.header-control select:focus,
+.header-control select:focus-visible {
+  outline:2px solid #9DE8D7;
+  outline-offset:2px;
+  border-color:#26A7A9;
+  box-shadow:0 0 0 3px rgba(7,31,41,.18);
+}
+
+/* Icone dei quattro orari: in dark mode seguono il colore del testo. */
+
+  html[data-theme="dark"] .schedule-subnav button .menu-entity-icon,html[data-theme="dark"] .schedule-subnav button .menu-entity-icon .entity-icon,html[data-theme="dark"] .schedule-home-buttons button .group-entity-icon,html[data-theme="dark"] .schedule-home-buttons button .group-entity-icon .entity-icon,html[data-theme="dark"] .schedule-home-buttons button .group-arrow{
+    color:inherit;
+  }
+
+
+/* AulaFinder V21: accessibilità tastiera e focus coerente con la palette.
+   Nessun outline rosso/arancione; il focus resta visibile e leggibile. */
+button, a, input, select, [role="button"] { -webkit-tap-highlight-color:transparent; }
+button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline:none; }
+.skip-link {
+  position:fixed; top:8px; left:8px; z-index:100000;
+  transform:translateY(-170%); padding:12px 18px;
+  border:2px solid #9DE8D7; border-radius:10px;
+  background:#071F29; color:#FFFFFF; font-weight:800; text-decoration:none;
+}
+.skip-link:focus-visible { transform:translateY(0); outline:3px solid #26A7A9; }
+
+/* V23 - Professori liberi: stessi controlli delle Aule libere, icona tazza coerente. */
+#freeTeachersShortcut{display:flex;align-items:center;justify-content:center;gap:9px}
+#freeTeachersShortcut .home-coffee-icon{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px}
+#freeTeachersShortcut .entity-icon{width:100%;height:100%;display:block}
+.free-teacher-note{margin:0 0 14px!important;color:var(--card-ink)!important;line-height:1.5}
+.free-teacher-list{display:flex;flex-wrap:wrap;align-items:start;gap:8px;margin-top:13px}
+.teacher-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:38px;padding:8px 11px;border:1px solid #93CAC4;border-radius:10px;background:#fff;color:#163E48;font-size:12px;font-weight:750;line-height:1.3;cursor:pointer;text-align:left}
+.teacher-chip:hover{background:#DFF8F0;border-color:#26A7A9}
+.teacher-chip .entity-icon{width:15px;height:15px;flex:0 0 15px}
+.free-teacher-weekly-cell .free-teacher-names{display:block;margin-top:6px;font-size:11px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+.free-teacher-weekly-cell .teacher-separator{color:#0D847F}
+
+ html[data-theme="dark"] .teacher-chip{background:#163B45;color:#F1FFF9;border-color:#5A9F9F}
+ html[data-theme="dark"] .teacher-chip:hover{background:#1D5E62;color:white}
+ html[data-theme="dark"] .free-teacher-note{color:#D0FFF0!important}
+
+@media(max-width:680px){.free-teacher-list{gap:7px}.teacher-chip{min-height:40px}}
+
+/* La matrice settimanale resta compatta: ogni fascia espande l'elenco completo su richiesta. */
+.teacher-slot-details{margin-top:2px;font-size:11px}
+.teacher-slot-details summary{cursor:pointer;color:var(--card-ink);font-weight:750;list-style-position:inside;line-height:1.4}
+.teacher-slot-details[open] .free-teacher-names{display:block;border-top:1px solid #8FC8C0;margin-top:6px;padding-top:6px}
+.teacher-slot-details .free-teacher-names{display:none}
+
+/* ================== Navigatore scolastico V24 ================== */
+#navigatorPage{max-width:1040px}
+.navigator-panel,.navigator-picker,.navigator-route-card{border:1px solid #B8D7D2;background:#F6FBFA;border-radius:17px;box-shadow:0 7px 23px #123f4610}
+.navigator-panel{padding:clamp(17px,3vw,27px)}
+.navigator-intro{font-size:15px;color:#153C43;margin-bottom:17px}
+.navigator-form{display:block}
+.navigator-inputs{position:relative;display:flex;flex-direction:column;gap:10px;padding-right:55px}
+.navigator-field{display:flex;align-items:center;gap:9px;border:1px solid #B4D6D1;border-radius:13px;background:#FFF;padding:7px 8px 7px 12px;min-height:61px;position:relative}
+.navigator-field:focus-within{border-color:#26A7A9;box-shadow:0 0 0 2px #26A7A92C}
+.nav-field-indicator{width:13px;height:13px;flex:0 0 13px;border-radius:50%;border:3px solid #187D9B;background:#FFF}
+.nav-destination-indicator{border-color:#0C927D;background:#0C927D}
+.navigator-field label{font-weight:850;color:#19404A;min-width:20px;font-size:15px}
+.navigator-field input{border:0!important;outline:none!important;background:transparent;color:#071F29;min-width:0;flex:1;width:100%;font-size:14px;font-weight:650;padding:8px 0}
+.navigator-field input::placeholder{color:#667E83;opacity:1;font-weight:500}
+.nav-pick-button{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border:1px solid #B5DAD5;border-radius:10px;background:#E4F6F2;color:#19404A}
+.nav-pick-button svg{width:22px;height:22px}
+.nav-pick-button:hover,.nav-pick-button[aria-pressed="true"]{background:#BFF3E9;border-color:#26A7A9}
+.navigator-swap{position:absolute;right:0;top:50%;transform:translateY(-50%);height:47px;width:47px;border:1px solid #26A7A9;background:#E4F6F2;border-radius:14px;color:#0C616D;display:grid;place-items:center;transition:background .15s}
+.navigator-swap svg{width:24px;height:24px}
+.navigator-swap:hover{background:#9DE8D7}
+.navigator-field-help{font-size:12px;color:#527176;margin:12px 0}
+.navigator-action-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:15px}
+.navigator-action-row label{font-weight:750;color:#19404A}
+.navigator-action-row select{border:1px solid #B5D6D0;background:white;color:#163C43;border-radius:10px;padding:12px 13px;min-height:44px}
+.navigator-go{margin-left:auto;border:0;border-radius:11px;background:linear-gradient(120deg,#19404A,#147E86);color:#FFF;font-weight:800;padding:12px 18px;min-height:46px;display:inline-flex;gap:9px;align-items:center;justify-content:center}
+.navigator-go svg{width:20px;height:20px}
+.navigator-go:hover{filter:brightness(1.13)}
+.navigator-message{margin-top:17px;border-radius:10px;background:#E4F6F2;color:#16434A;padding:12px 15px;line-height:1.5;font-weight:600;font-size:13px}
+.navigator-message.nav-error{background:#FFF2EA;color:#693526;border:1px solid #E8BAA9}
+.navigator-picker{margin-top:17px;padding:15px}
+.navigator-picker-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.navigator-picker-head h2{margin:0;color:#19404A}
+.navigator-picker-head button{height:38px;width:38px;border:1px solid #A5D6CF;border-radius:9px;color:#19404A;background:#FFF;font-weight:800}
+.navigator-picker-floor{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#19404A;font-weight:750;margin:15px 0 8px}
+.navigator-picker-floor select{background:white;border:1px solid #B5D9D4;border-radius:9px;color:#19404A;padding:9px 14px;min-height:40px}
+.navigator-picker-tip{font-size:13px;color:#4B6770;margin-bottom:10px}
+.navigator-map{background:linear-gradient(180deg,#F6FBFA,#FFFFFF);padding:12px;border-radius:13px;overflow:hidden}
+.navigator-map svg.plan{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;overflow:visible}
+.navigator-map svg.plan text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;pointer-events:none;stroke:none!important;text-shadow:none!important}
+.navigator-map .room{cursor:pointer;outline:0}
+.navigator-map .room .box{fill:#FFFFFF;stroke:#19404A;stroke-width:.5;stroke-linejoin:round}
+.navigator-map .room .room-name-hidden{display:none!important}
+.navigator-map .room[data-t="Palestra"] .room-name-hidden{display:block!important}
+.navigator-map .room .room-number{fill:#143E48;font-weight:800}
+.navigator-map .nav-room:hover .box,.navigator-map .nav-room:focus-visible .box{stroke:#0A9B98;stroke-width:1.2}
+.navigator-map .nav-room:focus-visible{outline:none}
+.navigator-map .nav-room:focus-visible .box{stroke:#0C927D;stroke-width:1.4}
+.navigator-map .nav-endpoint-room .box{stroke:#087E8E;stroke-width:1.4}
+.navigator-map .nav-route-layer{pointer-events:none}
+.navigator-map .nav-route-shadow{fill:none;stroke:#FFFFFF;stroke-width:4.8;stroke-linejoin:round;stroke-linecap:round;opacity:.95}
+.navigator-map .nav-route-polyline{fill:none;stroke:#087FD9;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
+.navigator-map .nav-route-start{fill:#FFFFFF;stroke:#087FD9;stroke-width:1.7}
+.navigator-map .nav-route-end{fill:#0DAF90;stroke:#FFFFFF;stroke-width:1.4}
+.navigator-map .nav-route-transfer{fill:#FFF;stroke:#008BC3;stroke-width:1.7}
+.navigator-map .nav-transfer-pulse{fill:#0D98C7;opacity:.16}
+.navigator-results{margin-top:17px}
+.navigator-summary{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;border:1px solid #94D7CE;border-radius:15px;background:#E5F7F3;padding:18px;margin-bottom:15px}
+.navigator-summary p{font-weight:750;color:#0A333A;margin:0;flex:1 1 230px}
+.navigator-summary small{display:block;color:#3B6770;font-weight:600;margin-top:4px}
+.navigator-summary .nav-mode-tag{background:#19404A;color:#FFF;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.navigator-route-card{overflow:hidden;margin-bottom:16px}
+.navigator-route-card-head{background:#19404A;color:#FFF;padding:13px 17px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.navigator-route-card-head h2{font-size:18px;margin:0;color:#FFF}
+.navigator-route-card-head span{font-size:12px;font-weight:750;color:#B6F6EB}
+.navigator-route-card-body{padding:13px}
+.navigator-route-instruction{margin:12px 0 0;padding:12px 13px;background:#E5F6F3;border-left:4px solid #26A7A9;border-radius:8px;color:#153C43;font-size:13px;line-height:1.5}
+.navigator-route-steps{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.navigator-step{display:flex;align-items:center;gap:10px;color:#19404A;font-weight:700;font-size:13px}
+.navigator-step .navigator-step-num{flex:0 0 28px;height:28px;display:grid;place-items:center;border-radius:50%;background:#19404A;color:#FFF}
+@media(max-width:620px){.navigator-panel{padding:15px}.navigator-inputs{padding-right:47px}.navigator-swap{width:40px;height:40px}.navigator-field{padding-left:9px;gap:6px}.navigator-field input{font-size:13px}.navigator-go{width:100%;margin-left:0}.navigator-action-row select{flex:1}.navigator-map{padding:6px}.navigator-route-card-body{padding:7px}.navigator-route-card-head{padding:12px}.navigator-route-card-head h2{font-size:16px}}
+
+  html[data-theme="dark"] .navigator-panel,html[data-theme="dark"] .navigator-picker,html[data-theme="dark"] .navigator-route-card{background:#153640;border-color:#4C747B}
+  html[data-theme="dark"] .navigator-intro,html[data-theme="dark"] .navigator-picker-head h2,html[data-theme="dark"] .navigator-picker-tip,html[data-theme="dark"] .navigator-picker-floor,html[data-theme="dark"] .navigator-action-row label,html[data-theme="dark"] .navigator-route-instruction,html[data-theme="dark"] .navigator-step{color:#EAFBF7}
+  html[data-theme="dark"] .navigator-field,html[data-theme="dark"] .navigator-action-row select,html[data-theme="dark"] .navigator-picker-floor select,html[data-theme="dark"] .navigator-picker-head button{background:#214854;border-color:#578790;color:#EFFDFB}
+  html[data-theme="dark"] .navigator-field label,html[data-theme="dark"] .navigator-picker-head button{color:#EFFDFB}
+  html[data-theme="dark"] .navigator-field input{color:#FFF}html[data-theme="dark"] .navigator-field input::placeholder{color:#C8D9DB}
+  html[data-theme="dark"] .nav-pick-button,html[data-theme="dark"] .navigator-swap{background:#204F59;color:#DAFFF8;border-color:#5CAFA9}html[data-theme="dark"] .nav-pick-button:hover,html[data-theme="dark"] .navigator-swap:hover{background:#26747A}
+  html[data-theme="dark"] .navigator-field-help{color:#C5DEDE}html[data-theme="dark"] .navigator-message,html[data-theme="dark"] .navigator-summary,html[data-theme="dark"] .navigator-route-instruction{background:#194652;color:#EAFEF8;border-color:#438C93}
+  html[data-theme="dark"] .navigator-message.nav-error{background:#573527;color:#FFF1E9;border-color:#A86C54}
+  html[data-theme="dark"] .navigator-summary p,html[data-theme="dark"] .navigator-summary small{color:#E5FDF6}html[data-theme="dark"] .navigator-map{background:linear-gradient(180deg,#132F39,#0C222C)}
+  html[data-theme="dark"] .navigator-map .room .box{fill:#2A515E;stroke:#95C6C8}html[data-theme="dark"] .navigator-map .room .room-number{fill:#F4FFFE}html[data-theme="dark"] .navigator-map .room .room-name-hidden{fill:#E2F7F1}
+  html[data-theme="dark"] .navigator-map svg.plan>path[fill="#A5D8FF"],html[data-theme="dark"] .navigator-map svg.plan>path[fill="#4D9EFF"]{fill:#163E54!important;stroke:#65A7C1!important}
+  html[data-theme="dark"] .navigator-map svg.plan text:not(.room-number):not(.room-name-hidden){fill:#E7F9F8}
+  html[data-theme="dark"] .navigator-map .nav-route-shadow{stroke:#061E29;stroke-width:5.5}html[data-theme="dark"] .navigator-map .nav-route-polyline{stroke:#4BD5FF}html[data-theme="dark"] .navigator-map .nav-route-start{stroke:#4BD5FF}
+  html[data-theme="dark"] .navigator-route-card-head{background:#0A2934}html[data-theme="dark"] .navigator-route-instruction{border-left-color:#6BE0D9}
+
+
+/* V25: tasti home con un unico set di icone. */
+#freeRoomsShortcut,#freeTeachersShortcut{display:flex;align-items:center;justify-content:center;gap:9px}
+#freeRoomsShortcut .home-room-icon{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px}
+#freeRoomsShortcut .home-room-icon .entity-icon{width:100%;height:100%;display:block}
+/* Popup dopo selezione aula: aspetto coerente con le card e non copre le piantine. */
+#piantinaPage .plan-body{position:relative}
+#piantinaPage .room-actions{position:absolute;z-index:40;min-width:186px;max-width:min(240px,calc(100% - 16px));padding:10px;border:1px solid #62B5AC;border-radius:13px;background:#F5FFFC;color:#123941;box-shadow:0 12px 26px rgba(7,31,41,.22);display:flex;flex-direction:column;gap:7px}
+#piantinaPage .room-actions[hidden]{display:none!important}
+#piantinaPage .room-actions-title{font-size:13px;font-weight:850;line-height:1.3;margin:0 0 1px}
+#piantinaPage .room-actions button{min-height:39px;padding:8px 10px;border:1px solid #87C9C1;border-radius:9px;color:#123941;background:#E4F6F2;font-size:13px;text-align:left;font-weight:750;cursor:pointer}
+#piantinaPage .room-actions button:hover{background:#9DE8D7}
+#piantinaPage .room-actions button:focus-visible{outline:2px solid #26A7A9;outline-offset:1px}
+#piantinaPage .room-actions button[hidden]{display:none!important}
+
+  html[data-theme="dark"] #piantinaPage .room-actions{background:#153640;color:#EAFBF7;border-color:#5CA79D}
+  html[data-theme="dark"] #piantinaPage .room-actions button{background:#20515B;color:#EAFBF7;border-color:#578C87}
+  html[data-theme="dark"] #piantinaPage .room-actions button:hover{background:#28717A}
+
+
+/* V25: piantine del Navigatore identiche alle piantine originali.
+   Solo percorsi e selezioni hanno sovrapposizioni grafiche aggiuntive. */
+#navigatorPage .navigator-map svg.plan{display:block;width:100%;height:auto;margin:0 auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#navigatorPage .navigator-map svg.plan text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;pointer-events:none;stroke:none!important;text-shadow:none!important}
+#navigatorPage .navigator-map .room .box{stroke-linejoin:round;stroke:#19404A;stroke-width:.5;fill:#FFF}
+#navigatorPage .navigator-map .room .room-number{font-weight:800!important;fill:#102F49!important}
+#navigatorPage .navigator-map .room .room-name-hidden{display:none!important}
+#navigatorPage .navigator-map .room[data-t="Palestra"] .room-name-hidden,#navigatorPage .navigator-map .room[data-t="Archivio"] .room-name-hidden,#navigatorPage .navigator-map .room[data-t="Caldaie"] .room-name-hidden{display:block!important}
+#navigatorPage .navigator-map svg.plan>path[fill="#A5D8FF"]{fill:#A5D8FF!important;stroke:#19404A!important}
+#navigatorPage .navigator-map .nav-room:hover .box,#navigatorPage .navigator-map .nav-room:focus-visible .box{stroke:#26A7A9!important;stroke-width:1.2}
+#navigatorPage .navigator-map .nav-endpoint-room .box{stroke:#26A7A9!important;stroke-width:1.2}
+#navigatorPage .navigator-map .entrance-room .map-entrance-label{fill:#143E48}
+
+ html[data-theme="dark"] #navigatorPage .navigator-map .room .box{fill:#2A515E!important;stroke:#95C6C8!important}
+ html[data-theme="dark"] #navigatorPage .navigator-map .room .room-number{fill:#F4FFFE!important}
+ html[data-theme="dark"] #navigatorPage .navigator-map .room .room-name-hidden{fill:#E2F7F1!important}
+ html[data-theme="dark"] #navigatorPage .navigator-map svg.plan>path[fill="#A5D8FF"]{fill:#163E54!important;stroke:#65A7C1!important}
+ html[data-theme="dark"] #navigatorPage .navigator-map svg.plan text:not(.room-number):not(.room-name-hidden){fill:#E7F9F8}
+ html[data-theme="dark"] #navigatorPage .navigator-map .nav-room:hover .box,html[data-theme="dark"] #navigatorPage .navigator-map .nav-room:focus-visible .box{stroke:#26A7A9!important}
+
+
+
+/* AulaFinder V26 - Dashboard Orari. Solo questa pagina: palette e layout globali invariati. */
+.orari-dashboard.content-page{max-width:none;padding:7px 0 25px}
+.orari-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:0 0 23px}
+.orari-heading h1{margin:2px 0 7px;color:var(--petrol)}
+.orari-heading p{font-size:14px;color:var(--muted);margin:0}
+.orari-heading-eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#087B7E}
+.orari-heading-icon{display:inline-flex;width:24px;height:24px}
+.orari-heading-icon .entity-icon{width:100%;height:100%}
+.orari-category-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 20px}
+.orari-category-tabs button{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:10px 9px;border:1.5px solid #79B9B5;background:#F7FCFA;color:#19404A;border-radius:14px;font-weight:800;font-size:13px;white-space:nowrap;transition:background .17s,border-color .17s,transform .17s}
+.orari-category-tabs button:hover{border-color:#26A7A9;background:#E4F6F2;transform:translateY(-1px)}
+.orari-category-tabs button.is-active{background:#26A7A9;border-color:#26A7A9;color:#071F29;box-shadow:0 5px 15px #26A7A924}
+.orari-category-tabs .group-entity-icon,.orari-category-tabs .entity-icon{width:23px;height:23px}
+.orari-filter-row{display:flex;align-items:end;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:14px 18px;margin-bottom:18px;border:1px solid #A6CAC7;border-radius:16px;background:#F1FAF7}
+.orari-filter-row .schedule-controls{margin:0;flex:1 1 280px}
+.orari-filter-row .schedule-controls label{width:100%;gap:7px;font-size:13px}
+.orari-filter-row .schedule-controls select{width:100%;min-width:0;min-height:46px;border-color:#8CBAB6;font-size:14px}
+.orari-filter-caption{flex:1 1 185px;margin:0 0 10px!important;font-size:12px;color:#3D5861!important;text-align:right}
+.orari-content-grid{display:grid;grid-template-columns:minmax(0,1fr) 226px;align-items:start;gap:16px}
+.orari-schedule-main{min-width:0}
+.orari-dashboard .orari-weekly-card{--card:#19404A;--card-light:#E4F6F2;--card-ink:#19404A;--card-stroke:#A6CAC7;margin:0;background:#FFF}
+.orari-weekly-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 16px 13px;border-bottom:1px solid #CEE5E2}
+.orari-weekly-heading h2{font-size:19px;color:#19404A;margin:0 0 5px}
+.orari-weekly-heading p{margin:0;font-size:12px;color:#3D5861}
+.orari-weekly-mark{display:flex;width:30px;height:30px;align-items:center;justify-content:center;color:#26A7A9}
+.orari-weekly-mark .entity-icon{width:100%;height:100%}
+.orari-weekly-body{padding:12px}
+.orari-dashboard .weekly-grid{grid-template-columns:38px repeat(5,minmax(98px,1fr));min-width:545px;gap:5px}
+.orari-dashboard .weekly-number{display:flex;flex-direction:column;gap:3px;font-size:18px}
+.orari-dashboard .weekly-number span{font-size:9px;font-weight:600}
+.orari-dashboard .weekly-corner,.orari-dashboard .weekly-day{background:#E4F6F2;color:#19404A;border:1px solid #C4E3DE;padding:10px 4px}
+.orari-dashboard .weekly-day.is-today{background:#26A7A9;color:#071F29;border-color:#26A7A9}
+.orari-dashboard .weekly-cell{min-height:89px;padding:8px 7px;background:#FBFDFC;border-color:#CEE5E2;gap:5px}
+.orari-dashboard .weekly-cell strong{font-size:11px;line-height:1.3}
+.orari-dashboard .weekly-cell small{font-size:10px;line-height:1.3}
+.orari-dashboard .weekly-cell.is-current{background:#DDF5EF;border-color:#26A7A9;box-shadow:inset 3px 0 #26A7A9}
+.orari-info-panel{border:1px solid #A6CAC7;background:#F7FCFA;border-radius:16px;min-width:0;box-shadow:0 7px 24px #16364014;overflow:hidden}
+.orari-info-inner{padding:17px 15px}
+.orari-info-icon{display:flex;color:#26A7A9;width:35px;height:35px;margin-bottom:12px}
+.orari-info-icon .entity-icon{width:100%;height:100%}
+.orari-info-panel h2{color:#19404A;font-size:20px;margin:0 0 14px;overflow-wrap:anywhere}
+.orari-info-details{margin:0}
+.orari-panel-row{padding:12px 0;border-top:1px solid #CEE5E2}
+.orari-panel-row dt{color:#3D5861;font-size:12px;margin-bottom:5px}
+.orari-panel-row dd{font-size:14px;font-weight:800;color:#071F29;margin:0;line-height:1.5;overflow-wrap:anywhere}
+.orari-info-note{font-size:11px!important;color:#3D5861!important;line-height:1.5;padding-top:12px;border-top:1px solid #CEE5E2;margin:0!important}
+.orari-dashboard .full-schedule{margin:0}
+.orari-dashboard .result-card.type-free{--card-stroke:#A6CAC7}
+@media (max-width:1190px){
+  .orari-content-grid{grid-template-columns:minmax(0,1fr)}
+  .orari-info-inner{display:flex;flex-wrap:wrap;align-items:center;gap:15px;padding:15px 18px}
+  .orari-info-icon{margin:0;width:29px;height:29px}
+  .orari-info-panel h2{margin:0;flex:1 1 180px}
+  .orari-info-details{display:flex;gap:18px;flex:1 1 280px;flex-wrap:wrap}
+  .orari-panel-row{flex:1 1 140px;border-top:0;padding:5px 0}
+  .orari-info-note{flex:1 1 100%;padding:8px 0 0}
+}
+@media (max-width:680px){
+  .orari-heading{margin:0 0 16px}
+  .orari-heading h1{font-size:27px}
+  .orari-heading p{font-size:13px}
+  .orari-category-tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;padding:1px 1px 9px;margin:0 0 12px;-webkit-overflow-scrolling:touch}
+  .orari-category-tabs button{flex:0 0 auto;min-height:49px;padding:9px 13px;scroll-snap-align:start}
+  .orari-filter-row{padding:13px;gap:4px}
+  .orari-filter-row .schedule-controls{flex:1 1 100%}
+  .orari-filter-caption{flex:1 1 100%;text-align:left;margin:2px 0 0!important}
+  .orari-weekly-heading h2{font-size:17px}
+  .orari-weekly-body{padding:9px}
+  .orari-dashboard .weekly-grid{grid-template-columns:38px repeat(5,122px);min-width:680px}
+  .orari-info-inner{display:block}
+  .orari-info-panel h2{margin:8px 0 12px}
+  .orari-info-details{display:block}
+  .orari-panel-row{border-top:1px solid #CEE5E2}
+}
+
+  html[data-theme="dark"] .orari-heading h1{color:#EAFEF9}
+  html[data-theme="dark"] .orari-heading p{color:#C5E1DF}
+  html[data-theme="dark"] .orari-heading-eyebrow{color:#9DE8D7}
+  html[data-theme="dark"] .orari-category-tabs button{color:#D1FFF0;background:#193A44;border-color:#527C7F}
+  html[data-theme="dark"] .orari-category-tabs button:hover{background:#286068;border-color:#9DE8D7}
+  html[data-theme="dark"] .orari-category-tabs button.is-active{background:#26A7A9;color:#071F29;border-color:#9DE8D7}
+  html[data-theme="dark"] .orari-filter-row{background:#163740;border-color:#4B727A}
+  html[data-theme="dark"] .orari-filter-caption{color:#C5E1DF!important}
+  html[data-theme="dark"] .orari-dashboard .orari-weekly-card{background:#16343D;border-color:#4F7A82;--card-ink:#CCF8F5;--card-light:#224B52;--card-stroke:#4F7A82}
+  html[data-theme="dark"] .orari-weekly-heading{border-color:#426973}
+  html[data-theme="dark"] .orari-weekly-heading h2{color:#EAFEF9}
+  html[data-theme="dark"] .orari-weekly-heading p{color:#C5E1DF}
+  html[data-theme="dark"] .orari-dashboard .weekly-corner,html[data-theme="dark"] .orari-dashboard .weekly-day{background:#224B52;color:#EAFEF9;border-color:#426973}
+  html[data-theme="dark"] .orari-dashboard .weekly-day.is-today{background:#26A7A9;color:#071F29}
+  html[data-theme="dark"] .orari-dashboard .weekly-cell{background:#193B45;border-color:#426973;color:#F0FFFD}
+  html[data-theme="dark"] .orari-dashboard .weekly-cell.is-current{background:#205B58;border-color:#9DE8D7;box-shadow:inset 3px 0 #26A7A9}
+  html[data-theme="dark"] .orari-dashboard .weekly-cell strong,html[data-theme="dark"] .orari-dashboard .weekly-cell small,html[data-theme="dark"] .orari-dashboard .weekly-cell.is-current strong{color:#EAFEF9}
+  html[data-theme="dark"] .orari-info-panel{background:#163740;border-color:#4F7A82}
+  html[data-theme="dark"] .orari-info-panel h2{color:#EAFEF9}
+  html[data-theme="dark"] .orari-panel-row{border-color:#426973}
+  html[data-theme="dark"] .orari-panel-row dt{color:#BDDBD8}
+  html[data-theme="dark"] .orari-panel-row dd{color:#F0FFFD}
+  html[data-theme="dark"] .orari-info-note{color:#BDDBD8!important;border-color:#426973}
+
+
+/* AulaFinder V27: fix icone in tutte le schede Orari. */
+.orari-category-tabs .group-entity-icon{display:inline-flex;flex:0 0 25px;width:25px;height:25px;align-items:center;justify-content:center;color:inherit!important;visibility:visible!important}
+.orari-category-tabs .group-entity-icon svg{display:block;flex:0 0 23px;width:23px!important;height:23px!important;color:inherit!important;fill:currentColor!important;opacity:1!important}
+.schedule-subnav .menu-entity-icon svg{display:block;width:18px!important;height:18px!important;fill:currentColor!important}
+
+/* V27 · tema manuale / preferiti / ricerca accessibile */
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border:1.5px solid #84CDC8;border-radius:12px;background:#12404B;color:#C8FFF2;cursor:pointer;transition:background .2s,border-color .2s}
+.theme-toggle:hover{background:#1B6872;border-color:#9DE8D7}.theme-toggle svg{width:21px;height:21px}
+html[data-theme="dark"] .theme-toggle{background:#153943;color:#9DE8D7;border-color:#5F9D9A}
+.favorites-block{margin-top:15px;padding:15px 12px;border:1px solid var(--line);border-radius:13px;background:var(--ice)}
+.favorites-block h2{display:flex;align-items:center;gap:7px;font-size:15px;margin:0 0 10px;color:var(--petrol)}
+.favorites-block h2 span{font-size:22px;color:#168B91}
+.favorites-list{display:flex;flex-direction:column;gap:5px;max-height:245px;overflow-y:auto}
+.favorites-item{display:flex;align-items:center;gap:4px;min-width:0}
+.favorites-item .favorites-open{flex:1;min-width:0;text-align:left;display:flex;align-items:center;gap:8px;padding:9px 5px;font-size:12px;color:var(--petrol);border:0;background:transparent;border-radius:7px;overflow-wrap:anywhere}
+.favorites-item .favorites-open:hover{background:#9DE8D738}
+.favorites-remove{flex:0 0 30px;border:0;border-radius:8px;background:transparent;color:#B27616;font-size:20px;min-height:34px}
+.favorites-remove:hover{background:#9DE8D738}
+.home-favorites{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:11px 0 0}
+.home-favorites[hidden]{display:none!important}
+.home-favorites strong{font-size:12px;color:var(--petrol)}
+.home-favorites button{border:1px solid #65B8B2;border-radius:9px;background:var(--ice);color:var(--petrol);padding:7px 10px;font-size:12px;font-weight:750}
+.home-favorites button:hover{background:#9DE8D7}
+.favorite-toggle{border:1px solid #7AACA8;border-radius:10px;background:var(--ice);color:#0D636F;display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:8px 11px;white-space:nowrap;font-weight:800;font-size:13px}
+.favorite-toggle span{font-size:21px;line-height:1}.favorite-toggle[aria-pressed="true"]{background:#D5F3E8;color:#09606A;border-color:#26A7A9}
+.orari-favorite-toggle{margin:0 0 12px}
+.result-banner .favorite-toggle{margin-left:auto}
+.search-suggestions button .suggestion-title{font-weight:750;flex:1;min-width:0}
+.search-suggestions button .suggestion-meta{font-size:11px;color:var(--muted);margin-left:auto}
+.search-suggestions button[aria-selected="true"]{background:#C6F0E6}
+.search-suggestions .favorite-mark{color:#B27A16;font-size:18px}
+html[data-theme="dark"] .favorites-block{background:#173841;border-color:#547A81}
+html[data-theme="dark"] .favorites-block h2,html[data-theme="dark"] .favorites-open,html[data-theme="dark"] .home-favorites strong{color:#DCF9F4}
+html[data-theme="dark"] .home-favorites button,html[data-theme="dark"] .favorite-toggle{background:#1A4950;color:#DFFFF7;border-color:#5B9A95}
+html[data-theme="dark"] .favorite-toggle[aria-pressed="true"]{background:#275F61;color:#B8FFF1}
+html[data-theme="dark"] .search-suggestions button .suggestion-meta{color:#B6D8D4}
+html[data-theme="dark"] .search-suggestions button[aria-selected="true"]{background:#24656A}
+@media(max-width:680px){.favorites-block{padding:13px 10px}.favorites-list{max-height:220px}.result-banner .favorite-toggle{padding:7px 10px}}
+/* V27 · disponibilità dei docenti con calendario cliccabile e filtro. */
+.free-teacher-search-label{display:block;margin:12px 0 6px;font-size:12px;font-weight:750;color:var(--card-ink)}
+.free-teacher-search{display:block;width:min(100%,470px);min-height:43px;padding:10px 12px;background:#FFF;border:1.5px solid #80C8C0;color:#19404A;border-radius:11px;font:inherit;font-size:14px}
+.free-teacher-search:focus-visible{outline:3px solid #26A7A9;outline-offset:2px}
+.free-teacher-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;cursor:pointer;font:inherit;padding:8px 4px;min-height:80px;color:#19404A}
+.free-teacher-slot strong{font-size:12px;line-height:1.3}
+.free-teacher-slot small{font-size:10px;color:#527176}
+.free-teacher-slot:hover{border-color:#26A7A9;background:#E0F7F0}
+.free-teacher-slot.is-current{outline:2px solid #26A7A9;outline-offset:-2px;background:#D2F4EC}
+html[data-theme="dark"] .free-teacher-search{background:#163943;color:#EFFDFB;border-color:#66B3AC}
+html[data-theme="dark"] .free-teacher-slot{color:#EAFEF9}
+html[data-theme="dark"] .free-teacher-slot small{color:#BCDAD7}
+html[data-theme="dark"] .free-teacher-slot:hover{background:#285963}
+html[data-theme="dark"] .free-teacher-slot.is-current{background:#17676B}
+/* V27 · Navigatore passo dopo passo. Stessa palette del progetto. */
+.nav-stepper{border:1px solid #A6CAC7;border-radius:16px;background:#F6FBFA;padding:15px;overflow:hidden;box-shadow:0 7px 24px #16364014}
+.nav-stepper-controls{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:12px;margin-bottom:12px}
+.nav-stepper-controls>div{text-align:center;min-width:0}
+.nav-stepper-controls button{width:48px;height:48px;border:1.5px solid #55B9B2;background:#E4F6F2;color:#19404A;border-radius:14px;font-size:24px;font-weight:900;cursor:pointer}
+.nav-stepper-controls button:not(:disabled):hover{background:#9DE8D7}
+.nav-stepper-controls button:disabled{opacity:.30;cursor:not-allowed}
+.nav-stepper-counter{display:inline-block;font-size:12px;font-weight:800;color:#117C80;margin-bottom:3px}
+.nav-stepper-controls h2{font-size:19px;margin:0;color:#19404A}
+#navStepRole{font-size:12px;color:#537A78;font-weight:700}
+.nav-stepper .navigator-map{padding:8px;background:linear-gradient(180deg,#F6FBFA,#FFF)}
+.nav-stepper .navigator-route-instruction{font-size:14px;margin:12px 0 0;text-align:center}
+.navigator-map .nav-route-layer{pointer-events:none!important}
+.navigator-map .nav-route-shadow{stroke-width:5.5;stroke-linejoin:round;stroke-linecap:round;opacity:.92}
+.navigator-map .nav-route-polyline{stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none}
+html[data-theme="dark"] .nav-stepper{background:#153640;border-color:#4C747B}
+html[data-theme="dark"] .nav-stepper-controls button{background:#214A54;color:#DCFFF5;border-color:#5FAFA9}
+html[data-theme="dark"] .nav-stepper-controls button:not(:disabled):hover{background:#24717A}
+html[data-theme="dark"] .nav-stepper-controls h2{color:#EAFEF9}
+html[data-theme="dark"] .nav-stepper-counter{color:#9DE8D7}
+html[data-theme="dark"] #navStepRole{color:#BEDBD8}
+html[data-theme="dark"] .nav-stepper .navigator-map{background:linear-gradient(180deg,#132F39,#0C222C)}
+@media(max-width:680px){.nav-stepper{padding:10px}.nav-stepper-controls{grid-template-columns:42px minmax(0,1fr) 42px;gap:4px}.nav-stepper-controls button{width:40px;height:40px}.nav-stepper-controls h2{font-size:17px}.nav-stepper .navigator-map{padding:5px}}
+.map-only-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.map-only-actions .plan-link-button{min-height:44px}
+/* Elenco dei liberi contenuto: il calendario resta immediatamente raggiungibile anche su mobile. */
+#freeTeacherMatches{max-height:220px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#26A7A9 transparent;padding:2px 4px 2px 0}
+@media(max-width:680px){#freeTeacherMatches{max-height:185px}}
+
+/* AulaFinder V28: piccoli controlli e stati usando ESCLUSIVAMENTE palette originale. */
+:root{--v28-focus:#26A7A9;--v28-ink:#19404A}
+/* Selezione uniforme anche in campi obbligatori e validazione, senza arancione/rosso. */
+:where(input,textarea,select,button,a):focus-visible{outline:2.5px solid #26A7A9!important;outline-offset:2px}
+:where(input,textarea,select):user-invalid{border-color:#26A7A9!important;box-shadow:0 0 0 2px #26A7A920!important}
+:where(input,textarea,select){accent-color:#26A7A9}
+.clear-history-button,.clear-history-button:not(:disabled):hover{background:#E4F6F2;color:#19404A;border-color:#69BBB4}
+html[data-theme="dark"] .clear-history-button,html[data-theme="dark"] .clear-history-button:not(:disabled):hover{background:#19404A;border-color:#69BBB4;color:#E4F6F2}
+.favorites-list,.history-list{max-height:170px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#26A7A9 #E4F6F2;padding-right:3px;overscroll-behavior:contain}
+.favorites-list::-webkit-scrollbar,.history-list::-webkit-scrollbar{width:6px}
+.favorites-list::-webkit-scrollbar-thumb,.history-list::-webkit-scrollbar-thumb{background:#26A7A9;border-radius:12px}
+.favorites-item,.history-entry{min-height:38px;display:flex;align-items:center;gap:3px;border-radius:9px;animation:v28-appear .18s cubic-bezier(.21,.65,.33,1) both}
+.history-item{flex:1;min-width:0;min-height:35px;display:flex;align-items:center;gap:7px}
+.history-item>span:last-child{flex:1;min-width:0;text-align:left;overflow-wrap:anywhere}
+.history-remove,.favorites-remove{height:28px;width:28px;flex:0 0 28px;display:grid;place-items:center;border:1px solid transparent;background:transparent;color:#19404A;border-radius:8px;font-size:20px;line-height:1;cursor:pointer;padding:0}
+.history-remove:hover,.favorites-remove:hover{background:#9DE8D744;border-color:#26A7A9}
+html[data-theme="dark"] .history-remove,html[data-theme="dark"] .favorites-remove{color:#E4F6F2}
+.favorites-block .clear-history-button{margin-top:9px}
+.favorite-toggle{display:inline-grid!important;place-items:center!important;flex:0 0 auto!important;width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;border-radius:50%!important;gap:0!important;background:transparent!important;border:1px solid transparent!important;color:#19404A!important;transition:transform .22s cubic-bezier(.2,.8,.2,1.35),background .18s,border-color .18s!important;box-shadow:none!important}
+.favorite-toggle span{font-size:26px!important;line-height:1}
+.favorite-toggle[aria-pressed="true"]{color:#EFCB41!important;background:#19404A!important;border-color:#26A7A9!important}
+.favorite-toggle:hover{transform:scale(1.13) rotate(-7deg);border-color:#26A7A9!important;background:#9DE8D744!important}
+.favorite-toggle[aria-pressed="true"]:hover{color:#F7DF6A!important;background:#19404A!important}
+html[data-theme="dark"] .favorite-toggle{color:#E4F6F2!important}
+html[data-theme="dark"] .favorite-toggle[aria-pressed="true"]{color:#F7DF6A!important;background:#19404A!important}
+.orari-filter-caption[hidden],.schedule-teacher-sort[hidden],.schedule-quick-results[hidden]{display:none!important}
+.schedule-quick-search{width:100%;min-width:0;min-height:42px;border:1.3px solid #8CBAB6;border-radius:11px;background:#FFF;color:#19404A;padding:10px 13px;font-size:14px;font-weight:650;font-family:inherit}
+.schedule-controls label{position:relative;min-width:0}
+.schedule-quick-results{position:absolute;top:calc(100% - 49px);left:0;right:0;z-index:20;max-height:270px;overflow-y:auto;border:1px solid #26A7A9;border-radius:12px;background:#F6FBFA;box-shadow:0 12px 25px #071F2928;padding:4px;display:flex;flex-direction:column;gap:3px}
+.schedule-quick-results button{display:flex;align-items:center;gap:8px;padding:9px 11px;border:0;background:transparent;border-radius:9px;color:#19404A;text-align:left;cursor:pointer;font:inherit;font-size:13px;font-weight:700}
+.schedule-quick-results button:hover,.schedule-quick-results button:focus-visible{background:#E4F6F2}
+.schedule-quick-results small{font-size:11px;font-weight:500;margin-left:auto;opacity:.78}
+.schedule-teacher-sort{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:40px}
+.schedule-teacher-sort label{font-size:12px;font-weight:750;color:#19404A}
+.schedule-teacher-sort select{min-height:37px;min-width:175px;border:1px solid #8CBAB6;border-radius:9px;padding:6px 9px;color:#19404A;background:#FFF}
+html[data-theme="dark"] .schedule-quick-search,html[data-theme="dark"] .schedule-teacher-sort select{background:#153640;color:#E4F6F2;border-color:#527C7F}
+html[data-theme="dark"] .schedule-quick-results{background:#153640;border-color:#26A7A9}
+html[data-theme="dark"] .schedule-quick-results button,html[data-theme="dark"] .schedule-teacher-sort label{color:#E4F6F2}
+html[data-theme="dark"] .schedule-quick-results button:hover{background:#19404A}
+.navigator-map .nav-route-polyline{stroke:url(#aula-nav-route-gradient)!important;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 1.3px #26A7A966)}
+.navigator-map .nav-route-start{stroke:#26A7A9!important}
+.navigator-map .nav-route-transfer{stroke:#26A7A9!important}
+.navigator-map .nav-route-shadow{stroke:#E4F6F2;stroke-width:4.6}
+html[data-theme="dark"] .navigator-map .nav-route-polyline{stroke:url(#aula-nav-route-gradient)!important}
+html[data-theme="dark"] .navigator-map .nav-route-shadow{stroke:#071F29}
+.navigator-message.nav-error{background:#E4F6F2;color:#19404A;border-color:#26A7A9}
+html[data-theme="dark"] .navigator-message.nav-error{background:#19404A;color:#E4F6F2;border-color:#26A7A9}
+/* Animazioni brevi: contenuto compare senza scatti, hover con micro-movimento. */
+@keyframes v28-appear{from{opacity:0;transform:translateY(4px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes v28-select{0%{box-shadow:0 0 0 0 #26A7A944}100%{box-shadow:0 0 0 7px #26A7A900}}
+.page:not([hidden])>.page-topline,.page:not([hidden])>.orari-heading,.page:not([hidden])>.orari-content-grid{animation:v28-appear .21s cubic-bezier(.2,.7,.25,1) both}
+.side-link,.orari-category-tabs button,.search-submit,.free-rooms-shortcut{transition:background .19s ease,border-color .19s ease,transform .20s cubic-bezier(.2,.8,.2,1.2),box-shadow .2s ease}
+.side-link:hover,.free-rooms-shortcut:hover{transform:translateX(2px)}
+.orari-category-tabs button.is-active{animation:v28-select .36s ease-out}
+@media(prefers-reduced-motion:reduce){.page:not([hidden])>.page-topline,.page:not([hidden])>.orari-heading,.page:not([hidden])>.orari-content-grid,.favorites-item,.history-entry,.orari-category-tabs button.is-active{animation:none!important}}
+
+/* Stelle accanto al nome (non occupano una riga dedicata). */
+.orari-info-title-row{display:flex;align-items:center;gap:8px;min-width:0;margin:8px 0 12px}
+.orari-info-title-row h2{min-width:0;margin:0!important;overflow-wrap:anywhere}
+.orari-info-title-row .orari-favorite-toggle{margin:0!important;flex-shrink:0}
+.result-banner .favorite-toggle{color:#E4F6F2!important;margin-left:auto}
+.result-banner .favorite-toggle[aria-pressed="true"]{color:#F7DF6A!important}
+/* Etichette stato con i soli colori del progetto. */
+.status-pill{background:#9DE8D7;color:#071F29}
+.status-pill.free{background:#E4F6F2;color:#19404A}
+html[data-theme="dark"] .status-pill{background:#26A7A9;color:#071F29}
+html[data-theme="dark"] .status-pill.free{background:#19404A;color:#E4F6F2}
+
+.schedule-entity-field{display:flex;flex-direction:column;gap:7px;position:relative;flex:1 1 100%;min-width:0}
+.schedule-entity-field>label{width:100%;font-size:13px}
+.schedule-entity-field>.schedule-quick-results{top:calc(100% - 49px)}
+.schedule-entity-field>select{width:100%;min-width:0}
+.schedule-teacher-sort{width:100%;gap:8px}
+
+.field-feedback{margin:9px 0 0;padding:10px 13px;border:1px solid #26A7A9;border-radius:10px;background:#E4F6F2;color:#19404A;font-size:13px;font-weight:700;animation:v28-appear .18s ease-out}
+.field-feedback[hidden]{display:none!important}
+html[data-theme="dark"] .field-feedback{background:#19404A;color:#E4F6F2}
+:where(input,textarea,select):focus:invalid{border-color:#26A7A9!important;box-shadow:0 0 0 2px #26A7A924!important}
+
+/* V29: stable four-row history/favorites scroll area; no scrollbar reflow. */
+.favorites-list,.history-list{max-height:none!important;height:auto;overflow:visible!important;scrollbar-gutter:stable}
+.favorites-list.is-scrollable,.history-list.is-scrollable{
+ height:180px;overflow-y:auto!important;overflow-x:hidden!important;
+ overscroll-behavior-y:contain;scrollbar-gutter:stable;
+ scrollbar-width:thin;scrollbar-color:#26A7A9 #E4F6F2;
+}
+.favorites-item,.history-entry{flex:0 0 auto;min-height:41px}
+.favorites-open,.history-item{min-width:0}
+html[data-theme="dark"] .favorites-list.is-scrollable,html[data-theme="dark"] .history-list.is-scrollable{scrollbar-color:#9DE8D7 #19404A}
+/* One consistent height and bottom alignment alongside Giorno / Ora on all devices. */
+.header-controls .theme-toggle{align-self:flex-end;flex-shrink:0;margin:0;height:40px;width:42px}
+@media(max-width:680px){.header-controls .theme-toggle{height:37px;width:40px}}
+@keyframes aula-theme-tilt{
+ 0%{transform:rotate(-18deg) scale(.80);opacity:.52}
+ 52%{transform:rotate(12deg) scale(1.12);opacity:1}
+ 100%{transform:rotate(0) scale(1);opacity:1}
+}
+.theme-toggle.theme-switching svg{animation:aula-theme-tilt .32s cubic-bezier(.2,.8,.18,1) both;transform-origin:center}
+.theme-toggle{transition:background-color .26s,border-color .26s,box-shadow .26s,transform .2s!important}
+.theme-toggle:hover{transform:translateY(-1px);box-shadow:0 0 0 2px #9DE8D733}
+/* Logo: short, subtle pop + aqua light halo, transparent outside the image. */
+@keyframes aula-logo-reveal{0%{opacity:0;transform:scale(.80) rotate(-6deg);filter:brightness(.85)}65%{opacity:1;transform:scale(1.035) rotate(1deg);filter:brightness(1.1)}100%{opacity:1;transform:scale(1) rotate(0);filter:brightness(1)}}
+@keyframes aula-logo-backdrop{from{background:#06191e00}to{background:#06191ed9}}
+.logo-dialog[open] img{animation:aula-logo-reveal .40s cubic-bezier(.16,.82,.19,1) both;will-change:transform,opacity}
+.logo-dialog[open]::backdrop{animation:aula-logo-backdrop .26s ease-out both}
+/* Navigator: suggestions anchored to each input, with stable, floor-specific matches. */
+.navigator-field:focus-within{z-index:31}
+.nav-input-suggestions[hidden]{display:none!important}
+.nav-input-suggestions{position:absolute;top:calc(100% + 5px);left:4px;right:4px;max-height:min(255px,45vh);
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;z-index:99;
+ display:flex;flex-direction:column;gap:2px;padding:5px;border:1px solid #26A7A9;border-radius:12px;
+ background:#F6FBFA;box-shadow:0 14px 30px #071F2938;scrollbar-color:#26A7A9 #E4F6F2;scrollbar-width:thin}
+.nav-input-suggestions button{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;border:0;border-radius:8px;
+ padding:8px 10px;text-align:left;background:transparent;color:#19404A;cursor:pointer;font:inherit;font-size:12px}
+.nav-input-suggestions button strong{min-width:42px;font-size:13px}
+.nav-input-suggestions button span{flex:1;overflow-wrap:anywhere}
+.nav-input-suggestions button small{font-size:11px;opacity:.8;white-space:nowrap;margin-left:auto}
+.nav-input-suggestions button:hover,.nav-input-suggestions button[aria-selected="true"]{background:#E4F6F2;outline:1px solid #26A7A9}
+.nav-no-matches{padding:8px 11px;margin:0;font-size:12px;color:#19404A}
+html[data-theme="dark"] .nav-input-suggestions{background:#153640;color:#E4F6F2;border-color:#26A7A9}
+html[data-theme="dark"] .nav-input-suggestions button,html[data-theme="dark"] .nav-no-matches{color:#E4F6F2}
+html[data-theme="dark"] .nav-input-suggestions button:hover,html[data-theme="dark"] .nav-input-suggestions button[aria-selected="true"]{background:#19404A}
+@media(prefers-reduced-motion:reduce){.logo-dialog[open] img,.logo-dialog[open]::backdrop,.theme-toggle.theme-switching svg{animation:none!important}.theme-toggle:hover{transform:none!important}}
