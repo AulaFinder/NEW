@@ -29,6 +29,30 @@
     secondo:[[[618,462],[738,462],[790,462],[790,450],[897,450]],[[738,462],[738,485]],[[738,462],[738,416],[790,416]],[[790,416],[790,450]],[[806,450],[806,435]],[[846,450],[846,436]],[[897,450],[897,442]]],
     terzo:[[[630,559],[740,559],[750,559],[795,559],[795,553],[896,553]],[[750,559],[750,583]],[[816,557.752475],[816,535]],[[855,555.435644],[855,535]],[[896,553],[905,552]]]
   };
+  // Le piantine sorgenti sono nascoste mentre è aperto il Navigatore.
+  // Chromium/Safari restituiscono getBBox() = 0 e isPointInFill() = false
+  // per gli SVG sotto [hidden]. Calcoliamo la geometria su copie renderizzate
+  // fuori schermo, invisibili all'utente ma NON display:none.
+  const geometrySurfaces=new Map(),geometryCorridors=new Map();
+  function geometrySurface(floor){
+    if(geometrySurfaces.has(floor))return geometrySurfaces.get(floor);
+    const original=document.querySelector('#'+floor+' svg.plan');
+    if(!original)return null;
+    const svg=svgNode('svg',{viewBox:original.getAttribute('viewBox'),'aria-hidden':'true',focusable:'false'});
+    svg.style.cssText='position:fixed;left:-20000px;top:0;width:600px;height:600px;opacity:0;pointer-events:none;z-index:-999';
+    const corridor=original.querySelector(':scope > path')?.cloneNode(true);
+    if(corridor){svg.appendChild(corridor);geometryCorridors.set(floor,corridor);}
+    document.body.appendChild(svg);
+    geometrySurfaces.set(floor,svg);
+    return svg;
+  }
+  function boundsOf(el,floor){
+    const surface=geometrySurface(floor);
+    if(!surface)return null;
+    const shape=el.cloneNode(true);surface.appendChild(shape);
+    const b=shape.getBBox();shape.remove();
+    return b;
+  }
   // Dati delle aule leggibili dalle mappe già presenti nella V23.
   const locations=[];
   floors.forEach(floor=>{
@@ -41,7 +65,8 @@
       if(!box)return;
       // The English laboratory (2.14) has an irregular SVG path, not a rect.
       // getBBox handles both shapes so it remains navigable like every other classroom.
-      const bounds=box.getBBox();
+      const bounds=boundsOf(box,floor);
+      if(!bounds||!bounds.width||!bounds.height)return;
       const x=bounds.x,y=bounds.y,w=bounds.width,h=bounds.height;
       locations.push({id:text,floor,description:(g.dataset.t||'').split('·').slice(1).join('·').trim(),cx:Number(g.dataset.cx),cy:Number(g.dataset.cy),rect:{x,y,w,h}});
     });
@@ -123,12 +148,25 @@
         e.preventDefault();pickSuggestion(input,buttons[Math.max(selectedSuggestion,0)].dataset.navChoice);
       }
     });
+    // Il tocco sullo scrollbar o lo spostamento del cursore non deve chiudere la lista.
+    let pointerInside=false;
     list.addEventListener('pointerdown',e=>{
-      const btn=e.target.closest('[data-nav-choice]');if(!btn)return;
-      e.preventDefault();pickSuggestion(input,btn.dataset.navChoice);
+      // Il mouse seleziona prima del blur; la scrollbar mantiene il drag nativo.
+      pointerInside=true;
+      const btn=e.target.closest('[data-nav-choice]');
+      if(btn && e.pointerType==='mouse'){
+        e.preventDefault();
+        pickSuggestion(input,btn.dataset.navChoice);
+      }
     });
+    list.addEventListener('click',e=>{
+      const btn=e.target.closest('[data-nav-choice]');
+      if(btn)pickSuggestion(input,btn.dataset.navChoice);
+      pointerInside=false;
+    });
+    list.addEventListener('pointerup',()=>{pointerInside=false;});
     input.addEventListener('blur',()=>{requestAnimationFrame(()=>{
-      if(!list.contains(document.activeElement))hideSuggestions(input);
+      if(!pointerInside && !list.contains(document.activeElement))hideSuggestions(input);
     });});
   });
   document.addEventListener('pointerdown',e=>{
@@ -192,12 +230,12 @@
   function walkingGrid(floor){
     if(walkGridCache.has(floor))return walkGridCache.get(floor);
     const svg=document.querySelector('#'+floor+' svg.plan');
-    const corridor=svg?.querySelector(':scope > path');
+    const corridor=geometryCorridors.get(floor);
     if(!svg||!corridor||typeof corridor.isPointInFill!=='function')return null;
-    const vb=svg.viewBox.baseVal,step=1.8;
+    const vb=svg.viewBox.baseVal,step=1.25;
     const nx=Math.ceil(vb.width/step)+1,ny=Math.ceil(vb.height/step)+1;
-    const rooms=[...svg.querySelectorAll('g.room .box')].map(b=>{const r=b.getBBox();return{
-      x:r.x+.38,y:r.y+.38,x2:r.x+r.width-.38,y2:r.y+r.height-.38
+    const rooms=locations.filter(loc=>loc.floor===floor).map(loc=>{const r=loc.rect;return{
+      x:r.x+.20,y:r.y+.20,x2:r.x+r.w-.20,y2:r.y+r.h-.20
     };});
     const valid=new Uint8Array(nx*ny),coord=n=>point(vb.x+(n%nx)*step,vb.y+Math.floor(n/nx)*step);
     for(let i=0;i<valid.length;i++){
@@ -241,43 +279,14 @@
   }
   function shortestHall(floor,start,end){
     const actual=actualHall(floor,start,end);
+    // Non presentare un tracciato schematico che taglia muri o esce dalla piantina.
+    // Se i corridoi disegnati non collegano i due punti, nessun percorso viene mostrato.
     if(actual && actual.length)return actual;
-    // Piantina parzialmente disconnessa: usa solo i collegamenti schematici predefiniti.
-    const segments=allSegments(floor),fst=entranceFor(start,segments),lst=entranceFor(end,segments);
-    if(!fst||!lst)return null;
-    // Create a graph from every corridor segment and their geometric intersections.
-    const onSeg=segments.map(([a,b])=>[a,b]);
-    for(let i=0;i<segments.length;i++)for(let j=i+1;j<segments.length;j++){
-      const crossAt=intersection(...segments[i],...segments[j]);
-      if(crossAt){onSeg[i].push(crossAt);onSeg[j].push(crossAt)}
-      // Covers branches that begin at an interior point of a straight hallway.
-      segments[j].forEach(p=>{if(distance(projection(p,...segments[i]),p)<.001)onSeg[i].push(p)});
-      segments[i].forEach(p=>{if(distance(projection(p,...segments[j]),p)<.001)onSeg[j].push(p)});
-    }
-    onSeg[fst.idx].push(fst.snap);onSeg[lst.idx].push(lst.snap);
-    const graph=new Map();
-    const key=p=>`${Math.round(p.x*1000)}:${Math.round(p.y*1000)}`;
-    const pts=new Map();
-    function connect(a,b){const ak=key(a),bk=key(b);pts.set(ak,a);pts.set(bk,b);if(!graph.has(ak))graph.set(ak,[]);if(!graph.has(bk))graph.set(bk,[]);const d=distance(a,b);if(d>.001){graph.get(ak).push([bk,d]);graph.get(bk).push([ak,d]);}}
-    onSeg.forEach((nodeSet,i)=>{
-      const [a,b]=segments[i];const uniqNode=[...new Map(nodeSet.map(p=>[key(p),p])).values()];
-      const denom=(b.x-a.x)**2+(b.y-a.y)**2||1;
-      uniqNode.sort((m,n)=>(((m.x-a.x)*(b.x-a.x)+(m.y-a.y)*(b.y-a.y))-((n.x-a.x)*(b.x-a.x)+(n.y-a.y)*(b.y-a.y)))/denom);
-      for(let j=1;j<uniqNode.length;j++)connect(uniqNode[j-1],uniqNode[j]);
-    });
-    const source=key(fst.snap),destination=key(lst.snap);
-    const d=new Map([[source,0]]),prev=new Map(),todo=new Set(graph.keys());
-    while(todo.size){let u=null,min=Infinity;for(const k of todo)if((d.get(k)??Infinity)<min){u=k;min=d.get(k)}
-      if(u===null||u===destination)break;todo.delete(u);
-      for(const [v,w] of graph.get(u)||[])if(todo.has(v)&&(d.get(v)??Infinity)>min+w){d.set(v,min+w);prev.set(v,u)}
-    }
-    if(!d.has(destination))return null;
-    const middle=[];let cur=destination;while(cur){middle.push(pts.get(cur));if(cur===source)break;cur=prev.get(cur)}middle.reverse();
-    const result=[fst.door,fst.snap,...middle.slice(1),lst.snap,lst.door];
-    return result.filter((p,i)=>!i||!close(p,result[i-1]));
+    return null;
+
   }
 
-  function cloneMap(floor,where,{routePoints=[],start=null,end=null,transfer=false}={}){
+  function cloneMap(floor,where,{routePoints=[],start=null,end=null,transfer=false,entryPoint=null,exitPoint=null}={}){
     where.innerHTML='';
     const original=document.querySelector('#'+floor+' svg.plan');
     if(!original)return;
@@ -299,14 +308,36 @@
       const defs=svgNode('defs');const grad=svgNode('linearGradient',{id:'aula-nav-route-gradient',x1:'0%',y1:'0%',x2:'100%',y2:'60%'});
       [['0%','#19404A'],['35%','#26A7A9'],['72%','#9DE8D7'],['100%','#26A7A9']].forEach(([offset,color])=>grad.append(svgNode('stop',{offset,'stop-color':color})));
       defs.append(grad);layer.append(defs);
-      layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
-      layer.append(svgNode('path',{d,class:'nav-route-polyline'}));
+      if(unique.length>1){
+        layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
+        layer.append(svgNode('path',{d,class:'nav-route-polyline'}));
+      }
       const a=unique[0],b=unique.at(-1);
-      if(a&&start)layer.append(svgNode('circle',{cx:a.x,cy:a.y,r:3.2,class:'nav-route-start'}));
-      if(b&&end)layer.append(svgNode('circle',{cx:b.x,cy:b.y,r:3.2,class:'nav-route-end'}));
-      if(transfer && b){layer.append(svgNode('circle',{cx:b.x,cy:b.y,r:6.8,class:'nav-transfer-pulse'}));layer.append(svgNode('circle',{cx:b.x,cy:b.y,r:3.8,class:'nav-route-transfer'}));}
       const firstRoom=map.querySelector('g.room');
       if(firstRoom)map.insertBefore(layer,firstRoom);else map.appendChild(layer);
+
+      // V33: tutti i punti sono in un livello SUPERIORE ai disegni delle aule.
+      // PIENO = partenza / punto da cui proseguire verso le scale.
+      // VUOTO = arrivo / pianerottolo in cui si arriva dalle scale.
+      // Usiamo le stesse forme in tutti i piani, anche quando si SCENDE.
+      const markers=[];
+      if(a&&start)markers.push({p:a,kind:'departure'});
+      if(entryPoint)markers.push({p:entryPoint,kind:'arrival'});
+      if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'departure'});
+      if(b&&end)markers.push({p:b,kind:'arrival'});
+      if(markers.length){
+        const overlay=svgNode('g',{class:'nav-transfer-marker-layer nav-point-marker-layer','aria-hidden':'true'});
+        const dedup=[];
+        for(const marker of markers){
+          if(dedup.some(prev=>prev.kind===marker.kind&&close(prev.p,marker.p)))continue;
+          dedup.push(marker);
+        }
+        dedup.forEach(({p,kind})=>{
+          overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:6.5,class:'nav-point-halo'}));
+          overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:3.8,class:kind==='departure'?'nav-point-departure':'nav-point-arrival'}));
+        });
+        map.appendChild(overlay);
+      }
     }
     where.appendChild(map);
   }
@@ -366,18 +397,32 @@
       const seq=[];let at=nodes.length-1;while(at>=0){seq.push(at);if(at===0)break;at=prev[at];}seq.reverse();
       if(seq[0]!==0)continue;
       const stages=[];let current=null;
+      // Dopo ogni collegamento verticale ricordiamo il puntino sul piano
+      // di arrivo, anche quando si SCENDONO le scale.
+      let pendingEntry=null;
+      let pendingEntryFloor=null;
       for(let k=0;k<seq.length-1;k++){
         const x=seq[k],y=seq[k+1],u=nodes[x],v=nodes[y];
         if(u.floor===v.floor){
           let pts=edgeDetails.get(Math.min(x,y)+','+Math.max(x,y));
           if(!pts)continue;
           if(x>y)pts=[...pts].reverse();
-          if(!current||current.floor!==u.floor){current={floor:u.floor,points:[],start:null,end:null,transfer:false};stages.push(current);}
+          if(!current||current.floor!==u.floor){
+            current={floor:u.floor,points:[],start:null,end:null,transfer:false,entryPoint:pendingEntry,entryFromFloor:pendingEntryFloor};
+            stages.push(current);pendingEntry=null;pendingEntryFloor=null;
+          }
           for(const pt of pts){if(!current.points.length||!close(current.points.at(-1),pt))current.points.push(pt);}
         }else{
-          if(!current||current.floor!==u.floor){current={floor:u.floor,points:[point(u.cx,u.cy)],start:null,end:null,transfer:false};stages.push(current);}
+          if(!current||current.floor!==u.floor){
+            current={floor:u.floor,points:[point(u.cx,u.cy)],start:null,end:null,transfer:false,entryPoint:pendingEntry,entryFromFloor:pendingEntryFloor};
+            stages.push(current);pendingEntry=null;pendingEntryFloor=null;
+          }
           current.transfer=true;
           current.exitLane=u.lane;
+          current.exitPoint=point(u.cx,u.cy);
+          current.exitToFloor=v.floor;
+          pendingEntry=point(v.cx,v.cy);
+          pendingEntryFloor=u.floor;
           current=null;
         }
       }
@@ -399,28 +444,41 @@
     $('#navStepNext').disabled=i===count-1;
     const role=count===1?'Percorso':i===0?'Partenza':i===count-1?'Arrivo':'Cambio piano';
     $('#navStepFloor').textContent=labels[r.floor];
+    const floorChange=r.exitToFloor
+      ? (floors.indexOf(r.exitToFloor)<floors.indexOf(r.floor)?'Scendi':'Sali')
+      : null;
+    const verticalMovement=r.exitToFloor
+      ? `${floorChange} ${latestRoute.mode==='lift'?'con l’ascensore':'le scale'} fino a ${labels[r.exitToFloor]}.`
+      : '';
     $('#navStepInstruction').textContent=count===1?`Segui il percorso evidenziato da ${latestRoute.a.id} a ${latestRoute.b.id}.`:
-      i===0?`Parti da ${latestRoute.a.id}. Segui il percorso fino al collegamento verticale evidenziato.`:
-      i===count-1?`Dal collegamento verticale raggiungi ${latestRoute.b.id}.`:
-      `Attraversa ${labels[r.floor]} e segui le indicazioni per ${latestRoute.mode==='lift'?'l’ascensore':'le scale'}.`;
+      i===0?`Parti da ${latestRoute.a.id}. Segui il percorso fino al puntino ${latestRoute.mode==='lift'?'dell’ascensore':'sulle scale'}. ${verticalMovement}`:
+      i===count-1?`Dal puntino del collegamento verticale raggiungi ${latestRoute.b.id}.`:
+      `Attraversa ${labels[r.floor]}. ${verticalMovement || 'Segui il percorso evidenziato.'}`;
     $('#navStepRole').textContent=role;
     const map=$('#navActiveMap');
-    cloneMap(r.floor,map,{routePoints:r.points,start:r.start,end:r.end,transfer:r.transfer});
+    cloneMap(r.floor,map,{routePoints:r.points,start:r.start,end:r.end,transfer:r.transfer,entryPoint:r.entryPoint,exitPoint:r.exitPoint});
   }
   function invalidateRoute(){latestRoute=null;stageState.stages=[];$('#navRouteResult').hidden=true;notice('Premi Visualizza percorso per calcolare il tragitto.');}
   function performRoute(scroll=false){
+    // Dopo l'avvio del percorso la lista dei suggerimenti non deve coprire la mappa.
+    hideSuggestions(from);hideSuggestions(to);
     const [a,b]=currentFields();
     if(!a||!b){latestRoute=null;$('#navRouteResult').hidden=true;notice('Controlla Da e A: scegli due ambienti presenti nell’elenco o nella piantina.',true);return false;}
     if(a.id===b.id){latestRoute=null;$('#navRouteResult').hidden=true;notice('Partenza e destinazione coincidono. Seleziona due ambienti diversi.',true);return false;}
     const mode=$('#navTravelMode').value;
     const result=bestRoute(a,b,mode);
-    if(!result){latestRoute=null;$('#navRouteResult').hidden=true;notice('Collegamento non disponibile con questa modalità. Prova scale/ascensore oppure altre aule.',true);return false;}
+    if(!result){latestRoute=null;$('#navRouteResult').hidden=true;notice('Nessun percorso verificabile all’interno dei corridoi disegnati con questa modalità. Prova scale/ascensore o un’altra aula.',true);return false;}
     latestRoute=result;stageState.stages=result.stages;
     notice(`Percorso trovato: ${result.a.id} → ${result.b.id} · ${result.stages.length} ${result.stages.length===1?'piano':'piani'}.`);
     const target=$('#navRouteResult');target.hidden=false;
     target.innerHTML=`<div class="navigator-summary"><p>${safe(result.a.id)} → ${safe(result.b.id)}<small>${safe(labels[result.a.floor])} → ${safe(labels[result.b.floor])}</small></p><span class="nav-mode-tag">${mode==='lift'?'Ascensore':'Scale'}</span></div>
       <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
-      <div class="navigator-map" id="navActiveMap"></div><p id="navStepInstruction" class="navigator-route-instruction"></p></section>`;
+      <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
+      <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
+      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-departure" aria-hidden="true"></span><span>Partenza / verso le scale</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-arrival" aria-hidden="true"></span><span>Arrivo / dalle scale</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso</span></div>
+      </aside></div><p id="navStepInstruction" class="navigator-route-instruction"></p></section>`;
     renderRouteStage(0);
     if(scroll)target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
     return true;

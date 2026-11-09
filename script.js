@@ -409,7 +409,7 @@
   function scheduleSort(kind,a,b){
     if(kind==='rooms')return sortRooms(a,b);
     if(kind==='classes')return a.localeCompare(b,'it',{numeric:true});
-    if(teacherSort.value==='subject')return teachingSubject(a).localeCompare(teachingSubject(b),'it',{sensitivity:'base'})||surnameOf(a).localeCompare(surnameOf(b),'it',{sensitivity:'base'});
+    // Gli orari dei professori restano ordinati per sigla, senza i filtri di disponibilità.
     return surnameOf(a).localeCompare(surnameOf(b),'it',{sensitivity:'base'})||a.localeCompare(b,'it');
   }
   function editDist(a,b){
@@ -419,7 +419,7 @@
     return p[b.length];
   }
   function scheduleSearchScore(kind,id,q){
-    const parts=[id,label(kind,id),kind==='teachers'?teacherBase(id):'',kind==='teachers'?teachingSubject(id):''];
+    const parts=kind==='teachers'?[id,teacherBase(id),teachingSubject(id),prof(id)]:[id,label(kind,id)];
     const c=x=>norm(x).replace(/[^A-Z0-9]/g,'');
     const needle=c(q);if(!needle)return 0;
     let score=-1;
@@ -432,7 +432,13 @@
     }
     return score;
   }
-  function scheduleEntries(){return Object.keys(DATA[state.schedule]||{}).sort((a,b)=>scheduleSort(state.schedule,a,b));}
+  function scheduleEntries(){
+    const kind=state.schedule;
+    const ids=Object.keys(DATA[kind]||{});
+    if(kind==='teachers' && teacherSort.value==='subject')
+      return ids.sort((a,b)=>teachingSubject(a).localeCompare(teachingSubject(b),'it',{sensitivity:'base'})||scheduleSort(kind,a,b));
+    return ids.sort((a,b)=>scheduleSort(kind,a,b));
+  }
   function renderScheduleQuickSearch(){
     if(!['classes','rooms','teachers'].includes(state.schedule))return;
     const kind=state.schedule,q=scheduleSearch.value.trim();
@@ -470,12 +476,13 @@
       $('#scheduleControls').hidden=false;
       scheduleSearch.value='';scheduleQuickResults.hidden=true;
       $('#scheduleTeacherSortWrap').hidden=kind!=='teachers';
-      $('#scheduleEntityLabel').textContent=kind==='classes'?'Seleziona classe':kind==='rooms'?'Seleziona aula':'Seleziona professore';
+      $('#scheduleEntityLabel').textContent=kind==='classes'?'Seleziona classe':kind==='rooms'?'Seleziona aula':'Cerca un professore';
       scheduleSearch.placeholder=kind==='classes'?'Cerca una classe':kind==='rooms'?'Cerca un’aula':'Cerca un professore';
       scheduleSearch.setAttribute('aria-label',scheduleSearch.placeholder);
       $('#scheduleFilterCaption').hidden=true;
     }else{
       $('#scheduleControls').hidden=true;scheduleQuickResults.hidden=true;
+      $('#scheduleTeacherSortWrap').hidden=true;
       state.selection='';
       $('#scheduleFilterCaption').hidden=true;
     }
@@ -585,7 +592,8 @@
   }
   function renderFreeTeacherMatches(){
     const box=$('#freeTeacherMatches');if(!box)return;
-    const available=freeTeachersAt(date(),hour()-1),filtered=filteredTeacherList(available);
+    const available=freeTeachersAt(date(),hour()-1),
+      filtered=filteredTeacherList(available).sort((a,b)=>surnameOf(a).localeCompare(surnameOf(b),'it',{sensitivity:'base'}));
     $('#freeTeacherCount').textContent=`${filtered.length} ${filtered.length===1?'professore':'professori'} ${state.freeTeacherFilter?'trovati':'senza lezione prevista'}`;
     box.innerHTML=teacherChips(filtered)||'<p>Nessun docente corrisponde alla ricerca in questa fascia.</p>';
   }
@@ -613,7 +621,10 @@
   }
   function renderSchedule(){
     const kind=state.schedule, box=$('#scheduleContents');
-    $('#scheduleInfoPanel').innerHTML=renderScheduleInfo();
+    const infoPanel=$('#scheduleInfoPanel');
+    infoPanel.hidden=kind==='freeRooms'||kind==='freeTeachers';
+    $('#orariPage .orari-content-grid').classList.toggle('without-info-panel',infoPanel.hidden);
+    infoPanel.innerHTML=infoPanel.hidden?'':renderScheduleInfo();
     if(kind==='freeTeachers'){box.innerHTML=renderFreeTeachers();renderFreeTeacherMatches();return;}
     if(kind==='freeRooms'){
       const all=DATA.freeRooms[date()]||[];
@@ -658,7 +669,14 @@
       if(first){e.preventDefault();setScheduleEntity(first.dataset.scheduleSearchId);}
     }
   });
-  teacherSort.addEventListener('change',()=>{const old=state.selection;openSchedule('teachers',old);});
+  teacherSort.addEventListener('change',()=>{
+    if(state.page!=='orari'||state.schedule!=='teachers')return;
+    const select=$('#scheduleEntity');
+    const entries=scheduleEntries();
+    select.innerHTML=entries.map(id=>`<option value="${escapeHtml(id)}">${escapeHtml(label('teachers',id))}</option>`).join('');
+    select.value=state.selection;
+    if(scheduleSearch.value.trim())renderScheduleQuickSearch();
+  });
 
   $('#menuButton').addEventListener('click',()=>$('#sidebar').classList.contains('is-open')?closeMenu():openMenu());
   $('#sidebarBackdrop').addEventListener('click',()=>{closeMenu();$('#menuButton').focus();});

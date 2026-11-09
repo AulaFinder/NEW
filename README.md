@@ -1,38 +1,35 @@
-# AulaFinder V29 · Correzioni UX e Navigatore
+# AulaFinder V30 – Correzioni Navigatore e Orari mobile
 
-Sito e PWA del progetto scolastico **AulaFinder**, per il Liceo Scientifico G.B. Grassi di Saronno. Basato direttamente sulla V28: palette, struttura, immagini, dati degli orari e geometrie delle piantine non sono stati sostituiti.
+Questa versione parte **integralmente da AulaFinder V29**. Sono conservati dati degli orari, piantine, layout, PWA, tema, ricerca generale, preferiti, cronologia, logo, footer e icone.
 
-## Cosa cambia rispetto alla V28
+## Modifiche
 
-- **Ingrandimento logo:** animazione breve con apertura progressiva e micro-ingrandimento, senza modificare il file del logo né aggiungere una X. Si chiude cliccando fuori o con Esc; rispetta `prefers-reduced-motion`.
-- **Ricerca nella sezione Orari:** placeholder specifico alla categoria: «Cerca una classe», «Cerca un’aula», «Cerca un professore». Nell'ordinamento dei docenti, la voce ora è «Cognome Nome» (in assenza di nominativi reali viene ancora usata la sigla disponibile) o «Materia».
-- **Cronologia e preferiti:** la lista scorre *solo* quando contiene più di quattro voci; la sua altezza diventa fissa e il browser non deve più far comparire/sparire la scrollbar durante i cambi di layout. Lo scroll viene conservato negli aggiornamenti. Restano possibili rimozione singola e totale.
-- **Navigatore:** un elenco personalizzato sostituisce i suggerimenti nativi del browser. Mostra tutti gli ambienti quando il campo è vuoto, ma se scrivi il prefisso del piano (`S`, `P`, `T`, `1`, `2`, `3`), i risultati riguardano esclusivamente quel piano. Digitando `T01` non compaiono stanze `1.01`, `2.01`, ecc. Selezione con mouse/touch, frecce, Invio ed Esc.
-- **Laboratorio di inglese 2.14:** la stanza ha una **forma SVG irregolare (`path`)**, non un rettangolo. Il Navigatore ora ne legge i contorni e permette di selezionarla dal campo (codice o nome), dalla piantina e nei tragitti. La stessa logica permette la gestione di altre forme irregolari in futuro.
-- **Cambio tema:** controllo sole/luna allineato verticalmente a Giorno e Ora; breve animazione dell'icona, con opzione di movimento ridotto.
+1. **Navigatore:** corretta la lettura delle geometrie SVG. Le piantine originali sono nascoste nella navigazione e `getBBox()` / `isPointInFill()` su quei nodi restituivano valori vuoti; i percorsi finivano su linee schematiche non vincolate ai corridoi. Ora viene costruita una copia SVG fuori schermo, ma effettivamente renderizzata, per misurare le stanze e calcolare il tracciato sulle aree pedonali disegnate. Il programma non disegna più percorsi alternativi inventati se l'area della mappa non permette il collegamento. I passaggi tra piani usano gli elementi verticali rappresentati nella piantina.
+2. **Navigatore / suggerimenti:** corretto il conflitto tra `blur` e clic/tocco sui risultati della ricerca; la tendina non si chiude trascinando il cursore sulla lista o scorrendola. La selezione da mouse viene acquisita prima della perdita del focus.
+3. **Orari docenti:** la selezione dell'orario del docente rimane accessibile per sigla. **Ordinamento per cognome/sigla o materia** e filtro per nome/materia sono disponibili nella sezione **Professori liberi** (non nell'orario standard dei docenti).
+4. **Mobile / Orari:** nascosto il menu a tendina che duplicava la ricerca testuale. Il riepilogo informativo compare prima della griglia, anche su schermi piccoli.
+5. **Header mobile:** hamburger a sinistra del logo; pulsante Home e tema a destra. Il pulsante tema viene spostato sopra, liberando spazio per giorno e ora. Su PC l'intestazione rimane invariata.
+6. **PWA:** aggiornata la versione della cache del service worker per distribuire le modifiche quando il sito è pubblicato.
 
-## Pubblicazione su GitHub Pages
+## Test
 
-1. Estrai questo ZIP.
-2. Carica **il contenuto direttamente nella root** del repository `leonardofiadino09-jpg/AulaFinder`, senza aggiungere una cartella `AulaFinder` esterna. Mantieni `assets/` e `icons/`.
-3. In **Settings → Pages** usa branch `main` e `/ (root)`; deve essere presente `index.html` nella root.
-4. Verifica l'indirizzo: `https://leonardofiadino09-jpg.github.io/AulaFinder/`.
-5. Aggiorna l'app PWA su uno smartphone già installato: aprila con Internet, ricarica la pagina e riavvia se necessario. La cache è aggiornata alla **V29**.
+Verificati i caricamenti del DOM e le interazioni con Chromium per larghezze 320, 360, 375, 390, 430, 680, 768, 1024, 1366 e 1440 px, sia in tema chiaro sia scuro nel campione. Controllati navigazione, input dei suggerimenti (mouse e touch simulato), ordinamento/ricerca Professori liberi, riepilogo mobile prima della griglia, percorso sul corridoio, assenza di overflow ed errori JavaScript. Sono stati verificati più percorsi sullo stesso piano e tra piani diversi; i campionamenti dei tratti disegnati sono interni ai corridoi delle planimetrie SVG.
 
-## Test effettuati
+**Limite importante:** queste piantine sono schematiche. Il percorso segue le aree visibili dei corridoi nel disegno, ma non è una verifica sul posto di accessi, porte, barriere o indicazioni di sicurezza. **Non usarlo per emergenze/evacuazione.** Non è stato eseguito un test su dispositivi fisici Android o iOS, Safari né una pubblicazione GitHub Pages reale.
 
-- Chromium: larghezze **320, 390, 768, 1366 px**, ciascuna in tema chiaro e scuro (**8/8**).
-- Apertura e chiusura del logo, cambio tema e animazione, ricerca specifica delle tre categorie, preferiti oltre quattro elementi con barra di scorrimento stabile, rimozione singola, nuovi suggerimenti per codice e descrizione, laboratorio inglese e scelta della destinazione.
-- Tutti i prefissi di piano (`S`, `P`, `T`, `1`, `2`, `3`) verificati su desktop e mobile; allineamento dei tre controlli dell'header verificato.
-- **536 combinazioni di itinerario** con partenza da Ingresso, 2.14, S.07 e 3.01 verso gli altri ambienti, in entrambe le modalità scale/ascensore: nessun percorso mancante nei casi eseguiti.
-- Laboratorio **2.14** selezionato direttamente sulla piantina sia a 1366 px sia a 390 px.
-- Controllo sintassi JavaScript e integrità del file ZIP.
+## Installazione / GitHub Pages
 
-**Limiti dei test:** le verifiche sono state svolte con Chromium e viewport simulate; non costituiscono una prova su Safari/iPhone fisici né una verifica del sito già pubblicato su GitHub.
+Il file `index.html` deve restare nella root del progetto con `style.css`, `script.js`, `navigator.js`, `data.js`, `piantina.js`, `sw.js` e le cartelle `assets`/`icons`. In GitHub Pages estrarre tutto il contenuto direttamente nella root del repository (non caricare solo lo ZIP). Il progetto include `.nojekyll`.
 
-## Limiti di utilizzo
+Gli orari nei file sono previsioni scolastiche, non posizioni rilevate in tempo reale.
 
-- I percorsi sono **schematici**, ricostruiti dai disegni: devono essere verificati fisicamente dall'istituto, specialmente per le porte, gli ascensori, l'accessibilità e i passaggi effettivi. Non sono adatti a evacuazioni o emergenze.
-- Orari e docenti liberi non rappresentano disponibilità/presenza in tempo reale.
-- Cronologia e preferiti sono conservati solo nel browser del dispositivo, senza sincronizzazione.
-- Prima della pubblicazione degli orari reali su un repository pubblico, verificare l'autorizzazione della scuola.
+
+## V32: puntino scale anche in discesa
+Il navigatore ora visualizza lo stesso puntino sul punto di accesso alle scale o all'ascensore sia sul piano di partenza sia sul piano di arrivo, compresi i percorsi in discesa. I marker sono sopra gli elementi della piantina per restare visibili; cambiano soltanto navigator.js, una regola CSS e la versione della cache PWA.
+
+
+## V33 · Preferiti e indicazioni del Navigatore
+- Preferiti: solo stella vuota/piena, senza contorno o sfondo colorato (bordo di focus soltanto da tastiera).
+- Navigatore: punto pieno = partenza / uscita verso scale o ascensore; cerchio vuoto = destinazione / arrivo dal collegamento verticale.
+- Simboli in primo piano rispetto alle stanze delle piantine; legenda affiancata su desktop e sotto la mappa su mobile.
+- Service worker aggiornato alla cache V33. Gli orari, le mappe, l'algoritmo di percorso e le immagini non sono stati alterati.

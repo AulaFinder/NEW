@@ -2,7 +2,7 @@
    Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
    A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v29-fix-navigation';
+const CACHE_NAME = 'aulafinder-pwa-v33-route-legend';
 const APP_SHELL = [
   "./index.html",
   "./style.css",

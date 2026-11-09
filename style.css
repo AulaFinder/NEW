@@ -1062,3 +1062,98 @@ html[data-theme="dark"] .nav-input-suggestions{background:#153640;color:#E4F6F2;
 html[data-theme="dark"] .nav-input-suggestions button,html[data-theme="dark"] .nav-no-matches{color:#E4F6F2}
 html[data-theme="dark"] .nav-input-suggestions button:hover,html[data-theme="dark"] .nav-input-suggestions button[aria-selected="true"]{background:#19404A}
 @media(prefers-reduced-motion:reduce){.logo-dialog[open] img,.logo-dialog[open]::backdrop,.theme-toggle.theme-switching svg{animation:none!important}.theme-toggle:hover{transform:none!important}}
+
+/* AulaFinder V30 - richieste di revisione: navigazione mobile e orari. */
+@media (max-width:680px) {
+  /* Menu a sinistra del logo, coerente con l'apertura del pannello laterale. */
+  .site-header{gap:8px;align-items:center}
+  .menu-button{order:0;flex:0 0 42px;min-width:42px;height:42px;z-index:22}
+  .brand{order:1;flex:1 1 0%;min-width:0;margin-left:2px;gap:6px}
+  .brand .logo-button{width:44px;height:44px;flex:0 0 44px}
+  .brand-title{font-size:clamp(17px,4.6vw,22px);min-width:0;letter-spacing:-.05em}
+  .mobile-home-button{order:2;flex:0 0 38px;width:38px;height:40px;margin-right:43px}
+  /* Sposta il tema dal secondo rigo giorno/ora all'estremità destra dell'intestazione. */
+  .header-controls{order:3;flex:0 0 100%;width:100%;margin:0;gap:10px}
+  .header-controls .theme-toggle{position:absolute;right:14px;top:13px;align-self:auto;width:40px;height:40px;margin:0}
+  .header-control{min-width:0;flex:1 1 0}
+  .header-control select{width:100%;min-width:0}
+  /* Una casella di ricerca basta: il menu a tendina duplicava la stessa scelta. */
+  #orariPage #scheduleEntity{display:none!important}
+  /* Le informazioni rilevanti vengono prima della griglia, anche su mobile. */
+  #orariPage .orari-content-grid{display:flex;flex-direction:column;gap:12px}
+  #orariPage .orari-info-panel{order:0;width:100%}
+  #orariPage .orari-schedule-main{order:1;width:100%}
+  .orari-info-inner{padding:13px 15px}
+  .orari-info-panel .orari-info-icon{display:none}
+  .orari-info-panel h2{margin:0 0 8px}
+  .orari-info-panel .orari-panel-row{padding:8px 0}
+  #scheduleQuickSearch{font-size:16px}
+}
+@media(max-width:355px){
+  .site-header{gap:5px;padding-left:9px;padding-right:9px}
+  .menu-button{flex-basis:38px;min-width:38px;width:38px}
+  .brand .logo-button{width:37px;height:37px;flex-basis:37px}
+  .brand-title{font-size:17px}
+  .mobile-home-button{width:34px;flex-basis:34px;margin-right:41px}
+  .header-controls .theme-toggle{right:9px;width:38px}
+}
+
+/* V31: le disponibilita occupano tutta la larghezza; nessun riepilogo laterale. */
+#orariPage .orari-content-grid.without-info-panel {grid-template-columns:minmax(0,1fr)}
+#orariPage .orari-info-panel[hidden] {display:none!important}
+@media(max-width:680px){
+  #orariPage .orari-content-grid.without-info-panel{display:flex;flex-direction:column}
+  #orariPage .orari-content-grid.without-info-panel .orari-schedule-main{width:100%;min-width:0}
+}
+
+/* V32 · I puntini di cambio piano sono visibili sopra l'area scale, anche in discesa. */
+.navigator-map .nav-transfer-marker-layer{pointer-events:none!important}
+
+/* AulaFinder V33 · Favoriti: soltanto la stella, senza cornici o dischi azzurri.
+   L'outline compare unicamente durante la navigazione da tastiera. */
+.favorite-toggle,
+.favorite-toggle[aria-pressed="true"],
+.favorite-toggle:hover,
+.favorite-toggle[aria-pressed="true"]:hover,
+html[data-theme="dark"] .favorite-toggle,
+html[data-theme="dark"] .favorite-toggle[aria-pressed="true"],
+html[data-theme="dark"] .favorite-toggle:hover,
+html[data-theme="dark"] .favorite-toggle[aria-pressed="true"]:hover {
+  border:0!important;
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.favorite-toggle[aria-pressed="true"] {color:#B08B1C!important}
+.result-banner .favorite-toggle[aria-pressed="true"],
+html[data-theme="dark"] .favorite-toggle[aria-pressed="true"]{color:#F7DF6A!important}
+.favorite-toggle:focus-visible{outline:2px solid #26A7A9!important;outline-offset:2px}
+
+/* V33 · Segni di partenza/arrivo distinguibili anche senza affidarsi al colore. */
+.nav-map-legend-layout{display:grid;grid-template-columns:minmax(0,1fr) 156px;gap:12px;align-items:start;min-width:0}
+.nav-map-legend-layout>.navigator-map{min-width:0;width:100%}
+.nav-route-legend{background:#E4F6F2;border:1px solid #92C9C2;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;gap:12px;color:#19404A;font-size:12px;line-height:1.35;min-width:0}
+.nav-route-legend>strong{font-size:13px;font-weight:800}
+.nav-route-legend-item{display:flex;gap:9px;align-items:center;min-width:0}
+.nav-route-legend-item>span:last-child{flex:1}
+.nav-legend-dot{width:15px;height:15px;border-radius:50%;flex:0 0 15px;display:block;border:3px solid #176B72;box-sizing:border-box}
+.nav-legend-departure{background:#176B72}
+.nav-legend-arrival{background:#FFF}
+.nav-legend-line{display:block;flex:0 0 20px;height:4px;border-radius:9px;background:linear-gradient(90deg,#19404A,#26A7A9,#9DE8D7)}
+.navigator-map .nav-point-marker-layer{pointer-events:none!important}
+.navigator-map .nav-point-halo{fill:#E4F6F2;opacity:.92;stroke:#19404A;stroke-width:.35}
+.navigator-map .nav-point-departure{fill:#176B72;stroke:#E4F6F2;stroke-width:1.15}
+.navigator-map .nav-point-arrival{fill:#FFF;stroke:#176B72;stroke-width:1.55}
+html[data-theme="dark"] .nav-route-legend{background:#153640;border-color:#4E8C8A;color:#E4F6F2}
+html[data-theme="dark"] .nav-legend-dot{border-color:#9DE8D7}
+html[data-theme="dark"] .nav-legend-departure{background:#9DE8D7}
+html[data-theme="dark"] .nav-legend-arrival{background:#153640}
+html[data-theme="dark"] .navigator-map .nav-point-halo{fill:#19404A;stroke:#9DE8D7}
+html[data-theme="dark"] .navigator-map .nav-point-departure{fill:#9DE8D7;stroke:#19404A}
+html[data-theme="dark"] .navigator-map .nav-point-arrival{fill:#153640;stroke:#9DE8D7}
+@media(max-width:760px){
+  .nav-map-legend-layout{grid-template-columns:minmax(0,1fr)}
+  .nav-route-legend{flex-direction:row;align-items:center;flex-wrap:wrap;gap:7px 14px;padding:10px}
+  .nav-route-legend>strong{width:100%}
+  .nav-route-legend-item{max-width:100%;flex:1 1 128px}
+}
