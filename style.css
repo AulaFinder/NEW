@@ -1292,20 +1292,42 @@ html[data-theme="dark"] .result-card.type-teacher .hour-row.is-selected .hour-lo
 html[data-theme="dark"] .nav-route-legend .nav-legend-departure{background:#9DE8D7;border-color:#19404A;box-shadow:0 0 0 1px #9DE8D7}
 html[data-theme="dark"] .nav-route-legend .nav-legend-arrival{background:#153640;border-color:#9DE8D7}
 
-/* AulaFinder V40 - colori pulsanti header */
-
+/* AulaFinder V41 · Bianco puro sui comandi header in modalità chiara,
+   identico al fondo dei selettori Giorno e Ora (#FFFFFF).
+   Nessuna modifica a dimensioni, posizioni o comportamento dei pulsanti. */
 html[data-theme="light"] #themeToggle,
 html[data-theme="light"] #menuButton,
 html[data-theme="light"] #mobileHomeButton {
-  background: #F5FCFA !important;
-  color: #071F29 !important;
-  border-color: #CBE4E0 !important;
+  background: #FFFFFF;
+  border-color: #C2F5E7;
+  color: #08171C;
+}
+html[data-theme="light"] #themeToggle:hover,
+html[data-theme="light"] #menuButton:hover,
+html[data-theme="light"] #mobileHomeButton:hover {
+  background: #FFFFFF;
+  border-color: #26A7A9;
 }
 
-html[data-theme="dark"] #themeToggle,
-html[data-theme="dark"] #menuButton,
-html[data-theme="dark"] #mobileHomeButton {
-  background: #19404A !important;
-  color: #E4F6F2 !important;
-  border-color: #467680 !important;
+/* Tema scuro: invariato rispetto alla versione precedente. */
+html[data-theme="dark"] #themeToggle {
+  background-color: #153943;
+  border-color: #5F9D9A;
+  color: #E4F6F2;
+}
+html[data-theme="dark"] #themeToggle:hover {
+  background-color: #20515B;
+  border-color: #75BDB7;
+}
+@media (max-width:680px) {
+  html[data-theme="dark"] #menuButton,
+  html[data-theme="dark"] #mobileHomeButton {
+    background-color: #153943;
+    border-color: #5F9D9A;
+    color: #E4F6F2;
+  }
+  html[data-theme="dark"] #menuButton:hover,
+  html[data-theme="dark"] #mobileHomeButton:hover {
+    background-color: #20515B;
+  }
 }
