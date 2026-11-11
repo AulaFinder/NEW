@@ -57,3 +57,7 @@ Il navigatore ora visualizza lo stesso puntino sul punto di accesso alle scale o
 - Nel menu mobile, al posto della X compare il logo originale e la scritta AulaFinder con effetto orbitale, coerenti con l'intestazione. Toccare il marchio chiude il menu e torna alla Home; restano disponibili il tocco sullo sfondo e il tasto Esc.
 - Il filmato originale di caricamento è invariato. Sul mobile, per eliminare lo stacco netto fra video e bande, il filmato sfuma ai margini superiore/inferiore sopra uno sfondo coordinato e sfocato ricavato dal poster originale.
 - Cache PWA aggiornata. Nessuna modifica agli orari, alle piantine o all'algoritmo del navigatore.
+
+
+## V39
+- piantina rifatta con approccio conservativo: mantenuta la planimetria originale e applicata solo la rotazione a 180° dell'intero piano, raddrizzando i gruppi stanza per conservare layout, scritte e icone senza deformazioni.

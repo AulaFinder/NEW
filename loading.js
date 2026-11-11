@@ -21,8 +21,13 @@
   if(reduced || !video){finishIntro();return;}
   video.addEventListener('ended',finishIntro,{once:true});
   video.addEventListener('error',finishIntro,{once:true});
-  // Se la riproduzione non parte per restrizioni del browser, nessun blocco.
-  const start=video.play();
-  if(start && typeof start.catch==='function')start.catch(finishIntro);
+  // Il filmato parte su desktop e mobile a ogni nuovo caricamento/refresh.
+  // Se l'autoplay è vietato, mostra almeno brevemente il fotogramma/poster
+  // invece di far scomparire l'anteprima all'istante; poi lascia usare il sito.
+  try {
+    const start=video.play();
+    if(start && typeof start.catch==='function')
+      start.catch(()=>window.setTimeout(finishIntro,1100));
+  } catch (_) { window.setTimeout(finishIntro,1100); }
   window.setTimeout(finishIntro,5200);
 })();

@@ -59,7 +59,9 @@
   function prof(code,subject=''){
     const key=teacherKey(code,subject);
     const subj=subject || teachingSubject(key);
-    return `Prof. ${teacherBase(code,subject)} (${subj})`;
+    // Il docente può già avere la materia nel nome/alias configurato.
+    const base=teacherBase(code,subject).replace(/\s*\((?:INGLESE|SCIENZE|MATEMATICA|FISICA|ITALIANO|LATINO|STORIA|FILOSOFIA)\)\s*$/i,'').trim();
+    return subj && !norm(base).includes(norm(subj)) ? `Prof. ${base} (${subj})` : `Prof. ${base}`;
   }
   const label = (kind,id) => kind === 'classes' ? `Classe ${id}` : (kind === 'rooms'||kind==='mapRooms') ? (['Palestra','Ingresso','Archivio','Caldaie'].includes(id)?id:`Aula ${id}`) : prof(id);
   // Ordine richiesto per TUTTE le liste: S, P, Palestra, T, 1, 2, 3.
@@ -193,6 +195,8 @@
   function setScheduleSubnavExpanded(expanded){
     $('#scheduleSubnav').hidden = !expanded;
     $('.side-link[data-page="orari"]').setAttribute('aria-expanded',String(expanded));
+    const toggle=$('#scheduleSubnavToggle');
+    if(toggle){toggle.setAttribute('aria-expanded',String(expanded));toggle.setAttribute('aria-label',expanded?'Nascondi i tipi di orario':'Mostra i tipi di orario');}
   }
   function go(page){
     // La pagina Orari è un unico dashboard: niente sottopagine ridondanti.
@@ -442,10 +446,13 @@
   function renderScheduleQuickSearch(){
     if(!['classes','rooms','teachers'].includes(state.schedule))return;
     const kind=state.schedule,q=scheduleSearch.value.trim();
-    const hits=scheduleEntries().map(id=>({id,rank:scheduleSearchScore(kind,id,q)})).filter(v=>v.rank>=0).sort((a,b)=>b.rank-a.rank||scheduleSort(kind,a.id,b.id));
+    const order=scheduleEntries();
+    const positions=new Map(order.map((id,i)=>[id,i]));
+    const hits=order.map(id=>({id,rank:scheduleSearchScore(kind,id,q)})).filter(v=>v.rank>=0)
+      .sort((a,b)=>b.rank-a.rank || (positions.get(a.id)-positions.get(b.id)));
     const shown=hits.slice(0,9);
     scheduleQuickResults.hidden=!q||!shown.length;
-    scheduleQuickResults.innerHTML=q?shown.map(v=>`<button type="button" role="option" data-schedule-search-id="${escapeHtml(v.id)}"><span aria-hidden="true" class="icon-inline">${iconFor(kind)}</span>${escapeHtml(label(kind,v.id))}${kind==='teachers'?` <small>${escapeHtml(teachingSubject(v.id))}</small>`:''}</button>`).join(''):'';
+    scheduleQuickResults.innerHTML=q?shown.map(v=>`<button type="button" role="option" data-schedule-search-id="${escapeHtml(v.id)}"><span aria-hidden="true" class="icon-inline">${iconFor(kind)}</span>${escapeHtml(label(kind,v.id))}</button>`).join(''):'';
   }
   function setScheduleEntity(id){
     if(!DATA[state.schedule]?.[id])return;
@@ -678,6 +685,9 @@
     select.innerHTML=entries.map(id=>`<option value="${escapeHtml(id)}">${escapeHtml(label('teachers',id))}</option>`).join('');
     select.value=state.selection;
     if(scheduleSearch.value.trim())renderScheduleQuickSearch();
+    // Aggiorna anche la selezione secondo la nuova ordinazione, senza lasciare
+    // la schermata sul primo docente dell'ordinamento precedente.
+    if(!scheduleSearch.value.trim() && !entries.includes(state.selection))state.selection=entries[0];
   });
 
   $('#menuButton').addEventListener('click',()=>$('#sidebar').classList.contains('is-open')?closeMenu():openMenu());
@@ -712,6 +722,10 @@
     if (!e.target.closest('#searchForm, #searchSuggestions')) $('#searchSuggestions').hidden=true;
     if(!e.target.closest('#scheduleQuickSearch,#scheduleQuickResults'))scheduleQuickResults.hidden=true;
     const btn=e.target.closest('button'); if(!btn)return;
+    if(btn.id==='scheduleSubnavToggle'){
+      setScheduleSubnavExpanded($('#scheduleSubnav').hidden);
+      return;
+    }
     if(btn.id === 'clearHistoryButton') { clearHistory(); return; }
     if(btn.id === 'clearFavoritesButton'){clearFavorites();return;}
     if(btn.hasAttribute('data-history-remove')){removeHistory(Number(btn.dataset.historyRemove));return;}

@@ -1262,3 +1262,50 @@ html[data-theme="dark"] .navigator-map .nav-point-arrival{fill:#153640;stroke:#9
   #sidebar .sidebar-brand-logo{width:39px;height:39px;flex-basis:39px}
   #sidebar .sidebar-brand-title{font-size:19px}
 }
+
+/* V36: controllo esplicito del sottomenu Orari su smartphone. */
+.side-orari-heading{display:flex;align-items:stretch;min-width:0}
+.side-orari-heading>.side-link{flex:1;min-width:0}
+.schedule-subnav-toggle{display:none;align-items:center;justify-content:center;flex:0 0 43px;
+  color:inherit;border:0;background:transparent;border-radius:10px;cursor:pointer}
+.schedule-subnav-toggle svg{transition:transform .18s ease}
+.schedule-subnav-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.schedule-subnav-toggle:focus-visible{outline:2px solid #9DE8D7;outline-offset:-2px}
+@media(max-width:680px){.schedule-subnav-toggle{display:flex}}
+/* Forte evidenziazione dell'ora corrente dei docenti anche in dark mode. */
+html[data-theme="dark"] .result-card.type-teacher .hour-row.is-selected{
+ background:#207F84!important;border:2px solid #A7F5E6!important;
+ box-shadow:0 0 0 2px #9DE8D747,0 5px 18px #0005!important;
+ color:#FFF!important;
+}
+html[data-theme="dark"] .result-card.type-teacher .hour-row.is-selected .hour-number{
+ background:#E4F6F2!important;color:#071F29!important;
+}
+html[data-theme="dark"] .result-card.type-teacher .hour-row.is-selected .hour-data strong,
+html[data-theme="dark"] .result-card.type-teacher .hour-row.is-selected .hour-location{
+ color:#FFF!important;
+}
+/* Legenda punto pieno e vuoto uguali ai marcatori SVG, in chiaro e in scuro. */
+.nav-route-legend .nav-legend-dot{border-width:2px}
+.nav-route-legend .nav-legend-departure{background:#176B72;border-color:#E4F6F2;box-shadow:0 0 0 1px #176B72}
+.nav-route-legend .nav-legend-arrival{background:#FFF;border-color:#176B72}
+html[data-theme="dark"] .nav-route-legend .nav-legend-departure{background:#9DE8D7;border-color:#19404A;box-shadow:0 0 0 1px #9DE8D7}
+html[data-theme="dark"] .nav-route-legend .nav-legend-arrival{background:#153640;border-color:#9DE8D7}
+
+/* AulaFinder V40 - colori pulsanti header */
+
+html[data-theme="light"] #themeToggle,
+html[data-theme="light"] #menuButton,
+html[data-theme="light"] #mobileHomeButton {
+  background: #F5FCFA !important;
+  color: #071F29 !important;
+  border-color: #CBE4E0 !important;
+}
+
+html[data-theme="dark"] #themeToggle,
+html[data-theme="dark"] #menuButton,
+html[data-theme="dark"] #mobileHomeButton {
+  background: #19404A !important;
+  color: #E4F6F2 !important;
+  border-color: #467680 !important;
+}

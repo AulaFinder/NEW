@@ -40,7 +40,7 @@
     if(!original)return null;
     const svg=svgNode('svg',{viewBox:original.getAttribute('viewBox'),'aria-hidden':'true',focusable:'false'});
     svg.style.cssText='position:fixed;left:-20000px;top:0;width:600px;height:600px;opacity:0;pointer-events:none;z-index:-999';
-    const corridor=original.querySelector(':scope > path')?.cloneNode(true);
+    const corridor=original.querySelector(':scope > g.plan-rotated > path, :scope > path')?.cloneNode(true);
     if(corridor){svg.appendChild(corridor);geometryCorridors.set(floor,corridor);}
     document.body.appendChild(svg);
     geometrySurfaces.set(floor,svg);
@@ -155,26 +155,34 @@
         e.preventDefault();pickSuggestion(input,buttons[Math.max(selectedSuggestion,0)].dataset.navChoice);
       }
     });
-    // Il tocco sullo scrollbar o lo spostamento del cursore non deve chiudere la lista.
-    let pointerInside=false;
+    // Selezione con un SOLO tocco/clic, anche se il campo perde il focus.
+    // Manteniamo lo scroll touch della lista: un trascinamento non seleziona l'aula.
+    let press=null,ignoreClick=false;
     list.addEventListener('pointerdown',e=>{
-      // Il mouse seleziona prima del blur; la scrollbar mantiene il drag nativo.
-      pointerInside=true;
       const btn=e.target.closest('[data-nav-choice]');
+      press=btn?{id:btn.dataset.navChoice,x:e.clientX,y:e.clientY,type:e.pointerType}:null;
       if(btn && e.pointerType==='mouse'){
-        e.preventDefault();
+        e.preventDefault();ignoreClick=true;
         pickSuggestion(input,btn.dataset.navChoice);
       }
     });
+    list.addEventListener('pointerup',e=>{
+      if(!press)return;
+      const candidate=press;press=null;
+      if(candidate.type==='mouse')return;
+      if(Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)>10)return;
+      ignoreClick=true;
+      pickSuggestion(input,candidate.id);
+    });
+    list.addEventListener('pointercancel',()=>{press=null;});
     list.addEventListener('click',e=>{
+      if(ignoreClick){ignoreClick=false;return;}
       const btn=e.target.closest('[data-nav-choice]');
       if(btn)pickSuggestion(input,btn.dataset.navChoice);
-      pointerInside=false;
     });
-    list.addEventListener('pointerup',()=>{pointerInside=false;});
-    input.addEventListener('blur',()=>{requestAnimationFrame(()=>{
-      if(!pointerInside && !list.contains(document.activeElement))hideSuggestions(input);
-    });});
+    input.addEventListener('blur',()=>{
+      window.setTimeout(()=>{if(!press && !list.contains(document.activeElement))hideSuggestions(input);},170);
+    });
   });
   document.addEventListener('pointerdown',e=>{
     fieldChoices.forEach((list,input)=>{if(!input.closest('.navigator-field').contains(e.target))hideSuggestions(input);});
@@ -269,23 +277,30 @@
   }
   function actualHall(floor,start,end){
     const grid=walkingGrid(floor);if(!grid)return undefined;
-    const {nx,ny,valid,coord,clearance}=grid;
+    const {nx,valid,coord,clearance}=grid;
+    const validCells=[];
+    for(let i=0;i<valid.length;i++)if(valid[i])validCells.push(i);
     function nearest(loc){let best=-1,dist=Infinity;
-      for(let i=0;i<valid.length;i++)if(valid[i]){const p=coord(i),d=(p.x-loc.cx)**2+(p.y-loc.cy)**2;
+      for(const i of validCells){const p=coord(i),d=(p.x-loc.cx)**2+(p.y-loc.cy)**2;
         if(d<dist){dist=d;best=i;}}
       return best;
     }
     const source=nearest(start),target=nearest(end);
     if(source<0||target<0)return null;
-    // Dijkstra con costo maggiore accanto a muri e porte: linea piu centrale.
-    const prev=new Int32Array(valid.length);prev.fill(-1);
-    const cost=new Float64Array(valid.length);cost.fill(Infinity);
-    const visited=new Uint8Array(valid.length);
-    const heap=[];
+    if(source===target)return [coord(source)];
+    // Four direction states per cell make the number of bends part of the
+    // optimization. Every segment remains horizontal or vertical and inside
+    // the hallway polygons, with no diagonal shortcuts through classrooms.
+    const n=valid.length*4;
+    const prev=new Int32Array(n);prev.fill(-1);
+    const costs=new Float64Array(n);costs.fill(Infinity);
+    const visited=new Uint8Array(n),heap=[];
     const tx=target%nx,ty=(target-tx)/nx;
-    const push=(i,g)=>{
-      const x=i%nx,y=(i-x)/nx,h=Math.abs(x-tx)+Math.abs(y-ty);
-      const item=[i,g,g+h];let k=heap.length;heap.push(item);
+    const directions=[-1,1,-nx,nx];
+    const push=(s,g)=>{
+      const cell=s>>2,x=cell%nx,y=(cell-x)/nx;
+      const f=g+Math.abs(x-tx)+Math.abs(y-ty);
+      const item=[s,g,f];let k=heap.length;heap.push(item);
       while(k>0){const p=(k-1)>>1;if(heap[p][2]<=item[2])break;heap[k]=heap[p];k=p;}heap[k]=item;
     };
     const pop=()=>{
@@ -295,23 +310,31 @@
         if(heap[c][2]>=last[2])break;heap[k]=heap[c];k=c;
       }heap[k]=last;}return top;
     };
-    cost[source]=0;push(source,0);
+    for(let d=0;d<4;d++){const state=(source<<2)|d;costs[state]=0;push(state,0);}
+    let final=-1;
     while(heap.length){
-      const [u,d]=pop();if(visited[u]||d>cost[u]+1e-7)continue;
-      visited[u]=1;if(u===target)break;
-      const x=u%nx,y=(u-x)/nx;
-      const near=[x>0?u-1:-1,x<nx-1?u+1:-1,y>0?u-nx:-1,y<ny-1?u+nx:-1];
-      for(const v of near){if(v<0||!valid[v]||visited[v])continue;
-        const wallDistance=Math.max(0.25,clearance[v]);
-        // Le prime/ultime celle possono essere vicino alla porta; dentro il
-        // corridoio preferiamo 2-4 celle di distanza dai bordi quando possibile.
-        const penalty=4.7/(wallDistance+0.8);
-        const candidate=d+1+penalty;
-        if(candidate<cost[v]){cost[v]=candidate;prev[v]=u;push(v,candidate);}
+      const [u,g]=pop();if(visited[u]||g>costs[u]+1e-7)continue;
+      visited[u]=1;
+      const cell=u>>2,oldDir=u&3;
+      if(cell===target){final=u;break;}
+      const x=cell%nx;
+      for(let d=0;d<4;d++){
+        if(d===0&&x===0 || d===1&&x===nx-1)continue;
+        const next=cell+directions[d];
+        if(next<0||next>=valid.length||!valid[next])continue;
+        // A decisive penalty for bends avoids the staircase/zigzag effect.
+        // Near doors, a short segment close to a wall is still allowed.
+        const turn=oldDir===d?0:7;
+        const clearancePenalty=3.0/(clearance[next]+1.0);
+        const v=(next<<2)|d;
+        const candidate=g+1+turn+clearancePenalty;
+        if(candidate+1e-8<costs[v]){costs[v]=candidate;prev[v]=u;push(v,candidate);}
       }
     }
-    if(!visited[target])return null;
-    const cells=[];for(let u=target;u>=0;u=prev[u]){cells.push(u);if(u===source)break;}
+    if(final<0)return null;
+    const cells=[];for(let u=final;u>=0;u=prev[u]){
+      cells.push(u>>2);if((u>>2)===source)break;
+    }
     cells.reverse();
     const points=cells.map(coord),compressed=[];
     for(let i=0;i<points.length;i++){
@@ -320,7 +343,6 @@
       }
       compressed.push(points[i]);
     }
-    // Il tracciato segue il corridoio privilegiandone il centro; le estremità si accostano alle porte.
     return compressed.filter((p,i)=>i===0||!close(p,compressed[i-1]));
   }
   function shortestHall(floor,start,end){
@@ -360,7 +382,7 @@
       }
       const a=unique[0],b=unique.at(-1);
       const firstRoom=map.querySelector('g.room');
-      if(firstRoom)map.insertBefore(layer,firstRoom);else map.appendChild(layer);
+      if(firstRoom)firstRoom.parentNode.insertBefore(layer,firstRoom);else (map.querySelector('.plan-rotated')||map).appendChild(layer);
 
       // V33: tutti i punti sono in un livello SUPERIORE ai disegni delle aule.
       // PIENO = partenza / punto da cui proseguire verso le scale.
@@ -382,7 +404,7 @@
           overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:6.5,class:'nav-point-halo'}));
           overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:3.8,class:kind==='departure'?'nav-point-departure':'nav-point-arrival'}));
         });
-        map.appendChild(overlay);
+        (map.querySelector('.plan-rotated')||map).appendChild(overlay);
       }
     }
     where.appendChild(map);
@@ -534,8 +556,8 @@
       <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
       <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
       <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
-      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-departure" aria-hidden="true"></span><span>Partenza / verso le scale</span></div>
-      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-arrival" aria-hidden="true"></span><span>Arrivo / dalle scale</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-departure" aria-hidden="true"></span><span>Partenza / ingresso alle scale</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-arrival" aria-hidden="true"></span><span>Destinazione / uscita dalle scale</span></div>
       <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso</span></div>
       </aside></div><p id="navStepInstruction" class="navigator-route-instruction"></p></section>`;
     renderRouteStage(0);

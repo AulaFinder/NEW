@@ -30,6 +30,7 @@
   <script src="data.js" defer></script>
   <script src="config-docenti.js" defer></script>
   <script src="script.js" defer></script>
+  <script src="map-orientation.js" defer></script>
   <script src="piantina.js" defer></script>
   <script src="navigator.js" defer></script>
   <meta name="color-scheme" content="light dark">
@@ -129,7 +130,7 @@
           <button type="button" class="side-link" data-page="tutorial"><svg viewBox="0 0 24 24" aria-hidden="true" class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4V8Z"/></svg> Tutorial</button>
           <button type="button" class="side-link" data-page="piantina"><svg viewBox="0 0 24 24" aria-hidden="true" class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15m6-12v15"/></svg> Piantina</button>
           <button type="button" class="side-link" data-page="navigator"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 18 6-12 6 12 6-12"/><circle cx="3" cy="18" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="6" r="1.7" fill="currentColor" stroke="none"/><path d="M9 6l6 12" stroke-dasharray="2.2 3.2"/></svg> Navigatore</button>
-          <button type="button" class="side-link" data-page="orari" aria-controls="scheduleSubnav" aria-expanded="false"><span class="nav-clock" data-icon="clock" aria-hidden="true"></span> Orari</button>
+          <div class="side-orari-heading"><button type="button" class="side-link" data-page="orari" aria-controls="scheduleSubnav" aria-expanded="false"><span class="nav-clock" data-icon="clock" aria-hidden="true"></span> Orari</button><button id="scheduleSubnavToggle" class="schedule-subnav-toggle" type="button" aria-controls="scheduleSubnav" aria-expanded="false" aria-label="Mostra i tipi di orario"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
           <div id="scheduleSubnav" class="schedule-subnav" hidden>
             <button type="button" data-schedule="classes"><span class="menu-entity-icon" data-icon="classes" aria-hidden="true"></span>Classi</button>
             <button type="button" data-schedule="rooms"><span class="menu-entity-icon" data-icon="rooms" aria-hidden="true"></span>Aule</button>
