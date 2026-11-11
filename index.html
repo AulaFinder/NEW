@@ -27,6 +27,24 @@
 </script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="piantina.css">
+  <!-- V42: correzioni puntuali dell'header e del menu. Regole mantenute
+       qui per prevalere anche quando la PWA conserva un vecchio style.css. -->
+  <style id="aulafinder-v42-header-fix">
+    /* Stesso bianco (#FFFFFF) dei selettori Giorno e Ora, senza muovere il tasto PC. */
+    html:not([data-theme="dark"]) #themeToggle {
+      background: #FFFFFF !important;
+      border-color: #C2F5E7 !important;
+      color: #08171C !important;
+    }
+    /* La freccia del sottomenù Orari esiste solo nella navigazione mobile. */
+    @media (min-width:681px) {
+      #scheduleSubnavToggle { display: none !important; }
+    }
+    /* Allineamento verticale preciso con il pulsante Home: +1 px solo dove necessario. */
+    @media (min-width:356px) and (max-width:680px) {
+      .header-controls #themeToggle { top:14px !important; }
+    }
+  </style>
   <script src="data.js" defer></script>
   <script src="config-docenti.js" defer></script>
   <script src="script.js" defer></script>
