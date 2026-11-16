@@ -1755,3 +1755,57 @@ html[data-theme="dark"] .tutorial-faq details p{color:#c7e4dc}
   .tutorial-route-draw{stroke-dasharray:none;stroke-dashoffset:0}
   .page:not([hidden]),.tutorial-panel,.finder-panel:not([hidden]){animation:none!important}
 }
+
+
+/* AulaFinder V48 - interventi mirati */
+.search-form:focus-within{outline:none!important;box-shadow:none!important;border-color:var(--mint,#9DE8D7)!important;}
+#searchInput:focus,#searchInput:focus-visible{outline:none!important;box-shadow:none!important;}
+#piantinaPage .room-actions-inline{position:relative!important;top:auto!important;left:auto!important;z-index:4;width:calc(100% - 20px);max-width:none;min-width:0;margin:10px;box-sizing:border-box;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 12px;box-shadow:0 5px 16px rgba(7,31,41,.13);}
+#piantinaPage .room-actions-inline .room-actions-title{grid-column:1/-1;margin:0;font-size:14px;}
+#piantinaPage .room-actions-inline button{text-align:center;min-width:0;}
+#piantinaPage .room-actions-inline button:only-of-type{grid-column:1/-1;}
+@media(max-width:360px){#piantinaPage .room-actions-inline{grid-template-columns:1fr}#piantinaPage .room-actions-inline button{grid-column:1/-1}}
+/* Finder launch: user provided icon */
+.finder-launch{touch-action:none;user-select:none;-webkit-user-select:none;max-width:calc(100vw - 12px);}
+.finder-launch-icon{width:30px;height:30px;flex:0 0 30px;display:block;border-radius:50%;object-fit:cover;pointer-events:none;}
+.finder-launch.is-dragging{cursor:grabbing!important;transition:none!important;transform:none!important;}
+.finder-orb-video{display:block;flex:0 0 53px;width:53px;height:53px;border-radius:50%;object-fit:cover;background:#0A252F;border:1.5px solid #9DE8D7;box-shadow:0 0 10px #9de8d755;}
+/* More distinct message ownership in light and dark themes */
+.finder-message-assistant{background:#DCF9EE!important;color:#073B3A!important;border:1.5px solid #49B7A5!important;box-shadow:0 1px 4px rgba(7,31,41,.07)}
+.finder-message-user{background:#123E69!important;color:#FFF!important;border:1.5px solid #398EC4!important;box-shadow:0 2px 6px rgba(7,31,41,.12)}
+html[data-theme="dark"] .finder-message-assistant{background:#2A6762!important;color:#FFF!important;border:1.5px solid #82F1D9!important}
+html[data-theme="dark"] .finder-message-user{background:#164A88!important;color:#FFF!important;border:1.5px solid #7DCBFF!important}
+/* Route progress column: yellow animated gradient, synchronized with step index */
+.nav-stepper{position:relative;padding-left:27px!important;}
+.nav-progress-rail{position:absolute;left:10px;top:15px;bottom:15px;width:7px;border-radius:999px;background:rgba(149,164,144,.25);overflow:hidden;border:1px solid rgba(25,64,74,.18);}
+.nav-progress-fill{position:absolute;left:0;bottom:0;width:100%;height:0;transition:height .46s ease;background:linear-gradient(180deg,#FFF3A5 0%,#FFC21E 30%,#FFE96C 55%,#F7B621 70%,#FFF3A5 100%);background-size:100% 220%;box-shadow:0 0 9px #f6ca2699;animation:af48-progress-flow 3s linear infinite;}
+@keyframes af48-progress-flow{to{background-position:0 220%}}
+html[data-theme="dark"] .nav-progress-rail{background:#274A4F;border-color:#5B6660;}
+/* Shared heading icons for all main sections */
+.page h1:has(>.section-title-icon){display:flex;align-items:center;gap:12px;}
+.section-title-icon{display:inline-flex;align-items:center;justify-content:center;color:#138E96;width:31px;height:31px;flex:none;}
+.section-title-icon svg{width:100%;height:100%;stroke-linecap:round;stroke-linejoin:round;}
+html[data-theme="dark"] .section-title-icon{color:#9DE8D7}
+@media(max-width:680px){.section-title-icon{width:26px;height:26px}.page h1:has(>.section-title-icon){gap:9px}}
+/* Tutorial screenshots are genuine site captures, not synthetic mockups */
+.tutorial-page>.page-topline{margin-bottom:10px}
+.tutorial-lead{max-width:760px;margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55}
+.tutorial-lead p{margin:0}
+.tutorial-real-panel{align-items:start!important}
+.tutorial-real-preview{min-width:0;width:100%;margin:0;border:1px solid #A5CEC9;border-radius:15px;overflow:hidden;background:#E7F4F0;box-shadow:0 8px 22px #071F2914}
+.tutorial-real-preview img{width:100%;height:290px;display:block;object-fit:contain;object-position:center top;background:#EEF8F5}
+.tutorial-real-preview figcaption{padding:9px 12px;color:#356769;font-size:11px;line-height:1.35}
+.tutorial-return{position:fixed;z-index:50;bottom:82px;right:17px;background:#19404A;color:#fff;border:1.5px solid #9DE8D7;box-shadow:0 7px 22px #071F2955;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;}
+.tutorial-return[hidden]{display:none!important}.tutorial-return:hover{background:#267780}
+html[data-theme="dark"] .tutorial-real-preview{background:#11333B;border-color:#4B948A}
+html[data-theme="dark"] .tutorial-real-preview img{background:#122D36}
+html[data-theme="dark"] .tutorial-real-preview figcaption{color:#C5E8E0}
+@media(max-width:680px){.tutorial-real-preview img{height:240px}.tutorial-return{right:10px;bottom:77px;font-size:12px;padding:10px 13px}}
+@media(prefers-reduced-motion:reduce){.nav-progress-fill{animation:none!important;transition:none!important}}
+
+/* Seven chapters on desktop, three columns on compact viewports. */
+@media(min-width:951px){.tutorial-steps{grid-template-columns:repeat(7,minmax(0,1fr))}}
+
+/* Keep Finder's default floating button from covering tutorial navigation. */
+@media(min-width:681px){#tutorialPage .tutorial-nav-bottom{padding-right:130px}}
+@media(max-width:680px){#tutorialPage .tutorial-nav-bottom{margin-bottom:64px}}

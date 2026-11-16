@@ -582,6 +582,8 @@
     const i=stageState.index,r=stageState.stages[i];
     const count=stageState.stages.length;
     $('#navCurrentStep').textContent=`${i+1} / ${count}`;
+    const fill=$('#navProgressFill');if(fill)fill.style.height=`${((i+1)/count)*100}%`;
+    const rail=$('#navProgressRail');if(rail)rail.setAttribute('aria-valuenow',String(i+1));
     $('#navStepPrev').disabled=i===0;
     $('#navStepNext').disabled=i===count-1;
     const role=count===1?'Percorso':i===0?'Partenza':i===count-1?'Arrivo':'Cambio piano';
@@ -614,13 +616,13 @@
     notice(`Percorso trovato: ${result.a.id} → ${result.b.id} · ${result.stages.length} ${result.stages.length===1?'piano':'piani'}.`);
     const target=$('#navRouteResult');target.hidden=false;
     target.innerHTML=`<div class="navigator-summary"><p>${safe(result.a.id)} → ${safe(result.b.id)}<small>${safe(labels[result.a.floor])} → ${safe(labels[result.b.floor])}</small></p><span class="nav-mode-tag">${mode==='lift'?'Ascensore':'Scale'}</span></div>
-      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
+      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div id="navProgressRail" class="nav-progress-rail" role="progressbar" aria-label="Avanzamento del percorso" aria-valuemin="1" aria-valuemax="${result.stages.length}" aria-valuenow="1"><span id="navProgressFill" class="nav-progress-fill"></span></div><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
       <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
       <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
       <div class="nav-route-legend-item"><span data-nav-legend="departure" aria-hidden="true"></span><span>Partenza</span></div>
       <div class="nav-route-legend-item"><span data-nav-legend="stairs" aria-hidden="true"></span><span>Scale / ascensore (entrata e uscita)</span></div>
       <div class="nav-route-legend-item"><span data-nav-legend="destination" aria-hidden="true"></span><span>Arrivo all’aula</span></div>
-      <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso giallo</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso</span></div>
       </aside></div><p id="navStepInstruction" class="navigator-route-instruction"></p></section>`;
     insertLegendSymbols();
     renderRouteStage(0);

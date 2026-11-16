@@ -9,7 +9,7 @@ var actionRoom='';
 function cleanRoomName(t){return String(t||'').split('·')[0].trim();}
 function canonicalRoom(t){return cleanRoomName(t).replace(/^Informatica\s+/i,'').replace(/[.\s]/g,'').toUpperCase();}
 function hasRoomSchedule(t){return Object.keys(window.AULAFINDER_DATA?.rooms||{}).some(function(k){return canonicalRoom(k)===canonicalRoom(t)});}
-function isNavigableRoom(t){return /^(?:[STP]\.\d+|[123]\.\d+|Palestra|Ingresso)$/i.test(cleanRoomName(t));}
+function isNavigableRoom(t){return /^(?:[STP]\.\d+|[123]\.\d+|Palestra|Ingresso|Archivio|Caldaie)$/i.test(cleanRoomName(t));}
 function hideActions(){if(actionsPanel){actionsPanel.remove();actionsPanel=null;}actionRoom='';}
 function showActions(g){
   hideActions();
@@ -21,6 +21,15 @@ function showActions(g){
   var go=document.createElement('button');go.type='button';go.dataset.mapAction='navigate';go.textContent='Portami qui';box.appendChild(go);
   if(hasRoomSchedule(code)){
     var schedule=document.createElement('button');schedule.type='button';schedule.dataset.mapAction='schedule';schedule.textContent='Vedi orario';box.appendChild(schedule);
+  }
+  var mobile=window.matchMedia('(max-width:680px)').matches;
+  if(mobile){
+    var card=g.closest('.plan-card');
+    card.querySelector('.plan-banner').insertAdjacentElement('afterend',box);
+    box.classList.add('room-actions-inline');
+    actionsPanel=box;actionRoom=code;
+    requestAnimationFrame(function(){focusRoom(g);});
+    return;
   }
   holder.appendChild(box);actionsPanel=box;actionRoom=code;
   var rect=g.getBoundingClientRect(),h=holder.getBoundingClientRect();
@@ -68,6 +77,7 @@ function pick(g){
   hideTip();
   if(cur===g && actionsPanel){clear();return;}
   clear();cur=g;mark(g);showActions(g);
+  if(!window.matchMedia('(max-width:680px)').matches) requestAnimationFrame(function(){focusRoom(g);});
 }
 function mark(g){
   var cx=+g.dataset.cx,cy=+g.dataset.cy,s=+g.dataset.s,c=g.cloneNode(true);

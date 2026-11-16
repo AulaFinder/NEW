@@ -2,7 +2,7 @@
    Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
    A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v47-tutorial-interattivo-logo-centro-aula';
+const CACHE_NAME = 'aulafinder-pwa-v48-tutorial-interattivo-logo-centro-aula';
 const APP_SHELL = [
   "./index.html",
   "./style.css",
@@ -18,6 +18,20 @@ const APP_SHELL = [
   "./loading.js",
   "./finder.js",
   "./tutorial.js",
+  "./finder-drag.js",
+  "./selection-focus.js",
+  "./assets/finder-icona.png",
+  "./assets/finder-orb.webm",
+  "./assets/finder-orb.mp4",
+  "./assets/finder-orb-poster.png",
+  "./assets/tutorial-ricerca.webp",
+  "./assets/tutorial-orari.webp",
+  "./assets/tutorial-disponibilita.webp",
+  "./assets/tutorial-navigatore.webp",
+  "./assets/tutorial-finder.webp",
+  "./assets/tutorial-piantina.webp",
+  "./assets/tutorial-footer.webp",
+
   "./sitemap.xml",
   "./assets/aulafinder-caricamento.jpg",
   "./manifest.webmanifest",
