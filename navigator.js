@@ -133,11 +133,19 @@
     list.innerHTML=hits.length?hits.map(({loc},i)=>`<button type="button" role="option" data-nav-choice="${loc.id}" aria-selected="false" data-idx="${i}"><strong>${loc.id}</strong>${loc.description?`<span>${loc.description}</span>`:''}<small>${labels[loc.floor]}</small></button>`).join(''):'<p class="nav-no-matches">Nessun ambiente trovato.</p>';
     list.hidden=false;input.setAttribute('aria-expanded','true');selectedSuggestion=-1;
   }
+  // Torna al modulo Da/A dopo una selezione anche da una piantina molto in basso.
+  function scrollToNavigatorTop(){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const y=window.scrollY+root.getBoundingClientRect().top-8;
+      window.scrollTo({top:Math.max(0,y),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    }));
+  }
   function pickSuggestion(input,id){
     const loc=lookup(id);if(!loc)return;
     input.value=loc.id;
     hideSuggestions(input);
     invalidateRoute();
+    scrollToNavigatorTop();
   }
   fieldChoices.forEach((list,input)=>{
     input.addEventListener('focus',()=>showSuggestions(input));
@@ -354,6 +362,36 @@
 
   }
 
+  // Un'unica funzione SVG per i marcatori sulla mappa e quelli della legenda:
+  // nessuna discrepanza tra esempio e percorso effettivo.
+  function markerCircles(holder,cx,cy,kind){
+    if(kind==='departure'){
+      holder.append(svgNode('circle',{cx,cy,r:6.4,class:'nav-symbol-departure-ring'}));
+      holder.append(svgNode('circle',{cx,cy,r:2.25,class:'nav-symbol-departure-core'}));
+    }else if(kind==='stairs'){
+      holder.append(svgNode('circle',{cx,cy,r:4.8,class:'nav-symbol-stairs'}));
+    }
+  }
+  function legendCircle(kind){
+    const svg=svgNode('svg',{class:'nav-legend-symbol',viewBox:'-9 -9 18 18','aria-hidden':'true'});
+    markerCircles(svg,0,0,kind);
+    return svg;
+  }
+  const arrivalPath='M12 2a8 8 0 0 0-8 8c0 5.3 8 12 8 12s8-6.7 8-12a8 8 0 0 0-8-8Zm0 11.1a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2Z';
+  function legendDestination(){
+    const span=document.createElement('span');span.className='nav-legend-destination';
+    const svg=svgNode('svg',{viewBox:'0 0 24 24','aria-hidden':'true'});
+    const group=svgNode('g',{class:'nav-point-destination'});
+    group.append(svgNode('path',{d:arrivalPath,'fill-rule':'evenodd'}));
+    svg.append(group);span.append(svg);return span;
+  }
+  function insertLegendSymbols(){
+    const host=$('#navRouteResult .nav-route-legend');if(!host)return;
+    [['departure',legendCircle('departure')],['stairs',legendCircle('stairs')],['destination',legendDestination()]].forEach(([key,el])=>{
+      const target=host.querySelector('[data-nav-legend="'+key+'"]');
+      if(target)target.replaceChildren(el);
+    });
+  }
   function cloneMap(floor,where,{routePoints=[],start=null,end=null,transfer=false,entryPoint=null,exitPoint=null}={}){
     where.innerHTML='';
     const original=document.querySelector('#'+floor+' svg.plan');
@@ -373,8 +411,18 @@
       // Draw the route BEHIND the room text and icons (the original g.room are appended afterwards).
       const unique=routePoints.filter((p,i)=>i===0||!close(p,routePoints[i-1]));
       const d=unique.length?`M ${fmt(unique[0].x)} ${fmt(unique[0].y)} `+unique.slice(1).map(p=>`L ${fmt(p.x)} ${fmt(p.y)}`).join(' '):'';
-      const defs=svgNode('defs');const grad=svgNode('linearGradient',{id:'aula-nav-route-gradient',x1:'0%',y1:'0%',x2:'100%',y2:'60%'});
-      [['0%','#19404A'],['35%','#26A7A9'],['72%','#9DE8D7'],['100%','#26A7A9']].forEach(([offset,color])=>grad.append(svgNode('stop',{offset,'stop-color':color})));
+      // Coordinate reali per il gradiente: objectBoundingBox ha altezza zero
+      // nei tratti perfettamente orizzontali e alcuni browser disegnano solo il contorno.
+      const gradientFrom=unique[0]||{x:0,y:0};
+      const gradientTo=unique.at(-1)||{x:1,y:1};
+      const noSpan=distance(gradientFrom,gradientTo)<0.01;
+      const defs=svgNode('defs');
+      const grad=svgNode('linearGradient',{
+        id:'aula-nav-route-gradient',gradientUnits:'userSpaceOnUse',
+        x1:fmt(gradientFrom.x),y1:fmt(gradientFrom.y),
+        x2:fmt(gradientTo.x+(noSpan?1:0)),y2:fmt(gradientTo.y+(noSpan?1:0))
+      });
+      [['0%','#FFF2A8'],['36%','#FFE348'],['70%','#FFC324'],['100%','#FFE37D']].forEach(([offset,color])=>grad.append(svgNode('stop',{offset,'stop-color':color})));
       defs.append(grad);layer.append(defs);
       if(unique.length>1){
         layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
@@ -384,15 +432,22 @@
       const firstRoom=map.querySelector('g.room');
       if(firstRoom)firstRoom.parentNode.insertBefore(layer,firstRoom);else (map.querySelector('.plan-rotated')||map).appendChild(layer);
 
-      // V33: tutti i punti sono in un livello SUPERIORE ai disegni delle aule.
-      // PIENO = partenza / punto da cui proseguire verso le scale.
-      // VUOTO = arrivo / pianerottolo in cui si arriva dalle scale.
-      // Usiamo le stesse forme in tutti i piani, anche quando si SCENDE.
+      // V46: la legenda corrisponde esattamente ai simboli presenti sulla mappa.
+      // Partenza: doppio cerchio; scale ENTRATA e USCITA: unico cerchio verde acqua;
+      // arrivo: SOLO il pin delle aule, senza cerchio né sfondo.
       const markers=[];
       if(a&&start)markers.push({p:a,kind:'departure'});
-      if(entryPoint)markers.push({p:entryPoint,kind:'arrival'});
-      if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'departure'});
-      if(b&&end)markers.push({p:b,kind:'arrival'});
+      if(entryPoint)markers.push({p:entryPoint,kind:'stairs'});
+      if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'stairs'});
+      if(b&&end){
+        // V47: il percorso resta invariato sul corridoio. Il SOLO simbolo d'arrivo
+        // è centrato sul rettangolo dell'aula, non sull'ultimo punto della linea.
+        const box=end.rect;
+        const center=box&&Number.isFinite(box.x+box.w/2)&&Number.isFinite(box.y+box.h/2)
+          ? point(box.x+box.w/2,box.y+box.h/2)
+          : point(end.cx,end.cy);
+        markers.push({p:center,kind:'destination'});
+      }
       if(markers.length){
         const overlay=svgNode('g',{class:'nav-transfer-marker-layer nav-point-marker-layer','aria-hidden':'true'});
         const dedup=[];
@@ -401,8 +456,14 @@
           dedup.push(marker);
         }
         dedup.forEach(({p,kind})=>{
-          overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:6.5,class:'nav-point-halo'}));
-          overlay.append(svgNode('circle',{cx:p.x,cy:p.y,r:3.8,class:kind==='departure'?'nav-point-departure':'nav-point-arrival'}));
+          if(kind==='destination'){
+            // La mappa è già ruotata di 180°; contro-ruotiamo solo l'icona dell'arrivo.
+            const pin=svgNode('g',{class:'nav-point-destination',transform:`translate(${fmt(p.x)} ${fmt(p.y)}) rotate(180) scale(.75) translate(-12 -12)`});
+            pin.append(svgNode('path',{d:arrivalPath,'fill-rule':'evenodd'}));
+            overlay.append(pin);
+          }else{
+            markerCircles(overlay,p.x,p.y,kind);
+          }
         });
         (map.querySelector('.plan-rotated')||map).appendChild(overlay);
       }
@@ -556,10 +617,12 @@
       <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
       <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
       <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
-      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-departure" aria-hidden="true"></span><span>Partenza / ingresso alle scale</span></div>
-      <div class="nav-route-legend-item"><span class="nav-legend-dot nav-legend-arrival" aria-hidden="true"></span><span>Destinazione / uscita dalle scale</span></div>
-      <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso</span></div>
+      <div class="nav-route-legend-item"><span data-nav-legend="departure" aria-hidden="true"></span><span>Partenza</span></div>
+      <div class="nav-route-legend-item"><span data-nav-legend="stairs" aria-hidden="true"></span><span>Scale / ascensore (entrata e uscita)</span></div>
+      <div class="nav-route-legend-item"><span data-nav-legend="destination" aria-hidden="true"></span><span>Arrivo all’aula</span></div>
+      <div class="nav-route-legend-item"><span class="nav-legend-line" aria-hidden="true"></span><span>Percorso giallo</span></div>
       </aside></div><p id="navStepInstruction" class="navigator-route-instruction"></p></section>`;
+    insertLegendSymbols();
     renderRouteStage(0);
     if(scroll)target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
     return true;
@@ -586,6 +649,7 @@
         $('#navPicker').hidden=true;
         root.querySelectorAll('[data-nav-pick]').forEach(el=>el.setAttribute('aria-pressed','false'));
         invalidateRoute();notice(`${room.dataset.navId} selezionata. ${lookup(from.value)&&lookup(to.value)?'Premi Visualizza percorso.':'Completa l’altro campo e premi Visualizza percorso.'}`);
+        scrollToNavigatorTop();
       }
       if(e.target.closest('svg.plan'))e.stopPropagation();
     },true);

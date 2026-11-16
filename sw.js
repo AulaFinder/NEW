@@ -2,7 +2,7 @@
    Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
    A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v43-tutorial-no-admin';
+const CACHE_NAME = 'aulafinder-pwa-v47-tutorial-interattivo-logo-centro-aula';
 const APP_SHELL = [
   "./index.html",
   "./style.css",
@@ -16,6 +16,9 @@ const APP_SHELL = [
   "./footer.js",
   "./pwa.js",
   "./loading.js",
+  "./finder.js",
+  "./tutorial.js",
+  "./sitemap.xml",
   "./assets/aulafinder-caricamento.jpg",
   "./manifest.webmanifest",
   "./assets/logo-aulafinder.png",

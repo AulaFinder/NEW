@@ -71,9 +71,13 @@ function pick(g){
 }
 function mark(g){
   var cx=+g.dataset.cx,cy=+g.dataset.cy,s=+g.dataset.s,c=g.cloneNode(true);
-  function T(k){return 'translate('+cx+'px,'+cy+'px) scale('+k+') translate('+(-cx)+'px,'+(-cy)+'px)'}
-  c.classList.remove('room');c.classList.add('sel-clone');c.removeAttribute('tabindex');c.style.transform=T(1);
-  g.closest('svg').querySelector('.top').appendChild(c);c.getBoundingClientRect();c.style.transform=T(s);
+  c.classList.remove('room');c.classList.add('sel-clone');c.removeAttribute('tabindex');
+  // V45: la stanza originale ha gia' la contro-rotazione di 180°.
+  // L'evidenziazione deve scalare e conservare la stessa contro-rotazione,
+  // invece di sostituirla con una trasformazione CSS che rovescia il testo.
+  c.style.removeProperty('transform');
+  c.setAttribute('transform',`translate(${cx} ${cy}) scale(${s}) rotate(180) translate(${-cx} ${-cy})`);
+  g.closest('svg').querySelector('.top').appendChild(c);
   var t=(g.dataset.t||'').split('·')[0].trim();
   var code=/^(?:\d+\.\d+|[STP]\.\d+)$/i.test(t) ? t : '';
   g.closest('.plan-card').querySelector('.sel-chip').textContent=code || (t==='Ingresso'?'Ingresso':'');

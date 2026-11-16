@@ -32,7 +32,7 @@
   // Formato aule: sempre con il punto e lo zero davanti (T.02, P.04, S.01...).
   const renRoom = (r) => { const m=String(r).match(/^(Informatica\s+)?([PST])\.?(\d+)$/i); return m ? (m[1]||'')+m[2].toUpperCase()+'.'+m[3].padStart(2,'0') : r; };
   const canon = (s) => norm(renRoom(norm(s).replace(/^AULA\s+/,''))).replace(/[.\s]/g,'');
-  const state = {page:'home',schedule:'classes',selection:'',result:null,history:[],favorites:[],freeTeacherFilter:'',scheduleReturn:'orari'};
+  const state = {page:'home',schedule:'classes',selection:'',result:null,history:[],favorites:[],freeTeacherFilter:'',freeTeacherMode:'gaps',scheduleReturn:'orari'};
   const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
   const date = () => daySelect.value;
@@ -105,7 +105,7 @@
     list.scrollTop=previousScroll;
     home.hidden=state.favorites.length===0;
     $('#clearFavoritesButton').disabled=state.favorites.length===0;
-    home.innerHTML=state.favorites.length?`<strong>★ Preferiti</strong>`+state.favorites.slice(0,5).map((v,i)=>`<button type="button" data-fav-open="${i}">${escapeHtml(v.kind==='teachers'?teacherBase(v.id):v.id)}</button>`).join(''):'';
+    home.innerHTML=state.favorites.length?`<strong aria-label="Preferiti" title="Preferiti">★</strong>`+state.favorites.slice(0,5).map((v,i)=>`<button type="button" data-fav-open="${i}">${escapeHtml(v.kind==='teachers'?teacherBase(v.id):v.id)}</button>`).join(''):'';
   }
   function clearFavorites(){
     if(!state.favorites.length || !window.confirm('Vuoi cancellare tutti i preferiti?'))return;
@@ -590,7 +590,13 @@
   // Non certifica la presenza fisica del professore nella scuola.
   const teacherIds=Object.keys(DATA.teachers).sort(teacherCompare);
   function freeTeachersAt(day,index){
-    return teacherIds.filter(id=>!DATA.teachers[id].days?.[day]?.[index]);
+    return teacherIds.filter(id=>{
+      const slots=DATA.teachers[id].days?.[day]||[];
+      if(slots[index]) return false;
+      if(state.freeTeacherMode==='all') return true;
+      // Ora buca = il docente ha almeno una lezione PRIMA e una DOPO nello stesso giorno.
+      return slots.slice(0,index).some(Boolean)&&slots.slice(index+1).some(Boolean);
+    });
   }
   function teacherChips(ids){
     return ids.map(id=>`<button class="teacher-chip" type="button" data-free-teacher="${escapeHtml(id)}"><span>${escapeHtml(prof(id))}</span></button>`).join('');
@@ -603,28 +609,29 @@
     const box=$('#freeTeacherMatches');if(!box)return;
     const available=freeTeachersAt(date(),hour()-1),
       filtered=filteredTeacherList(available).sort((a,b)=>surnameOf(a).localeCompare(surnameOf(b),'it',{sensitivity:'base'}));
-    $('#freeTeacherCount').textContent=`${filtered.length} ${filtered.length===1?'professore':'professori'} ${state.freeTeacherFilter?'trovati':'senza lezione prevista'}`;
+    $('#freeTeacherCount').textContent=`${filtered.length} ${filtered.length===1?'professore':'professori'} ${state.freeTeacherFilter?'trovati':state.freeTeacherMode==='gaps'?'con ora buca':'senza lezione prevista'}`;
     box.innerHTML=teacherChips(filtered)||'<p>Nessun docente corrisponde alla ricerca in questa fascia.</p>';
   }
   function renderFreeTeachers(){
     const day=date(),index=hour()-1;
+    const allFree=state.freeTeacherMode==='all';
     const columns=DATA.days.map(d=>`<div class="weekly-day ${d===day?'is-today':''}">${escapeHtml(d.slice(0,3))}</div>`).join('');
     const rows=Array.from({length:6},(_,i)=>`<div class="weekly-number">${i+1}</div>`+
       DATA.days.map(d=>{const avail=freeTeachersAt(d,i),active=d===day&&index===i;
-        return `<button type="button" class="weekly-cell free-teacher-slot ${active?'is-current':''}" data-free-slot-day="${escapeHtml(d)}" data-free-slot-hour="${i+1}" aria-pressed="${active}" aria-label="${escapeHtml(d)}, ora ${i+1}: ${avail.length} professori senza lezione prevista"><strong>${avail.length} docenti</strong><small>${active?'Selezionata':'Visualizza elenco'}</small></button>`;
+        return `<button type="button" class="weekly-cell free-teacher-slot ${active?'is-current':''}" data-free-slot-day="${escapeHtml(d)}" data-free-slot-hour="${i+1}" aria-pressed="${active}" aria-label="${escapeHtml(d)}, ora ${i+1}: ${avail.length} ${allFree?'professori senza lezione prevista':'professori con ora buca'}"><strong>${avail.length} docenti</strong><small>${active?'Selezionata':'Visualizza elenco'}</small></button>`;
       }).join('')).join('');
     return `<article class="result-card type-free full-schedule orari-weekly-card">
       <div class="result-banner"><span class="banner-icon" aria-hidden="true">${coffeeIcon}</span><h2>Professori liberi</h2></div>
       <div class="result-body">
-        <section class="current-lesson free-teacher-current"><p class="eyebrow">${escapeHtml(day)} · ${hour()}ª ora</p>
+        <section class="current-lesson free-teacher-current"><div class="free-teacher-mode"><div><strong>Solo ore buche</strong><small>Lezione prima e dopo nella stessa giornata</small></div><label class="free-teacher-switch"><span>Mostra tutte le ore libere</span><input id="freeTeacherMode" type="checkbox" role="switch" ${allFree?'checked':''} aria-label="Mostra tutte le ore libere dei professori"><span class="free-teacher-track" aria-hidden="true"></span></label></div><p class="eyebrow">${escapeHtml(day)} · ${hour()}ª ora</p>
           <h3 id="freeTeacherCount"></h3>
           <label class="free-teacher-search-label" for="freeTeacherSearch">Cerca per docente, sigla o materia</label>
           <input id="freeTeacherSearch" class="free-teacher-search" type="search" autocomplete="off" placeholder="Es. BA AN, matematica, inglese" value="${escapeHtml(state.freeTeacherFilter)}" aria-controls="freeTeacherMatches"/>
           
           <div class="free-teacher-list" id="freeTeacherMatches" tabindex="0" role="region" aria-label="Elenco dei professori liberi"></div>
         </section>
-        <h3 class="weekly-title">Disponibilità settimanale</h3>
-        <div class="weekly-scroll" role="region" aria-label="Professori senza lezione per giorno e ora" tabindex="0"><div class="weekly-grid"><div class="weekly-corner">Ora</div>${columns}${rows}</div></div>
+        <h3 class="weekly-title">${allFree?'Tutte le ore libere':'Ore buche della settimana'}</h3>
+        <div class="weekly-scroll" role="region" aria-label="Disponibilità docenti per giorno e ora" tabindex="0"><div class="weekly-grid"><div class="weekly-corner">Ora</div>${columns}${rows}</div></div>
       </div>
     </article>`;
   }
@@ -667,6 +674,7 @@
   $('#searchForm').addEventListener('submit', e=>{e.preventDefault();submitSearch();});
   searchInput.addEventListener('input',()=>{$('#searchFeedback').hidden=true;previewSuggestions();});
   document.addEventListener('input',e=>{if(e.target.id==='freeTeacherSearch'){state.freeTeacherFilter=e.target.value;renderFreeTeacherMatches();}});
+  document.addEventListener('change',e=>{if(e.target.id==='freeTeacherMode'){state.freeTeacherMode=e.target.checked?'all':'gaps';renderSchedule();}});
   daySelect.addEventListener('change',updateTimeDependent);
   hourSelect.addEventListener('change',updateTimeDependent);
   $('#scheduleEntity').addEventListener('change',e=>{state.selection=e.target.value;renderSchedule();});
@@ -796,6 +804,12 @@
     if(!id)return false;
     openSchedule('rooms',id);
     return true;
+  };
+  window.AulaFinderBridge={
+    getCurrentClass:()=>state.schedule==='classes'?state.selection:(state.result?.kind==='classes'?state.result.id:null),
+    showClass:(id)=>{if(!DATA.classes[id])return false;openSchedule('classes',id);return true;},
+    findTeacher:(id)=>{if(!DATA.teachers[id])return false;openSchedule('teachers',id);return true;},
+    openRoom:(id)=>{const key=Object.keys(DATA.rooms).find(k=>canon(k)===canon(id));if(key){openSchedule('rooms',key);return true;}return false;}
   };
   const themeButton=$('#themeToggle');
   const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');

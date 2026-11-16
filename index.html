@@ -4,18 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071F29">
-  <meta name="description" content="AulaFinder: trova aule, classi, professori e orari del Liceo Scientifico G.B. Grassi di Saronno.">
+  <meta name="description" content="AulaFinder, il tuo navigatore scolastico: cerca aule, classi, professori, orari e aule libere al Liceo Scientifico G.B. Grassi di Saronno. Consulta anche le piantine e il navigatore.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Progetto scolastico AulaFinder">
+  <meta name="application-name" content="AulaFinder">
   <link rel="canonical" href="https://leonardofiadino09-jpg.github.io/AulaFinder/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="it_IT">
   <meta property="og:site_name" content="AulaFinder">
   <meta property="og:title" content="AulaFinder | Liceo Scientifico G.B. Grassi">
-  <meta property="og:description" content="Consulta aule, classi, professori e orari del Liceo Scientifico G.B. Grassi di Saronno.">
+  <meta property="og:description" content="AulaFinder: il tuo navigatore scolastico al Liceo Scientifico G.B. Grassi di Saronno. Orari, aule, professori, piantine e percorsi.">
   <meta property="og:url" content="https://leonardofiadino09-jpg.github.io/AulaFinder/">
   <meta property="og:image" content="https://leonardofiadino09-jpg.github.io/AulaFinder/assets/liceo-grassi-carboncino.png">
   <meta property="og:image:alt" content="Illustrazione a carboncino del Liceo Scientifico G.B. Grassi di Saronno">
   <meta name="twitter:card" content="summary_large_image">
-  <title>AulaFinder | Liceo Scientifico G.B. Grassi</title>
+  <title>AulaFinder | Il tuo navigatore scolastico - Liceo G.B. Grassi Saronno</title>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"AulaFinder","alternateName":"Aula Finder","url":"https://leonardofiadino09-jpg.github.io/AulaFinder/","description":"Progetto scolastico per trovare aule, classi, professori e orari del Liceo Scientifico G.B. Grassi di Saronno.","inLanguage":"it-IT","about":{"@type":"EducationalOrganization","name":"Liceo Scientifico G.B. Grassi di Saronno"}}</script>
   <link rel="icon" type="image/png" href="assets/logo-aulafinder.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
@@ -55,6 +59,8 @@
   <script src="footer.js" defer></script>
   <script src="pwa.js" defer></script>
   <script src="loading.js" defer></script>
+  <script src="finder.js" defer></script>
+  <script src="tutorial.js" defer></script>
 </head>
 <body>
   <!-- Video di apertura fornito dagli studenti. Silenziato per consentire autoplay su mobile. -->
@@ -73,7 +79,7 @@
         <button type="button" id="logoButton" class="logo-button" aria-label="Ingrandisci il logo AulaFinder" title="Ingrandisci il logo">
           <img src="assets/logo-aulafinder.png" alt="Logo AulaFinder: lettere A e F con lente di ingrandimento">
         </button>
-        <button type="button" class="brand-title" data-page="home" aria-label="Vai alla Home"><span class="brand-aula"><span class="brand-aula-letters">Aula</span><svg class="brand-aula-orbit" aria-hidden="true" viewBox="0 0 160 76" focusable="false">
+        <div class="brand-wordmark"><button type="button" class="brand-title" data-page="home" aria-label="Vai alla Home"><span class="brand-aula"><span class="brand-aula-letters">Aula</span><svg class="brand-aula-orbit" aria-hidden="true" viewBox="0 0 160 76" focusable="false">
               <defs>
                 <linearGradient id="brandOrbitGradient" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0" stop-color="#ecffff"/><stop offset="0.28" stop-color="#75ffee"/><stop offset="0.63" stop-color="#2ff0ed"/><stop offset="1" stop-color="#faffff"/>
@@ -94,7 +100,12 @@
                 <circle cx="29" cy="42" r="9" fill="url(#brandOrbitOrb)" stroke="#eaffff" stroke-width="1.6"/>
                 <ellipse cx="25.5" cy="38" rx="2.9" ry="1.5" transform="rotate(-40 25.5 38)" fill="white" opacity=".9"/>
               </g>
-            </svg></span><span class="brand-finder">Finder</span></button>
+              <g class="orbit-electron-traveler" aria-hidden="true">
+                <circle class="orbit-electron-halo" cx="0" cy="0" r="13" fill="#59fff0" opacity=".65"/>
+                <circle cx="0" cy="0" r="8.5" fill="url(#brandOrbitOrb)" stroke="#f6ffff" stroke-width="1.8"/>
+                <circle cx="-3" cy="-3" r="2.5" fill="#fff" opacity=".9"/>
+              </g>
+            </svg></span><span class="brand-finder">Finder</span></button><span class="brand-tagline">Il tuo navigatore scolastico</span></div>
       </div>
       <div class="header-controls">
         <label class="header-control">
@@ -112,7 +123,7 @@
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Passa alla modalità scura" title="Cambia modalità chiara/scura"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
       </div>
       <button type="button" id="mobileHomeButton" class="mobile-home-button" data-page="home" aria-label="Torna alla Home" title="Home"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></svg></button>
-      <button type="button" id="menuButton" class="menu-button" aria-expanded="false" aria-controls="sidebar" aria-label="Apri menu">☰</button>
+      <button type="button" id="menuButton" class="menu-button" aria-expanded="false" aria-controls="sidebar" aria-label="Apri menu"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" style="display:block;margin:auto" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 6h14 M5 12h14 M5 18h14"/></svg></button>
     </header>
 
     <div class="workspace">
@@ -140,6 +151,11 @@
                 <circle cx="29" cy="42" r="11" fill="#5cffea" opacity=".5" filter="url(#brandOrbitGlow-sidebar)"/>
                 <circle cx="29" cy="42" r="9" fill="url(#brandOrbitOrb-sidebar)" stroke="#eaffff" stroke-width="1.6"/>
                 <ellipse cx="25.5" cy="38" rx="2.9" ry="1.5" transform="rotate(-40 25.5 38)" fill="white" opacity=".9"/>
+              </g>
+              <g class="orbit-electron-traveler" aria-hidden="true">
+                <circle class="orbit-electron-halo" cx="0" cy="0" r="13" fill="#59fff0" opacity=".65"/>
+                <circle cx="0" cy="0" r="8.5" fill="url(#brandOrbitOrb-sidebar)" stroke="#f6ffff" stroke-width="1.8"/>
+                <circle cx="-3" cy="-3" r="2.5" fill="#fff" opacity=".9"/>
               </g>
             </svg></span><span class="brand-finder">Finder</span></span>
 </button>
@@ -175,6 +191,7 @@
               <label class="sr-only" for="searchInput">Cerca aula, classe o professore</label>
               <span class="search-glyph" data-icon="search" aria-hidden="true"></span>
               <input id="searchInput" name="q" type="search" autocomplete="off" placeholder="Cerca aule, prof, classi" required>
+              <button type="button" id="searchVoiceButton" class="search-voice-button" aria-label="Detta la ricerca" title="Detta la ricerca con la voce"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg></button>
               <button type="submit" class="search-submit">Cerca</button>
             </form>
             <div id="searchSuggestions" class="search-suggestions" hidden></div>
@@ -252,7 +269,114 @@
           </div>
         </section>
 
-        <section id="tutorialPage" class="page content-page empty-page" hidden aria-labelledby="tutorialTitle"><h1 id="tutorialTitle">Tutorial</h1><p>In fase di elaborazione.</p></section>
+        <section id="tutorialPage" class="page content-page tutorial-page" hidden aria-labelledby="tutorialTitle">
+  <header class="tutorial-hero">
+    <div class="tutorial-hero-copy">
+      <span class="tutorial-eyebrow"><span class="tutorial-sparkle" aria-hidden="true">✦</span> LA GUIDA INTERATTIVA</span>
+      <h1 id="tutorialTitle">La scuola, a portata di <span>clic.</span></h1>
+      <p>Da una semplice ricerca al percorso per raggiungere l'aula: scopri AulaFinder, una tappa alla volta.</p>
+      <div class="tutorial-hero-tags"><span>6 tappe</span><span>Prova ogni funzione</span><span>Da PC e smartphone</span></div>
+    </div>
+    <div class="tutorial-hero-art" aria-hidden="true">
+      <svg viewBox="0 0 225 190" role="presentation" focusable="false">
+        <defs><linearGradient id="tutorialOrbitGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d6fff5"/><stop offset=".55" stop-color="#67eedf"/><stop offset="1" stop-color="#ffdf84"/></linearGradient></defs>
+        <path class="tutorial-orbit-back" d="M30 119C-11 76 70 10 147 31c86 23 92 101 6 130C83 185 43 142 30 119Z" fill="none" stroke="url(#tutorialOrbitGrad)" stroke-width="2" stroke-dasharray="4 8"/>
+        <circle cx="110" cy="96" r="56" fill="#153d49" stroke="#76e8d7" stroke-width="2"/>
+        <path d="M110 51 148 136 109 118 69 137Z" fill="#9de8d7" stroke="#e6fffa" stroke-width="3" stroke-linejoin="round"/>
+        <path d="m110 51-1 67 39 18Z" fill="#26a7a9"/>
+        <circle class="tutorial-art-orb" cx="31" cy="119" r="8" fill="#ffe68c"/>
+        <path d="M163 33l3 9 9 3-9 3-3 9-3-9-9-3 9-3Z" fill="#e9fffa"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="tutorial-explorer">
+    <div class="tutorial-explorer-top">
+      <div><p class="tutorial-overline">IL TUO PERCORSO</p><h2>Impara facendo</h2></div>
+      <div class="tutorial-meter" aria-label="Avanzamento del tutorial">
+        <span class="tutorial-progress-number" id="tutorialProgressCount" aria-live="polite">01 <small>/ 06</small></span>
+        <span class="tutorial-progress-label">Tappa corrente</span>
+      </div>
+    </div>
+    <div class="tutorial-progress-track" role="progressbar" aria-label="Avanzamento del tutorial" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" id="tutorialProgressBar"><span id="tutorialProgressFill"></span></div>
+    <nav class="tutorial-steps" aria-label="Scegli una tappa del tutorial" role="tablist">
+      <button type="button" class="tutorial-step is-active" id="tutorialTab0" data-tutorial-select="0" role="tab" aria-selected="true" aria-controls="tutorialStep0" tabindex="0"><span class="tutorial-step-no">01</span><span>Cerca</span></button>
+      <button type="button" class="tutorial-step" id="tutorialTab1" data-tutorial-select="1" role="tab" aria-selected="false" aria-controls="tutorialStep1" tabindex="-1"><span class="tutorial-step-no">02</span><span>Orari</span></button>
+      <button type="button" class="tutorial-step" id="tutorialTab2" data-tutorial-select="2" role="tab" aria-selected="false" aria-controls="tutorialStep2" tabindex="-1"><span class="tutorial-step-no">03</span><span>Disponibilità</span></button>
+      <button type="button" class="tutorial-step" id="tutorialTab3" data-tutorial-select="3" role="tab" aria-selected="false" aria-controls="tutorialStep3" tabindex="-1"><span class="tutorial-step-no">04</span><span>Navigatore</span></button>
+      <button type="button" class="tutorial-step" id="tutorialTab4" data-tutorial-select="4" role="tab" aria-selected="false" aria-controls="tutorialStep4" tabindex="-1"><span class="tutorial-step-no">05</span><span>Finder</span></button>
+      <button type="button" class="tutorial-step" id="tutorialTab5" data-tutorial-select="5" role="tab" aria-selected="false" aria-controls="tutorialStep5" tabindex="-1"><span class="tutorial-step-no">06</span><span>Preferiti e mappe</span></button>
+    </nav>
+
+    <div class="tutorial-stage" id="tutorialStage">
+      <article id="tutorialStep0" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab0" data-tutorial-panel="0" tabindex="0">
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 01 · TROVA QUELLO CHE CERCHI</span><h2>Una ricerca. Tutta la scuola.</h2>
+          <p>Nella Home digita <strong>il numero di un'aula</strong>, <strong>una classe</strong> o <strong>un professore</strong>. Puoi usare i suggerimenti oppure il microfono, se il browser lo supporta.</p>
+          <ol><li>Apri la Home e tocca la barra di ricerca.</li><li>Scrivi, ad esempio, <strong>S.07</strong> oppure la tua classe.</li><li>Apri il risultato per vedere dove si trova e il relativo orario.</li></ol>
+          <button type="button" class="tutorial-action" data-page="home">Prova la ricerca <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">ESEMPIO · RICERCA</div><div class="tutorial-search-demo"><span aria-hidden="true">⌕</span><strong>S.07</strong><span class="tutorial-search-caret"></span></div><div class="tutorial-result-demo"><span class="tutorial-demo-icon">⌖</span><div><strong>S.07</strong><small>Aula · Informatica</small></div><span>↗</span></div><p class="tutorial-demo-note">I risultati si aprono direttamente nel sito.</p></div>
+      </article>
+
+      <article id="tutorialStep1" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab1" data-tutorial-panel="1" tabindex="0" hidden>
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 02 · CONSULTA GLI ORARI</span><h2>La tua settimana, senza PDF.</h2>
+          <p>Dalla sezione <strong>Orari</strong> puoi consultare quelli di <strong>classi, aule e professori</strong>. Seleziona un elemento, cerca per nome o materia dove disponibile e scorri la tabella settimanale.</p>
+          <ol><li>Scegli una categoria tra <strong>Classi</strong>, <strong>Aule</strong> e <strong>Professori</strong>.</li><li>Cerca o seleziona il soggetto che ti interessa.</li><li>Usa i selettori <strong>Giorno</strong> e <strong>Ora</strong> per evidenziare il momento della giornata.</li></ol>
+          <button type="button" class="tutorial-action" data-schedule="classes">Consulta gli orari <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">ORARIO SETTIMANALE</div><div class="tutorial-week-demo"><div>Ora</div><div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><strong>1</strong><span></span><span></span><span></span><span class="tutorial-week-current"></span><span></span><strong>2</strong><span></span><span></span><span></span><span class="tutorial-week-current"></span><span></span><strong>3</strong><span></span><span></span><span></span><span class="tutorial-week-current"></span><span></span></div><p class="tutorial-demo-note">Schema illustrativo: le informazioni vere sono nella sezione Orari.</p></div>
+      </article>
+
+      <article id="tutorialStep2" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab2" data-tutorial-panel="2" tabindex="0" hidden>
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 03 · TROVA LE DISPONIBILITÀ</span><h2>Qual è l'aula libera adesso?</h2>
+          <p>Con <strong>Aule libere</strong> scopri quali ambienti risultano disponibili nell'ora selezionata. In <strong>Professori liberi</strong>, invece, puoi distinguere le vere <strong>ore buche</strong> dalle altre ore senza lezione.</p>
+          <ol><li>Imposta giorno e ora dalla barra superiore.</li><li>Apri <strong>Aule libere</strong> o <strong>Professori liberi</strong>.</li><li>Per i docenti, usa lo switch per passare da <strong>Ore buche</strong> a <strong>Tutte le ore libere</strong>.</li></ol>
+          <div class="tutorial-dual-actions"><button type="button" class="tutorial-action" data-schedule="freeRooms">Aule libere <span aria-hidden="true">↗</span></button><button type="button" class="tutorial-action tutorial-action-outline" data-schedule="freeTeachers">Professori liberi <span aria-hidden="true">↗</span></button></div>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">DUE TIPI DI DISPONIBILITÀ</div><div class="tutorial-availability-demo"><div><span class="tutorial-status-dot"></span><strong>Ora buca</strong><small>Una lezione prima e una dopo, nello stesso giorno.</small></div><div><span class="tutorial-status-dot tutorial-dot-blue"></span><strong>Ora senza lezione</strong><small>Qualsiasi ora non occupata da una lezione prevista.</small></div></div><p class="tutorial-demo-note">L'assenza di lezione non garantisce la presenza del docente a scuola.</p></div>
+      </article>
+
+      <article id="tutorialStep3" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab3" data-tutorial-panel="3" tabindex="0" hidden>
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 04 · SPOSTATI TRA LE AULE</span><h2>Dal punto A al punto B.</h2>
+          <p>Il <strong>Navigatore</strong> ti mostra il percorso sulle piantine. Puoi scrivere l'aula di partenza e quella di destinazione, oppure selezionarle direttamente sulla mappa.</p>
+          <ol><li>Imposta <strong>Da</strong> e <strong>A</strong>, poi scegli Scale o Ascensore.</li><li>Tocca <strong>Mostra percorso</strong> per visualizzare la linea gialla.</li><li>Segui i passaggi tra i piani: i simboli della legenda distinguono partenza, scale e arrivo.</li></ol>
+          <button type="button" class="tutorial-action" data-page="navigator">Apri il navigatore <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">SCHEMA ILLUSTRATIVO</div><div class="tutorial-route-demo"><svg viewBox="0 0 310 182" aria-hidden="true" focusable="false"><rect x="16" y="24" width="92" height="59" rx="10" fill="#dff5ef" stroke="#7dbeb6"/><rect x="202" y="103" width="92" height="59" rx="10" fill="#dff5ef" stroke="#7dbeb6"/><path d="M108 54H156V131H202" fill="none" stroke="#113740" stroke-width="12" stroke-linejoin="round"/><path class="tutorial-route-draw" d="M108 54H156V131H202" fill="none" stroke="#ffdb4e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="108" cy="54" r="7" fill="#123740" stroke="#ffeab0" stroke-width="2"/><circle cx="108" cy="54" r="3" fill="white"/><circle cx="156" cy="131" r="6" fill="#2fc8b7" stroke="#113740" stroke-width="2"/><path d="M206 103Q199 96 199 89a9 9 0 0 1 18 0q0 7-11 14Z" fill="#ff8a6b" stroke="white" stroke-width="1.5"/><text x="62" y="59" text-anchor="middle" font-size="13" font-weight="750" fill="#16434a">Partenza</text><text x="247" y="139" text-anchor="middle" font-size="13" font-weight="750" fill="#16434a">Arrivo</text></svg></div><p class="tutorial-demo-note">La mappa è schematica e non sostituisce la segnaletica della scuola, soprattutto in emergenza.</p></div>
+      </article>
+
+      <article id="tutorialStep4" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab4" data-tutorial-panel="4" tabindex="0" hidden>
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 05 · CHIEDI A FINDER</span><h2>Gli orari, in una domanda.</h2>
+          <p><strong>Finder</strong> è l'assistente di AulaFinder. Seleziona la tua classe e chiedigli, per esempio, <strong>«Che materie ho domani?»</strong> o <strong>«Che lezione ho la prossima ora?»</strong>.</p>
+          <ol><li>Apri Finder dal pulsante nell'angolo in basso a destra.</li><li>Seleziona la classe per le richieste personali.</li><li>Scrivi una domanda o usa il microfono quando disponibile.</li></ol>
+          <button type="button" class="tutorial-action" id="tutorialOpenFinder">Prova Finder <span aria-hidden="true">✦</span></button>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">CONVERSAZIONE DI ESEMPIO</div><div class="tutorial-chat-demo"><div class="tutorial-chat-user">Che lezioni ho domani?</div><div class="tutorial-chat-assistant"><strong>✦ Finder</strong><span>Seleziona la tua classe e consulterò l'orario previsto.</span></div></div><p class="tutorial-demo-note">Finder utilizza gli orari caricati nel sito: non conosce variazioni dell'ultimo minuto.</p></div>
+      </article>
+
+      <article id="tutorialStep5" class="tutorial-panel" role="tabpanel" aria-labelledby="tutorialTab5" data-tutorial-panel="5" tabindex="0" hidden>
+        <div class="tutorial-panel-text"><span class="tutorial-chapter">CAPITOLO 06 · PERSONALIZZA AULAFINDER</span><h2>La scuola, a modo tuo.</h2>
+          <p>Salva con la <strong>stella</strong> le ricerche importanti, consulta la <strong>Piantina</strong> per orientarti e usa il pulsante sole/luna per cambiare tema.</p>
+          <ol><li>Apri una classe, un'aula o un docente e premi la <strong>stella</strong>.</li><li>Ritrova i preferiti dal menu senza cercarli di nuovo.</li><li>Apri <strong>Piantina</strong> per scegliere i piani e toccare gli ambienti.</li></ol>
+          <button type="button" class="tutorial-action" data-page="piantina">Esplora la piantina <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="tutorial-visual"><div class="tutorial-mini-label">IL TUO SPAZIO</div><div class="tutorial-personal-demo"><div class="tutorial-fav-demo"><span class="tutorial-star">★</span><div><strong>I tuoi preferiti</strong><small>Un tocco per ritrovare quello che ti serve.</small></div></div><div class="tutorial-theme-demo"><span aria-hidden="true">☀</span><span>Chiaro</span><span class="tutorial-theme-separator">↔</span><span>Scuro</span><span aria-hidden="true">☾</span></div></div><p class="tutorial-demo-note">Le preferenze vengono conservate nel browser che stai utilizzando.</p></div>
+      </article>
+    </div>
+
+    <div class="tutorial-nav-bottom"><button type="button" id="tutorialPrev" class="tutorial-prev" disabled><span aria-hidden="true">←</span> Indietro</button><span class="tutorial-nav-hint" id="tutorialNavHint" aria-live="polite">Inizia dalla ricerca</span><button type="button" id="tutorialNext" class="tutorial-next">Avanti <span aria-hidden="true">→</span></button></div>
+  </div>
+
+  <section class="tutorial-faq" aria-labelledby="tutorialFaqTitle"><div class="tutorial-faq-head"><span class="tutorial-overline">DA SAPERE</span><h2 id="tutorialFaqTitle">Dubbi frequenti</h2><p>Le risposte che conviene conoscere prima di andare a caccia di aule.</p></div>
+    <div class="tutorial-faq-list">
+      <details><summary>Gli orari si aggiornano in tempo reale?<span aria-hidden="true">+</span></summary><p>No. AulaFinder mostra gli orari caricati nel sito. Sostituzioni, assenze e cambi dell'ultimo minuto potrebbero non essere presenti.</p></details>
+      <details><summary>Se un professore è libero, significa che si trova a scuola?<span aria-hidden="true">+</span></summary><p>No. «Libero» significa che per quell'ora non è prevista una lezione nell'orario. Non indica la presenza effettiva del docente.</p></details>
+      <details><summary>Posso usare Finder senza microfono?<span aria-hidden="true">+</span></summary><p>Sì. Puoi scrivere le domande normalmente. Il riconoscimento vocale dipende dal browser e dai permessi concessi.</p></details>
+      <details><summary>Posso usare il navigatore come mappa di emergenza?<span aria-hidden="true">+</span></summary><p>No. I percorsi sono schematici. Per evacuazioni o emergenze segui le indicazioni e la segnaletica ufficiali della scuola.</p></details>
+    </div>
+  </section>
+</section>
+
         <section id="piantinaPage" class="page content-page" hidden aria-labelledby="piantinaTitle">
           <div class="page-topline"><h1 id="piantinaTitle">Piantina</h1><button type="button" class="back-link" id="planBackButton" data-page="results" hidden>← Risultato</button></div>
 <div class="floor-filter" aria-label="Seleziona le piantine da visualizzare">
@@ -324,12 +448,37 @@
                 <circle cx="29" cy="42" r="9" fill="url(#brandOrbitOrb-footer)" stroke="#eaffff" stroke-width="1.6"/>
                 <ellipse cx="25.5" cy="38" rx="2.9" ry="1.5" transform="rotate(-40 25.5 38)" fill="white" opacity=".9"/>
               </g>
+              <g class="orbit-electron-traveler" aria-hidden="true">
+                <circle class="orbit-electron-halo" cx="0" cy="0" r="13" fill="#59fff0" opacity=".65"/>
+                <circle cx="0" cy="0" r="8.5" fill="url(#brandOrbitOrb-footer)" stroke="#f6ffff" stroke-width="1.8"/>
+                <circle cx="-3" cy="-3" r="2.5" fill="#fff" opacity=".9"/>
+              </g>
             </svg></span><span class="brand-finder">Finder</span></button>
 </div>
-
+<button aria-label="Apri la sezione Admin" class="footer-admin-button" data-page="admin" type="button">Admin</button>
 </div>
 </footer>
   </div>
+
+  <!-- Finder: risposte basate soltanto sugli orari integrati, con riconoscimento vocale se disponibile. -->
+  <button type="button" id="finderLaunch" class="finder-launch" aria-controls="finderPanel" aria-expanded="false" aria-label="Apri Finder, assistente scolastico" title="Parla con Finder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="8" y="3" width="8" height="13" rx="4"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg><span>Finder</span></button>
+  <section id="finderPanel" class="finder-panel" role="dialog" aria-modal="false" aria-labelledby="finderTitle" hidden>
+    <div class="finder-panel-head"><span class="finder-head-icon" aria-hidden="true">✦</span><div><h2 id="finderTitle">Finder</h2><p>Il tuo assistente per orari, lezioni e aule.</p></div><button type="button" id="finderClose" class="finder-close" aria-label="Chiudi Finder">×</button></div>
+    <div class="finder-panel-content">
+      <label for="finderClass">La tua classe</label><select id="finderClass" aria-label="Scegli la tua classe"><option value="">Seleziona la tua classe</option></select>
+      <div class="finder-suggestions" id="finderPrompts" aria-label="Domande suggerite">
+        <button type="button" data-finder-prompt="Che materie ho domani?">Che materie ho domani?</button>
+        <button type="button" data-finder-prompt="Che lezione ho la prossima ora?">Che lezione ho la prossima ora?</button>
+        <button type="button" data-finder-prompt="Dove si trova la mia prossima aula?">Dove si trova la mia prossima aula?</button>
+        <button type="button" data-finder-prompt="Quali aule sono libere?">Quali aule sono libere?</button>
+        <button type="button" data-finder-prompt="Quali professori hanno un'ora buca?">Quali professori hanno un'ora buca?</button>
+        <button type="button" data-finder-prompt="Mostrami l'orario della mia classe">Mostrami l'orario della mia classe</button>
+      </div>
+      <div class="finder-conversation" id="finderConversation" role="log" aria-live="polite"><p class="finder-message finder-message-assistant">Ciao! Sono Finder. Seleziona la tua classe e chiedimi qualcosa sugli orari scolastici. Puoi anche scrivere, senza usare il microfono.</p></div>
+      <form id="finderForm" class="finder-form"><label for="finderQuestion" class="sr-only">La tua domanda per Finder</label><input id="finderQuestion" type="text" placeholder="Scrivi una domanda…" autocomplete="off" required><button type="button" class="finder-mic" id="finderMic" title="Parla con Finder" aria-label="Parla con Finder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg></button><button class="finder-send" type="submit" aria-label="Invia domanda">➤</button></form>
+      <p class="finder-privacy" id="finderStatus">Finder risponde dagli orari pubblicati: non conosce variazioni dell'ultimo minuto. Il microfono usa il riconoscimento vocale del browser, se supportato.</p>
+    </div>
+  </section>
   <div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
   <button id="backToTop" class="back-to-top" type="button" hidden aria-label="Torna all’inizio della pagina" title="Torna su">
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>

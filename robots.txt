@@ -1,0 +1,4 @@
+# Per una pubblicazione con dominio personalizzato o nella root del sito.
+User-agent: *
+Allow: /
+Sitemap: https://leonardofiadino09-jpg.github.io/AulaFinder/sitemap.xml
