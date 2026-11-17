@@ -10,6 +10,7 @@
   const log = $('finderConversation'), input = $('finderQuestion');
   const form = $('finderForm'), status = $('finderStatus');
   const voiceSearch = $('searchVoiceButton'), voiceFinder = $('finderMic');
+  const dragState={active:false,startX:0,startY:0,baseRight:0,baseBottom:0,pointerId:null};
   const daySel = $('daySelect'), hourSel = $('hourSelect'), mainSearch = $('searchInput');
   const days = DATA.days;
   const lower = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -19,14 +20,48 @@
   let lastVoiceInput = false;
   let activeRecognition = null;
 
+  function clamp(value,min,max){return Math.min(max,Math.max(min,value));}
+  function setLaunchPosition(right,bottom){launch.style.left='auto';launch.style.top='auto';launch.style.right=Math.round(right)+'px';launch.style.bottom=Math.round(bottom)+'px';}
+  function saveLaunchPosition(){try{localStorage.setItem('aulafinder.finder.launch.position',JSON.stringify({right:parseFloat(launch.style.right)||18,bottom:parseFloat(launch.style.bottom)||22}));}catch(_){}}
+  function restoreLaunchPosition(){try{const raw=localStorage.getItem('aulafinder.finder.launch.position');if(!raw)return;const pos=JSON.parse(raw);if(Number.isFinite(pos?.right)&&Number.isFinite(pos?.bottom))setLaunchPosition(pos.right,pos.bottom);}catch(_){}}
+
   const allClasses = Object.keys(DATA.classes).sort((a,b)=>a.localeCompare(b,'it',{numeric:true}));
   select.insertAdjacentHTML('beforeend', allClasses.map(id=>`<option value="${id}">Classe ${id}</option>`).join(''));
+  restoreLaunchPosition();
   try { const stored = localStorage.getItem('aulafinder.finder.class');if(allClasses.includes(stored))selectedClass=stored; } catch (_) {}
   select.value=selectedClass;
   select.addEventListener('change',()=>{
     selectedClass=select.value;
     try {localStorage.setItem('aulafinder.finder.class',selectedClass);}catch(_){}
   });
+
+  function stopDragging(event){
+    if(dragState.pointerId!==event.pointerId)return false;
+    const wasDragging=dragState.active;
+    if(wasDragging){saveLaunchPosition();event.preventDefault();}
+    dragState.active=false;dragState.pointerId=null;launch.classList.remove('is-dragging');
+    return wasDragging;
+  }
+  launch.addEventListener('pointerdown',event=>{
+    if(event.button!==0)return;
+    dragState.active=false;dragState.pointerId=event.pointerId;dragState.startX=event.clientX;dragState.startY=event.clientY;
+    const style=getComputedStyle(launch);
+    dragState.baseRight=parseFloat(style.right)||18;dragState.baseBottom=parseFloat(style.bottom)||22;
+    launch.setPointerCapture?.(event.pointerId);
+  });
+  launch.addEventListener('pointermove',event=>{
+    if(dragState.pointerId!==event.pointerId)return;
+    const dx=event.clientX-dragState.startX,dy=event.clientY-dragState.startY;
+    if(!dragState.active&&Math.hypot(dx,dy)>8){dragState.active=true;launch.classList.add('is-dragging');}
+    if(!dragState.active)return;
+    const margin=8;
+    const right=clamp(dragState.baseRight-dx,margin,Math.max(margin,window.innerWidth-launch.offsetWidth-margin));
+    const bottom=clamp(dragState.baseBottom-dy,margin,Math.max(margin,window.innerHeight-launch.offsetHeight-margin));
+    setLaunchPosition(right,bottom);
+  });
+  launch.addEventListener('pointerup',event=>{if(stopDragging(event))return;setOpen(panel.hidden);});
+  launch.addEventListener('pointercancel',stopDragging);
+  window.addEventListener('resize',()=>{const style=getComputedStyle(launch);setLaunchPosition(clamp(parseFloat(style.right)||18,8,Math.max(8,window.innerWidth-launch.offsetWidth-8)),clamp(parseFloat(style.bottom)||22,8,Math.max(8,window.innerHeight-launch.offsetHeight-8)));});
 
   const setOpen = open => {
     panel.hidden=!open;
@@ -41,7 +76,6 @@
       launch.focus({preventScroll:true});
     }
   };
-  launch.addEventListener('click',()=>setOpen(panel.hidden));
   close.addEventListener('click',()=>setOpen(false));
   document.addEventListener('keydown',e=>{if(e.key==='Escape' && !panel.hidden)setOpen(false);});
   document.addEventListener('click',e=>{

@@ -9,8 +9,8 @@ var actionRoom='';
 function cleanRoomName(t){return String(t||'').split('·')[0].trim();}
 function canonicalRoom(t){return cleanRoomName(t).replace(/^Informatica\s+/i,'').replace(/[.\s]/g,'').toUpperCase();}
 function hasRoomSchedule(t){return Object.keys(window.AULAFINDER_DATA?.rooms||{}).some(function(k){return canonicalRoom(k)===canonicalRoom(t)});}
-function isNavigableRoom(t){return /^(?:[STP]\.\d+|[123]\.\d+|Palestra|Ingresso|Archivio|Caldaie)$/i.test(cleanRoomName(t));}
-function hideActions(){if(actionsPanel){actionsPanel.remove();actionsPanel=null;}actionRoom='';}
+function isNavigableRoom(t){return /^(?:[STP]\.\d+|[123]\.\d+|Palestra|Ingresso|Archivio|Caldai(?:e|a))$/i.test(cleanRoomName(t));}
+function hideActions(){if(actionsPanel){var holder=actionsPanel.closest('.plan-body');if(holder)holder.classList.remove('has-room-actions');actionsPanel.remove();actionsPanel=null;}actionRoom='';}
 function showActions(g){
   hideActions();
   var code=cleanRoomName(g.dataset.t);
@@ -22,17 +22,16 @@ function showActions(g){
   if(hasRoomSchedule(code)){
     var schedule=document.createElement('button');schedule.type='button';schedule.dataset.mapAction='schedule';schedule.textContent='Vedi orario';box.appendChild(schedule);
   }
-  var mobile=window.matchMedia('(max-width:680px)').matches;
-  if(mobile){
-    var card=g.closest('.plan-card');
-    card.querySelector('.plan-banner').insertAdjacentElement('afterend',box);
-    box.classList.add('room-actions-inline');
-    actionsPanel=box;actionRoom=code;
-    requestAnimationFrame(function(){focusRoom(g);});
-    return;
-  }
   holder.appendChild(box);actionsPanel=box;actionRoom=code;
   var rect=g.getBoundingClientRect(),h=holder.getBoundingClientRect();
+  var mobile=window.matchMedia&&window.matchMedia('(max-width:680px)').matches;
+  if(mobile){
+    holder.classList.add('has-room-actions');
+    box.classList.add('room-actions--docked');
+    box.style.left='10px';box.style.top='10px';
+    holder.scrollIntoView({behavior:(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth',block:'center'});
+    return;
+  }
   var maxLeft=Math.max(8,holder.clientWidth-box.offsetWidth-8);
   var left=Math.min(maxLeft,Math.max(8,(rect.left+rect.width/2)-h.left-box.offsetWidth/2));
   var top=(rect.bottom-h.top+8);
@@ -77,7 +76,6 @@ function pick(g){
   hideTip();
   if(cur===g && actionsPanel){clear();return;}
   clear();cur=g;mark(g);showActions(g);
-  if(!window.matchMedia('(max-width:680px)').matches) requestAnimationFrame(function(){focusRoom(g);});
 }
 function mark(g){
   var cx=+g.dataset.cx,cy=+g.dataset.cy,s=+g.dataset.s,c=g.cloneNode(true);

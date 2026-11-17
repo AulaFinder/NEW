@@ -88,7 +88,10 @@
   const roomAliases=loc=>{
     const desc=loc.description||'';
     const simplified=desc.replace(/^(?:LAB\.?|LABORATORIO)\s*(?:DI\s*)?/i,'');
-    return [loc.id,`Aula ${loc.id}`,desc,`${desc} ${loc.id}`,`Lab ${simplified}`,`Laboratorio di ${simplified}`].filter(Boolean).map(searchNorm);
+    const extras=[loc.id,`Aula ${loc.id}`,desc,`${desc} ${loc.id}`,`Lab ${simplified}`,`Laboratorio di ${simplified}`];
+    if(/^Caldaie$/i.test(loc.id))extras.push('Caldaia','Aula Caldaia');
+    if(/^Archivio$/i.test(loc.id))extras.push('Aula Archivio');
+    return extras.filter(Boolean).map(searchNorm);
   };
   const lookup=s=>{
     const exact=uniq.get(canon(s));if(exact)return exact;
@@ -582,8 +585,6 @@
     const i=stageState.index,r=stageState.stages[i];
     const count=stageState.stages.length;
     $('#navCurrentStep').textContent=`${i+1} / ${count}`;
-    const fill=$('#navProgressFill');if(fill)fill.style.height=`${((i+1)/count)*100}%`;
-    const rail=$('#navProgressRail');if(rail)rail.setAttribute('aria-valuenow',String(i+1));
     $('#navStepPrev').disabled=i===0;
     $('#navStepNext').disabled=i===count-1;
     const role=count===1?'Percorso':i===0?'Partenza':i===count-1?'Arrivo':'Cambio piano';
@@ -616,7 +617,7 @@
     notice(`Percorso trovato: ${result.a.id} → ${result.b.id} · ${result.stages.length} ${result.stages.length===1?'piano':'piani'}.`);
     const target=$('#navRouteResult');target.hidden=false;
     target.innerHTML=`<div class="navigator-summary"><p>${safe(result.a.id)} → ${safe(result.b.id)}<small>${safe(labels[result.a.floor])} → ${safe(labels[result.b.floor])}</small></p><span class="nav-mode-tag">${mode==='lift'?'Ascensore':'Scale'}</span></div>
-      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div id="navProgressRail" class="nav-progress-rail" role="progressbar" aria-label="Avanzamento del percorso" aria-valuemin="1" aria-valuemax="${result.stages.length}" aria-valuenow="1"><span id="navProgressFill" class="nav-progress-fill"></span></div><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
+      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
       <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
       <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
       <div class="nav-route-legend-item"><span data-nav-legend="departure" aria-hidden="true"></span><span>Partenza</span></div>

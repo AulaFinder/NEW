@@ -33,6 +33,13 @@
   const renRoom = (r) => { const m=String(r).match(/^(Informatica\s+)?([PST])\.?(\d+)$/i); return m ? (m[1]||'')+m[2].toUpperCase()+'.'+m[3].padStart(2,'0') : r; };
   const canon = (s) => norm(renRoom(norm(s).replace(/^AULA\s+/,''))).replace(/[.\s]/g,'');
   const state = {page:'home',schedule:'classes',selection:'',result:null,history:[],favorites:[],freeTeacherFilter:'',freeTeacherMode:'gaps',scheduleReturn:'orari'};
+  const reducedMotion=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function centerFocus(target,{block='center'}={}){
+    if(!target || typeof target.scrollIntoView!=='function')return;
+    requestAnimationFrame(()=>{
+      try{target.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block,inline:'nearest'});}catch(_){ }
+    });
+  }
   const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
   const date = () => daySelect.value;
@@ -213,6 +220,10 @@
     if(page==='orari') renderSchedule();
     $('#mainContent').focus({preventScroll:true});
     window.scrollTo({top:0,behavior:'auto'});
+    document.dispatchEvent(new CustomEvent('aulafinder:pagechange',{detail:{page}}));
+    const activePage=$('#'+page+'Page');
+    const focusTitle=activePage?.querySelector('h1, .page-topline, .orari-heading');
+    if(focusTitle)centerFocus(focusTitle,{block:'start'});
   }
 
   const teacherCompare=(a,b)=>teacherBase(a).localeCompare(teacherBase(b),'it',{numeric:true,sensitivity:'base'}) || teachingSubject(a).localeCompare(teachingSubject(b),'it',{sensitivity:'base'}) || a.localeCompare(b,'it',{numeric:true});
@@ -809,8 +820,20 @@
     getCurrentClass:()=>state.schedule==='classes'?state.selection:(state.result?.kind==='classes'?state.result.id:null),
     showClass:(id)=>{if(!DATA.classes[id])return false;openSchedule('classes',id);return true;},
     findTeacher:(id)=>{if(!DATA.teachers[id])return false;openSchedule('teachers',id);return true;},
-    openRoom:(id)=>{const key=Object.keys(DATA.rooms).find(k=>canon(k)===canon(id));if(key){openSchedule('rooms',key);return true;}return false;}
+    openRoom:(id)=>{const key=Object.keys(DATA.rooms).find(k=>canon(k)===canon(id));if(key){openSchedule('rooms',key);return true;}return false;},
+    go:(page)=>{go(page);return true;},
+    openSchedule:(kind,id='')=>{openSchedule(kind,id);return true;},
+    getPage:()=>state.page,
+    centerFocus
   };
+  document.addEventListener('click',e=>{
+    const target=e.target.closest('button,[role="tab"],summary,.room,.team-member,.side-link,[data-page],[data-schedule]');
+    if(target) setTimeout(()=>centerFocus(target),25);
+  },true);
+  document.addEventListener('change',e=>{
+    const target=e.target.closest('select,input');
+    if(target) setTimeout(()=>centerFocus(target),25);
+  },true);
   const themeButton=$('#themeToggle');
   const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
   const refreshThemeLabel=()=>{
