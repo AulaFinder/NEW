@@ -1,0 +1,329 @@
+# CHANGELOG · AulaFinder
+
+> Storico ricostruito da file di rilascio effettivamente disponibili. Le versioni senza una fonte puntuale sono segnalate e non hanno modifiche inventate.
+
+## V48 · Versioni, tutorial e Finder personalizzati
+
+- Nuova pagina Versioni con cronologia consultabile V1–V48, ricerca e schede apribili.
+- Rimosso l’alone/rettangolo azzurro quando la barra di ricerca ha il focus.
+- Legenda del navigatore: dicitura «Percorso», senza il colore nel nome; indicatori con gradiente animato.
+- Dalla piantina puoi scegliere «Portami qui» anche per Archivio e Caldaie, dove il navigatore trova il tragitto.
+- Su mobile le azioni dell’aula compaiono tra il titolo del piano e la mappa, senza coprire la stanza.
+- Titoli delle sezioni principali con icona a sinistra; centratura mirata degli elementi selezionati.
+- Tutorial in sette tappe con anteprime clonate dai componenti reali del sito, tappa Footer e ritorno alla tappa dopo una prova.
+- Nuova FAQ sul motivo delle sigle dei docenti per la privacy.
+- Finder trascinabile con posizione salvata nel browser, icona fornita, video orb in loop e fumetti più contrastati.
+- Aggiornati README, changelog, storico, descrizione GitHub e cache PWA.
+
+*Fonte: Specifiche V48 dell’utente; verifica del pacchetto e report V48*
+
+## V47 · Tutorial e microanimazioni
+
+- Il pin di arrivo si trova al centro geometrico dell’aula.
+- Hover con alone e riflesso sul logo; bagliore del titolo migliorato.
+- Microanimazioni dell’interfaccia con rispetto della riduzione movimento.
+- Tutorial a sei tappe con FAQ e navigazione da tastiera.
+- Cache PWA aggiornata per la guida.
+
+*Fonte: README_V47.md; VERIFICHE_V47.md*
+
+## V46 · Navigatore e marchio animato
+
+- Sottotitolo «Il tuo navigatore scolastico» con accento menta.
+- Orbita elettronica animata nel marchio; rimossa dicitura «Fainder».
+- Percorsi gialli con gradiente SVG; marcatori partenza, scale e pin arrivo coerenti con legenda.
+- Selezionando Da/A su mappa o tendina si torna in cima al modulo.
+
+*Fonte: README_V46.md; VERIFICHE_V46.md*
+
+## V45 · Finder, disponibilità e SEO
+
+- Finder locale con risposte dagli orari e comandi vocali opzionali.
+- Dittatura vocale nella ricerca, dove supportata.
+- Professori liberi: ore buche e tutte le ore senza lezione.
+- Miglioramenti alla selezione aule, menu mobile e preferiti.
+- Pulsante Admin nel footer; metadati SEO e sitemap.
+
+*Fonte: README_V45.md; VERIFICHE_V45.md*
+
+## V44 · Icona del menu mobile
+
+- L’icona hamburger testuale del menu mobile è diventata una SVG.
+- Cache aggiornata.
+
+*Fonte: Confronto archivi V43/V44 riportato nella documentazione ricostruita*
+
+## V43 · Rifiniture su tutorial e footer
+
+- Piccoli interventi sull’area tutorial allora in elaborazione e sul footer.
+- Cache aggiornata.
+
+*Fonte: Confronto archivi V42/V43 riportato nella documentazione ricostruita*
+
+## V42 · Consolidamento dell’interfaccia
+
+- Versione disponibile ma non completamente distinguibile dalle modifiche V41 nei confronti conservati.
+- Aggiornamenti a HTML, CSS e cache.
+
+*Fonte: Storico comparativo V40/V42, attribuzione parziale*
+
+## V41 · Pulsanti e tema mobile
+
+- Sfondo bianco di menu e Home mobile e selettore tema nel tema chiaro.
+- Allineamenti con Giorno e Ora mantenendo invariato il tema scuro.
+
+*Fonte: VERIFICHE_V41.md*
+
+## V40 · Rifiniture di interfaccia
+
+- Versione conservata; differenze in orientamento, CSS e cache rispetto a V36.
+- Non è possibile separare con precisione tutti i cambiamenti intermedi.
+
+*Fonte: Confronto V36/V40 ricostruito nello storico precedente*
+
+## V39 · Orientamento delle planimetrie
+
+- Rotazione di 180° dell’intero disegno con contro-rotazione di scritte e simboli.
+- Conservata la geometria originale delle stanze.
+
+*Fonte: README.md storico (V39); VERIFICHE_V39.md*
+
+## V38 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V37 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V36 · Piantine e navigazione
+
+- Rotazione delle piantine e mantenimento leggibilità dei nomi delle stanze.
+- Percorsi più ortogonali con meno svolte, legenda e adattamenti di menu/orari mobile.
+
+*Fonte: README_V36.txt; VERIFICHE_V36.md*
+
+## V35 · Caricamento e menu mobile
+
+- Video originale di apertura integrato come schermata di caricamento con poster/fallback.
+- Marchio AulaFinder cliccabile nel menu mobile.
+- Sfumatura ai bordi del video su smartphone; cache aggiornata.
+
+*Fonte: README.md storico, sezioni video e V35*
+
+## V34 · Percorsi e adattamento mobile
+
+- Gestione dei due accessi della Palestra, terra e sotterraneo.
+- Algoritmo con penalizzazione della vicinanza ai muri.
+- Ore visualizzate da 1 a 6, filtri e menu mobile rifiniti.
+- Ordinamento dei docenti aggiornato.
+
+*Fonte: README.md storico, V34*
+
+## V33 · Preferiti e simboli del navigatore
+
+- Stella dei preferiti senza sfondo.
+- Marcatori e legenda con distinzione tra partenza, destinazione e collegamento verticale.
+- Legenda affiancata su desktop e sotto su mobile.
+
+*Fonte: README.md storico, V33*
+
+## V32 · Marcatori scale anche in discesa
+
+- Il simbolo per scale/ascensore compare all’entrata e all’uscita del cambio piano anche in discesa.
+
+*Fonte: README.md storico, V32*
+
+## V31 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V30 · Percorsi validati e ricerca più stabile
+
+- Geometrie SVG misurate con una copia renderizzata per calcolare itinerari entro i corridoi.
+- Corretto il comportamento dei suggerimenti del navigatore durante il click/tocco.
+- Orari docenti, riepilogo mobile e header mobile rifiniti; cache aggiornata.
+
+*Fonte: README.md storico, V30*
+
+## V29 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V28 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V27 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V26 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V25 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V24 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V23 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V22 · SEO e accessibilità
+
+- Metadati canonical, Open Graph e Twitter Card; collegamento per saltare al contenuto.
+- Focus e nomi accessibili, interventi nelle piantine su T.07 e T.08.
+- Footer con collegamento email e cache PWA aggiornata.
+
+*Fonte: ANALISI_SEO_ACCESSIBILITA.md, documento intestato V22*
+
+## V21 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V20 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V19 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V18 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V17 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V16 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V15 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V14 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V13 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V12 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V11 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V10 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V9 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V8 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V7 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V6 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V5 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V4 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V3 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V2 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*
+
+## V1 · Dettagli non documentati
+
+- La documentazione disponibile non permette di attribuire modifiche specifiche a questa versione.
+
+*Fonte: Documentazione e pacchetti consultabili non sufficienti*

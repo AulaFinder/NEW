@@ -88,10 +88,7 @@
   const roomAliases=loc=>{
     const desc=loc.description||'';
     const simplified=desc.replace(/^(?:LAB\.?|LABORATORIO)\s*(?:DI\s*)?/i,'');
-    const extras=[loc.id,`Aula ${loc.id}`,desc,`${desc} ${loc.id}`,`Lab ${simplified}`,`Laboratorio di ${simplified}`];
-    if(/^Caldaie$/i.test(loc.id))extras.push('Caldaia','Aula Caldaia');
-    if(/^Archivio$/i.test(loc.id))extras.push('Aula Archivio');
-    return extras.filter(Boolean).map(searchNorm);
+    return [loc.id,`Aula ${loc.id}`,desc,`${desc} ${loc.id}`,`Lab ${simplified}`,`Laboratorio di ${simplified}`].filter(Boolean).map(searchNorm);
   };
   const lookup=s=>{
     const exact=uniq.get(canon(s));if(exact)return exact;
