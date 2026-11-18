@@ -1,45 +1,43 @@
 # AulaFinder · Il tuo navigatore scolastico
 
-**Versione attuale: V49 · Il salto di qualità.**
+**Versione attuale: V50 · Orizzonti nuovi (18 novembre 2026).**
 
-AulaFinder è una web app/PWA realizzata per il **Liceo Scientifico G.B. Grassi di Saronno**: ricerca di aule, classi e docenti, orari, piantine, navigazione tra i piani e assistenza Finder. I dati sugli orari sono quelli caricati nell'app, **non aggiornamenti in tempo reale**.
+AulaFinder è la web app/PWA del progetto scolastico per il **Liceo Scientifico G.B. Grassi di Saronno**. Il pacchetto V50 parte dalla V49 originale, senza sostituire i dati degli orari o i cinque SVG delle piantine.
 
 ## Cosa puoi fare
 
-- Cercare aule, classi e sigle dei docenti con suggerimenti, cronologia e preferiti.
-- Consultare orari settimanali, aule libere, professori senza lezione e ore buche.
-- Esplorare cinque piantine originali e, su smartphone, aprirle a schermo intero, con un visualizzatore che si adatta anche al formato orizzontale.
-- Usare il Navigatore tra gli ambienti, inclusi Archivio, Caldaie e Palestra, con scale/ascensore e passaggi tra piani quando esiste un percorso verificabile sulla geometria della mappa.
-- Chiedere a Finder suggerimenti in linguaggio naturale: aiuto con lo zaino, le materie, le prossime lezioni e l'uso del sito. **Finder è un assistente locale basato su regole e orari, non un modello AI generativo né un servizio Internet.**
-- Usare il **Tutorial autonomo** in sette tappe, con esempi interattivi e copie autentiche delle piantine.
-- Consultare tutte le **49 versioni** e aprire le anteprime delle Home ricavate dagli archivi storici, dalla V1 alla V49.
-- Alternare tema chiaro/scuro e installare la PWA dove supportata dal browser.
+- Cercare aule, classi e docenti per sigla, conservando suggerimenti, preferiti e cronologia.
+- Consultare orari da lunedì a venerdì, aule senza lezione, ore buche e **numero di ore di lezione previste a settimana per docente**.
+- Consultare le cinque piantine; aprirle a schermo intero, ingrandirle e scorrere in orizzontale e verticale, quando la dimensione della mappa supera il display.
+- Usare il Navigatore per individuare un percorso schematico lungo i corridoi, inclusa la Palestra e i cambi di piano con scale/ascensore.
+- Fare domande a **Finder**, che risponde dagli orari locali senza usare un servizio AI remoto. Finder ha ora un lanciatore circolare animato e un nuovo effetto di ingresso/uscita; la lettura vocale dipende dal dispositivo.
+- Seguire il Tutorial autonomo in sette tappe, ora arricchito con suggerimenti contestuali.
+- Consultare l'archivio di **50 versioni** e aprire a schermo intero le anteprime delle Home con zoom.
+- Usare il tema automatico del sistema su mobile, con possibilità di modifica manuale.
 
-## Avvertenze e privacy
+## Note importanti
 
-- Le disponibilità delle aule e dei docenti derivano dall'orario caricato; sostituzioni e assenze non sono rilevate in tempo reale.
-- I docenti sono riportati tramite sigle/iniziali per tutela della privacy.
-- Il Navigatore è **schematico** e non va usato per evacuazioni o emergenze.
-- Il riconoscimento vocale funziona solo sui browser che espongono API compatibili e concedono accesso al microfono: alcuni browser possono richiedere servizi di trascrizione online o non consentire il riconoscimento. La chat testuale funziona senza microfono.
-- Per la lettura a voce alta Finder sceglie solo una **voce italiana locale del dispositivo**, se presente. Non è stata introdotta una voce proprietaria uniforme su tutti i telefoni.
-- Il breve suono di apertura viene tentato soltanto durante l'introduzione. I browser mobili possono bloccarlo per le regole sull'autoplay; il sito resta utilizzabile senza suono.
-- Su iOS e su alcuni browser il blocco della rotazione tramite API non è disponibile: il visualizzatore delle mappe ha un fallback CSS.
+- I dati sulle disponibilità derivano dagli **orari pubblicati**, non da presenze in tempo reale; le ore settimanali indicate sono ore di **lezione**, non ore lavorative complessive.
+- I percorsi sono schematici e non sostituiscono segnaletica, istruzioni di sicurezza o vie di evacuazione.
+- Il filmato di ingresso resta quello originale. I tre brevi effetti sonori sono nuovi e prodotti per V50; l'autoplay audio può essere vietato dal browser.
+- Microfono e lettura vocale dipendono dal browser e dalle voci disponibili. Non è garantita una voce identica su tutti i dispositivi.
+- Le immagini **V1–V48** sono gli scatti d'archivio ricevuti nella V49; la schermata **V49** è stata rigenerata dal codice V49 originale per correggere l'assenza del simbolo Orari nella precedente acquisizione. Le altre anteprime storiche non sono state inventate o ritoccate arbitrariamente.
 
 ## Pubblicare su GitHub Pages
 
-1. Estrai lo ZIP **AulaFinderV49.zip**. All'interno trovi la cartella **`V49/`**.
-2. Carica **il contenuto di `V49/`** nella cartella principale del repository, non la cartella `V49` intera, se il sito deve continuare a funzionare all'URL `/AulaFinder/`.
-3. Mantieni intatte le sottocartelle `assets/` e `icons/`, i file `.js`, `.css`, `manifest.webmanifest` e `sw.js`.
-4. Attiva GitHub Pages dalle impostazioni del repository e controlla la pubblicazione HTTPS. Il service worker utilizza la cache **`aulafinder-pwa-v49`**; dopo l'aggiornamento può servire un ricaricamento completo.
-5. Verifica su **Android e iPhone reali** il video, il microfono, il visualizzatore fullscreen e l'uso della tastiera assistiva prima della consegna definitiva.
+1. Estrai **AulaFinderV50.zip**: contiene la cartella `V50/`.
+2. Se vuoi mantenere il sito all'URL `/AulaFinder/`, pubblica **il contenuto della cartella `V50/`** nella radice del repository, non la cartella stessa.
+3. Mantieni tutte le cartelle `assets/`, `icons/` e tutti i file `.js`, `.css`, `manifest.webmanifest` e `sw.js`.
+4. La cache PWA è ora `aulafinder-pwa-v50`. Dopo l'aggiornamento può essere necessario aggiornare la pagina o chiudere e riaprire la PWA.
+5. Prima di dichiarare il sito pronto in produzione, verifica su Android/iPhone reali audio, rotazione mappa, microfono e comportamento delle animazioni.
 
-## Documentazione nella release
+## Documentazione
 
-- `README_V49.md`: dettagli della V49.
-- `CHANGELOG.md`: registro storico aggiornato.
-- `STORICO_VERSIONI.md`: indice V1–V49 e fonte delle informazioni recuperate.
-- `VERIFICHE_V49.md`: controlli eseguiti, bug corretti e limiti dei test.
-- `ANALISI_V49.md`: problematiche, proposte di miglioramento e priorità consigliate.
-- `GITHUB_ABOUT.txt`: descrizione breve pronta per il campo About del repository.
+- `README_V50.md`: funzionalità e dettagli del rilascio.
+- `VERIFICHE_V50.md`: controlli eseguiti e loro limiti.
+- `CHECKLIST_V50.md`: richieste delle note e stato.
+- `STORICO_VERSIONI.md`: storia delle versioni e provenienza delle anteprime.
+- `CHANGELOG.md`: cronologia delle modifiche.
+- I file `README_V49.md`, `VERIFICHE_V49.md` e simili sono conservati come **documenti storici**.
 
-**Contatto del progetto:** [aulafinder@gmail.com](mailto:aulafinder@gmail.com).
+**Contatto:** aulafinder@gmail.com

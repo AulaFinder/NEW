@@ -1,8 +1,16 @@
-# AulaFinder · Storico verificato delle versioni V1–V49
+# AulaFinder · Storico verificato delle versioni V1–V50
 
 Le note sono ricostruite a partire dai file/rapporti originali contenuti negli archivi storici. L’anteprima della Home di ogni versione è consultabile nella pagina **Versioni** del sito.
 
-**Versione attuale: V49 · Il salto di qualità.**
+**Versione attuale: V50 · Orizzonti nuovi.**
+
+## V50 · Orizzonti nuovi
+
+- Tema dispositivo su mobile, animazioni del marchio, Finder rinnovato e suoni originali.
+- Piantine fullscreen scorrevoli, navigatore con ingresso/uscita dalle aule, ore settimanali per docenti.
+- Archivio aggiornato a 50 rilasci e anteprima Home V50.
+- **Fonte:** revisione V50 realizzata a partire dallo ZIP V49 fornito dall'utente, due pagine di appunti manoscritti e controlli tecnici indicati in `VERIFICHE_V50.md`.
+- **Anteprima Home:** `assets/versioni-home/V50.webp`.
 
 ## V49 · Il salto di qualità
 - Tutorial completamente autonomo: ricerca, orari, disponibilità, percorso, Finder e mappe interattivi all’interno della guida.

@@ -1,5 +1,17 @@
 # Registro delle versioni di AulaFinder
 
+## V50 · Orizzonti nuovi (18 novembre 2026)
+
+- Mobile: tema automatico secondo il dispositivo con preferenza manuale indipendente; raccordo d'intro più uniforme.
+- Nuovi brevi effetti sonori originali per avvio, tap del logo e domande a Finder (nei limiti del browser).
+- Marchio sempre animato; click header, menu e footer senza navigazione; logo con ingresso/uscita morbidi.
+- Finder circolare animato, senza testo né «Riduci a icona», apertura e chiusura ancorate al lanciatore.
+- Contatori di disponibilità in Home; totale ore di lezione settimanali per docente.
+- Piantine fullscreen con zoom e pan effettivi; percorsi per le aule con marcatori centrati.
+- Versioni 1–50 con dettagli, nuova miniatura V50 e fullscreen preview; immagine V49 rigenerata dai sorgenti originali.
+- Sette passi tutorial arricchiti, correzioni di scroll e contrasto interfaccia.
+- Cache PWA incrementata a v50, verifiche dettagliate in `VERIFICHE_V50.md`.
+
 ## V49 · Il salto di qualità (18 novembre 2026)
 
 - **Tutorial autonomo:** tutte le sette tappe si provano senza lasciare il tutorial, con lezioni e piantine originali.
