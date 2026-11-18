@@ -351,7 +351,8 @@
       <div class="result-banner"><span class="banner-icon" aria-hidden="true">${icon}</span><h2>${escapeHtml(headline)}</h2>${favButton(kind,item.id)}</div>
       <div class="result-body">
         <div class="result-header">${planButton}<span class="status-pill ${v?'':'free'}">${escapeHtml(badge)}</span></div>
-        <section class="current-lesson"><p class="eyebrow">${escapeHtml(extra)}</p><h3>${escapeHtml(heading)}</h3><p>${escapeHtml(line)}</p>${kind==='teachers'?`<p class="af50-teacher-total">${Object.values(item.days||{}).flat().filter(Boolean).length} ore di lezione previste nella settimana</p>`:''}</section>
+        <section class="current-lesson"><p class="eyebrow">${escapeHtml(extra)}</p><h3>${escapeHtml(heading)}</h3><p>${escapeHtml(line)}</p></section>
+        ${kind==='teachers'?`<div class="teacher-total-highlight" aria-label="Ore totali settimanali ${Object.values(item.days).flat().filter(Boolean).length}"><span>Ore totali settimanali</span><strong>${Object.values(item.days).flat().filter(Boolean).length}</strong></div>`:''}
         <div class="daily-heading"><h3><span class="icon-inline">${clockIcon}</span>Orario</h3><span>${escapeHtml(day)}</span></div>
         <div class="hours-list">${item.days[day].map((slot,i)=>hourRow(kind,slot,i,selected)).join('')}</div>
         <button class="complete-schedule-button" type="button" data-full-schedule="${escapeHtml(kind)}" data-entity="${escapeHtml(item.id)}">Apri l’orario completo →</button>
@@ -547,7 +548,7 @@
     return [...counts.entries()].sort((a,b)=>b[1]-a[1]||sortRooms(a[0],b[0]))[0]?.[0] || null;
   }
   function panelRow(labelTxt,valueTxt){
-    return `<div class="orari-panel-row"><dt>${escapeHtml(labelTxt)}</dt><dd>${escapeHtml(valueTxt)}</dd></div>`;
+    return `<div class="orari-panel-row ${labelTxt==='Ore totali settimanali'?'is-total-hours':''}"><dt>${escapeHtml(labelTxt)}</dt><dd>${escapeHtml(valueTxt)}</dd></div>`;
   }
   function renderScheduleInfo(){
     const kind=state.schedule, id=state.selection;
@@ -570,9 +571,10 @@
       const item=DATA.teachers[id]; if(!item) return '';
       title=teacherBase(id);
       rows=panelRow('Materia',teachingSubject(id));
-      rows+=panelRow('Ore settimanali previste',String(Object.values(item.days||{}).flat().filter(Boolean).length));
       const classes=[...new Set(Object.values(item.days).flat().filter(Boolean).map(x=>x.class))].sort((a,b)=>a.localeCompare(b,'it',{numeric:true}));
       rows+=panelRow('Classi',classes.join(' · ')||'Non indicate');
+      const totalHours=Object.values(item.days).flat().filter(Boolean).length;
+      rows+=panelRow('Ore totali settimanali',String(totalHours));
     }else if(kind==='freeRooms'){
       title='Aule libere';
       rows=panelRow('Disponibili adesso',String(DATA.freeRooms[date()]?.[hour()-1]?.length||0));
@@ -700,7 +702,7 @@
   });
 
   $('#menuButton').addEventListener('click',()=>$('#sidebar').classList.contains('is-open')?closeMenu():openMenu());
-  $('#sidebarClose').addEventListener('click',()=>go('home'));
+  $('#sidebarClose').addEventListener('click',()=>{if(window.matchMedia('(max-width:680px)').matches)closeMenu();});
   $('#sidebarBackdrop').addEventListener('click',()=>{closeMenu();$('#menuButton').focus();});
   window.addEventListener('resize',()=>{if(window.innerWidth>680 && document.body.classList.contains('mobile-menu-open'))closeMenu();});
   window.addEventListener('resize',()=>{const box=$('#searchSuggestions');if(!box.hidden)fitSuggestions(box);});
@@ -823,7 +825,7 @@
   themeButton.addEventListener('click',()=>{
     const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
     document.documentElement.dataset.theme=next;
-    try{localStorage.setItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme',next);}catch(_){}
+    try{localStorage.setItem('aulafinder.theme',next);}catch(_){}
     refreshThemeLabel();
     themeButton.classList.remove('theme-switching');
     // Re-trigger the short icon transition when toggled repeatedly.
@@ -831,8 +833,7 @@
     themeButton.classList.add('theme-switching');
   });
   themeButton.addEventListener('animationend',()=>themeButton.classList.remove('theme-switching'));
-  systemTheme.addEventListener('change',e=>{try{if(localStorage.getItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme'))return;}catch(_){}document.documentElement.dataset.theme=e.matches?'dark':'light';refreshThemeLabel()});
-  matchMedia('(max-width:680px)').addEventListener('change',()=>{let saved=null;try{saved=localStorage.getItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme');}catch(_){}document.documentElement.dataset.theme=saved==='dark'||(saved!=='light'&&systemTheme.matches)?'dark':'light';refreshThemeLabel();});
+  systemTheme.addEventListener('change',e=>{try{if(localStorage.getItem('aulafinder.theme'))return;}catch(_){}document.documentElement.dataset.theme=e.matches?'dark':'light';refreshThemeLabel()});
   refreshThemeLabel();
   renderFavorites();
   renderHistory();
