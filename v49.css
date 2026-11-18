@@ -1,0 +1,176 @@
+/* AulaFinder V49 - migliorie isolate. Gli SVG originali delle mappe non sono alterati. */
+:root{--af49-aqua:#19dec9;--af49-iris:#7d7cff;--af49-gold:#ffd978;--af49-ink:#112f43}
+/* Logo mobile: bagliore al tocco senza navigare. */
+@keyframes af49-brand-light{0%{filter:brightness(1);text-shadow:none}38%{filter:brightness(1.9) drop-shadow(0 0 11px #9bfff0);text-shadow:0 0 21px #9bfff0}100%{filter:brightness(1);text-shadow:none}}
+.af49-brand-glow{animation:af49-brand-light .75s cubic-bezier(.2,.75,.25,1) both!important}
+#sidebarClose.af49-brand-glow .sidebar-brand-logo,.footer-brand:has(.af49-brand-glow) .footer-logo{animation:af49-brand-light .75s ease both!important}
+.logo-dialog.af49-logo-returning::backdrop{background:#06191e50!important;transition:background .48s ease}
+@keyframes af49-logo-land{0%{filter:brightness(2.2) drop-shadow(0 0 16px #9dfff1);transform:scale(1.12)}100%{filter:brightness(1);transform:scale(1)}}
+#logoButton.af49-logo-landing{animation:af49-logo-land .55s ease both}
+/* Menu Orari: stessi ingombri delle altre voci, freccia interna. */
+@media(max-width:680px){
+ #sidebar .side-orari-heading{position:relative;width:100%;min-width:0;display:block}
+ #sidebar .side-orari-heading>.side-link{display:flex;width:100%;min-height:51px;padding-right:51px}
+ #sidebar .schedule-subnav-toggle{display:grid;place-items:center;position:absolute;right:7px;top:50%;transform:translateY(-50%);height:39px;width:38px;min-width:38px;flex:none;border-radius:9px;color:#19404A;border:1px solid transparent}
+ #sidebar .side-orari-heading:has(.side-link.is-active) .schedule-subnav-toggle{color:#fff}
+ #sidebar .schedule-subnav-toggle:focus-visible{border-color:#9de8d7;outline:2px solid #2c9f9f}
+ #sidebar .side-orari-heading .schedule-subnav-toggle:hover{background:#4bbcb625}
+}
+/* Navigatore: cambia solo fondi, barre e legenda (palette ad alto contrasto). */
+#navigatorPage .navigator-panel,#navigatorPage .navigator-picker{background:linear-gradient(150deg,#f7f8ff,#e7f4f7)!important;border-color:#bbc9e9!important}
+#navigatorPage .nav-stepper{background:linear-gradient(145deg,#f3f5ff,#e6f1fc)!important;border-color:#b7c6e8!important}
+#navigatorPage .nav-route-legend{background:linear-gradient(140deg,#eaf1ff,#d9f2ec)!important;border-color:#a8c0e1!important;color:#193649!important}
+#navigatorPage .nav-field-indicator{background-size:100% 330%!important;animation:af49-bar-flow 2.6s linear infinite!important;box-shadow:0 0 8px #6ddddd44!important}
+#navigatorPage .nav-origin-indicator{background-image:linear-gradient(180deg,#65f0f5,#4666e3,#a68bff,#19dec9,#65f0f5)!important}
+#navigatorPage .nav-destination-indicator{background-image:linear-gradient(180deg,#ffd978,#fc8fba,#8d77fa,#19dec9,#ffd978)!important}
+#navigatorPage .nav-legend-line{background:linear-gradient(110deg,#19dec9,#8782ff,#ffd978,#19dec9)!important;background-size:320% 100%!important;animation:af49-bar-horizontal 2.8s linear infinite!important;height:6px!important;border-radius:99px!important}
+#navigatorPage .nav-symbol-departure-ring{stroke:#6374e9!important;fill:#eefaff!important}
+#navigatorPage .nav-symbol-departure-core{fill:#3047c0!important}
+#navigatorPage .nav-symbol-stairs{fill:#05b49f!important;stroke:#073d47!important}
+#navigatorPage .nav-point-destination path{fill:#df4e83!important;stroke:#fff!important}
+#navigatorPage .nav-route-polyline{stroke-width:3.4!important}
+#navigatorPage .nav-room-entrance-spur{stroke:#24cbb9;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:4 2;fill:none}
+@keyframes af49-bar-flow{0%{background-position:50% 0}100%{background-position:50% 100%}}
+@keyframes af49-bar-horizontal{0%{background-position:0 50%}100%{background-position:100% 50%}}
+html[data-theme="dark"] #navigatorPage .navigator-panel,html[data-theme="dark"] #navigatorPage .navigator-picker{background:linear-gradient(150deg,#101b39,#182f42)!important;border-color:#425c83!important}
+html[data-theme="dark"] #navigatorPage .nav-stepper{background:linear-gradient(155deg,#111d3d,#133a47)!important;border-color:#456583!important}
+html[data-theme="dark"] #navigatorPage .nav-route-legend{background:linear-gradient(145deg,#152b4c,#0e4550)!important;border-color:#43858a!important;color:#f1fcff!important}
+html[data-theme="dark"] #navigatorPage .nav-symbol-departure-ring{stroke:#8eacff!important;fill:#0e2e46!important}
+html[data-theme="dark"] #navigatorPage .nav-symbol-departure-core{fill:#e9faff!important}
+/* Mappe a schermo intero: gli SVG sono copie dei disegni originali. */
+#piantinaPage .plan-banner{position:relative}
+#piantinaPage .af49-plan-expand{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;padding:8px;border:1px solid #a5eee0;border-radius:11px;background:#ffffff17;color:#fff;box-shadow:0 3px 10px #001c2c26;transition:background .2s,box-shadow .2s}
+#piantinaPage .af49-plan-expand:hover{background:#ffffff2a;box-shadow:0 0 0 3px #9de8d732}
+#piantinaPage .af49-plan-expand svg{width:23px;height:23px}
+#piantinaPage .sel-chip{margin-left:auto}
+.af49-map-fullscreen-open{overflow:hidden!important}
+.af49-map-viewer{position:fixed;inset:0;z-index:2000;background:#091d2c;color:#f6fffd;isolation:isolate}
+.af49-map-viewer[hidden]{display:none!important}
+.af49-map-viewer-bar{position:absolute;z-index:3;top:0;left:0;right:0;min-height:62px;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px clamp(12px,3vw,24px);background:linear-gradient(90deg,#071f29,#175060);box-shadow:0 8px 23px #00171d70}
+.af49-map-viewer-bar strong{font-size:clamp(14px,2vw,20px);font-weight:850;letter-spacing:-.02em}
+.af49-viewer-buttons{display:flex;align-items:center;gap:7px}
+.af49-viewer-buttons button{height:43px;width:43px;border:1px solid #81dace;border-radius:11px;background:#163d4c;color:#f1fffe;font-weight:900;font-size:21px;display:grid;place-items:center;line-height:1}
+.af49-viewer-buttons button:hover,.af49-viewer-buttons button:focus-visible{background:#266977}
+#af49ZoomLabel{display:inline-block;min-width:46px;text-align:center;font-size:12px;font-weight:800}
+.af49-map-viewer-scene{position:absolute;inset:63px 0 32px;overflow:auto;display:flex;align-items:center;justify-content:center;background:#edf6f7}
+.af49-map-viewer-stage{display:flex;align-items:center;justify-content:center;width:100%;height:100%;transform:scale(var(--af49-viewer-zoom,1));transform-origin:center;transition:transform .22s ease}
+.af49-map-viewer svg.plan{display:block;width:100%;height:100%;max-width:100%;max-height:100%;overflow:visible}
+.af49-map-viewer svg.plan text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;pointer-events:none;stroke:none!important;text-shadow:none!important}
+.af49-map-viewer svg.plan .room .room-name-hidden{display:none!important}
+.af49-map-viewer svg.plan .room[data-t="Archivio"] .room-name-hidden,.af49-map-viewer svg.plan .room[data-t="Caldaie"] .room-name-hidden,.af49-map-viewer svg.plan .room[data-t="Palestra"] .room-name-hidden{display:block!important}
+.af49-map-viewer svg.plan .room .box{stroke-linejoin:round}
+.af49-map-viewer svg.plan .room .room-number{font-weight:800!important;fill:#102f49!important}
+.af49-map-viewer svg.plan .room.af49-room-highlight .box{stroke:#e8579a!important;stroke-width:2.1px!important;filter:drop-shadow(0 0 3px #e8579a)}
+.af49-map-viewer .af49-map-viewer-note{position:absolute;bottom:0;left:0;right:0;min-height:33px;padding:6px 12px;background:#092838;text-align:center;font-size:12px;font-weight:600;color:#d7fff5;z-index:3}
+html[data-theme="dark"] .af49-map-viewer-scene{background:#132936}
+html[data-theme="dark"] .af49-map-viewer svg.plan .room .box{fill:#2a515e!important;stroke:#95c6c8!important}
+html[data-theme="dark"] .af49-map-viewer svg.plan .room .room-number{fill:#f4fffe!important}
+html[data-theme="dark"] .af49-map-viewer svg.plan .room .room-name-hidden{fill:#e2f7f1!important}
+@media(max-width:680px) and (orientation:portrait){
+ .af49-map-viewer-scene{inset:56px 0 33px;overflow:hidden}
+ .af49-map-viewer-stage{position:absolute;left:50%;top:50%;width:calc(100dvh - 100px);height:100vw;max-height:none;transform:translate(-50%,-50%) rotate(90deg) scale(var(--af49-viewer-zoom,1))}
+ .af49-map-viewer-bar{min-height:56px;padding:7px 9px}
+ .af49-viewer-buttons button{width:36px;height:36px;min-height:36px}
+ .af49-map-viewer-bar strong{font-size:13px}
+ #af49ZoomLabel{min-width:38px;font-size:10px}
+}
+/* Finder: finestra realmente trascinabile, regolabile e ripristinabile. */
+#finderLaunch{border:1px solid #8df8e8;background:linear-gradient(120deg,#0b3447,#25597d,#166969,#0b3447);background-size:260% 260%;animation:af49-finder-button 7s linear infinite;box-shadow:0 9px 24px #071f2960,0 0 0 2px #b6fff017;font-weight:850;letter-spacing:.015em}
+#finderLaunch::before{content:'';position:absolute;inset:-3px;border:1px solid #7ef5e2;border-radius:inherit;opacity:.42;pointer-events:none;animation:af49-finder-ring 3.3s ease-in-out infinite}
+#finderLaunch .finder-launch-icon{border-radius:8px;box-shadow:0 0 9px #a2f9f957}
+@keyframes af49-finder-button{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+@keyframes af49-finder-ring{0%,100%{transform:scale(1);opacity:.24}50%{transform:scale(1.07);opacity:.8}}
+#finderPanel{resize:both;min-width:min(295px,calc(100vw - 16px));min-height:300px;overflow:hidden;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
+#finderPanel .finder-panel-head{touch-action:none;user-select:none;cursor:grab}
+#finderPanel.is-window-dragging .finder-panel-head{cursor:grabbing}
+#finderPanel .finder-window-controls{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+#finderPanel .finder-window-btn,#finderPanel .finder-close{display:grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid #9de8d7;border-radius:9px;background:#19404a;color:#fff;cursor:pointer;line-height:1}
+#finderPanel .finder-close svg{display:block;width:18px;height:18px;flex:none}
+#finderPanel .finder-window-btn{font-size:21px}
+#finderPanel.is-maximized{position:fixed!important;inset:8px!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 16px)!important;max-width:none!important;max-height:none!important;resize:none!important;border-radius:15px!important}
+#finderPanel .finder-head-orb{background:#0b2e37 url('assets/finder-orb-loop.webp') center/cover no-repeat}
+#finderPanel .finder-head-orb video.is-paused{opacity:0}
+#finderPanel .finder-prompt-wrap{border:1px solid #99c9c3;border-radius:12px;padding:7px 9px;background:#eefbf7}
+#finderPanel .finder-prompt-wrap>summary{cursor:pointer;display:flex;justify-content:space-between;gap:9px;font-size:12px;font-weight:800;color:#19404a;list-style:none;padding:4px 2px}
+#finderPanel .finder-prompt-wrap>summary::-webkit-details-marker{display:none}
+#finderPanel .finder-prompt-wrap[open]>summary span{transform:rotate(180deg)}
+#finderPanel .finder-suggestions{margin-top:9px;display:grid;gap:9px;max-height:180px;overflow:auto;overscroll-behavior:contain}
+#finderPanel .finder-prompt-group{display:flex;flex-wrap:wrap;gap:5px}
+#finderPanel .finder-prompt-group>strong{flex:1 1 100%;display:block;font-size:11px;color:#32747b}
+#finderPanel .finder-prompt-group>button{font-size:11px;padding:6px 8px;background:#fff;border:1px solid #91c9c0;border-radius:9px;color:#19404a;min-height:34px;text-align:left}
+#finderPanel .finder-conversation{max-height:none;min-height:110px;flex:1 1 auto}
+html[data-theme="dark"] #finderPanel .finder-prompt-wrap{background:#183843;border-color:#48857e}
+html[data-theme="dark"] #finderPanel .finder-prompt-wrap>summary,html[data-theme="dark"] #finderPanel .finder-prompt-group>strong{color:#e6fff7}
+html[data-theme="dark"] #finderPanel .finder-prompt-group>button{background:#214652;color:#f0fffa;border-color:#4a807d}
+@media(max-width:680px){
+ #finderPanel{resize:none;min-height:250px;max-height:calc(100dvh - 16px);width:calc(100vw - 16px)}
+ #finderPanel .finder-head-orb{width:40px;height:40px;flex-basis:40px}
+ #finderPanel .finder-panel-head{padding:10px 8px;gap:7px}
+ #finderPanel .finder-window-controls{gap:4px}
+ #finderPanel .finder-window-btn,#finderPanel .finder-close{width:29px;height:29px}
+ #finderPanel .finder-panel-head h2{font-size:16px}
+ #finderPanel .finder-panel-head p{font-size:10px}
+}
+/* Tutorial completo e interattivo SENZA link alle altre sezioni. */
+.af49-tutorial .af48-tour-preview.af49-demo{background:linear-gradient(155deg,#f4fbff,#e7f8f3);border:1px solid #b9dedd;padding:16px;min-height:225px;display:flex;flex-direction:column;gap:10px}
+.af49-demo label{display:block;margin:0 0 5px;font-size:12px;font-weight:800;color:#254d5a}
+.af49-demo input,.af49-demo select{width:100%;min-width:0;min-height:44px;border:1px solid #8bbfba;background:#fff;color:#112f3c;border-radius:10px;padding:9px 10px;font-size:13px}
+.af49-demo button{min-height:44px;padding:9px 13px;border:1px solid #1c7482;border-radius:10px;background:#15596b;color:#fff;font-weight:800;font-size:12px}
+.af49-demo button:hover,.af49-demo button:focus-visible{background:#187a86}
+.af49-demo button:disabled{opacity:.45;cursor:not-allowed}
+.af49-demo-line{display:flex;align-items:end;gap:9px}
+.af49-demo-line>input,.af49-demo-line>.af49-demo-field{flex:1 1 auto;min-width:0}
+.af49-demo-field{flex:1;min-width:0}
+.af49-demo-result{padding:13px;border:1px solid #b0d9d4;background:#fff;border-radius:13px;color:#193e4b;font-size:12px;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere}
+.af49-demo-result p{margin:7px 0;color:inherit;font-size:12px}
+.af49-demo-result small{color:#536f76;font-size:11px}
+.af49-mini-results{display:grid;gap:6px}.af49-mini-result{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;border-bottom:1px solid #d4e8e3;padding:5px 0}.af49-mini-result span{font-size:10px;color:#59737e}
+.af49-mini-schedule{display:grid;gap:6px;margin-top:10px}.af49-mini-schedule>div{display:grid;grid-template-columns:95px 1fr;gap:8px;border-bottom:1px solid #dbece8;padding:4px 0}.af49-mini-schedule b{font-size:11px}
+.af49-demo-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px}.af49-demo-switch button[aria-pressed="true"]{background:linear-gradient(125deg,#14505f,#128e8d);color:#fff;box-shadow:0 0 0 2px #79d4cc66}.af49-demo-switch button[aria-pressed="false"]{background:#fff;color:#195465}
+.af49-tour-plan{width:100%;max-width:100%;border:1px solid #c7e0e2;border-radius:10px;overflow:hidden;background:#f8fffe;padding:5px}
+.af49-tour-plan svg.plan{display:block;width:100%;height:auto;max-width:100%;max-height:420px;overflow:visible;margin:auto}
+.af49-tour-plan svg.plan text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;pointer-events:none;stroke:none!important;text-shadow:none!important}
+.af49-tour-plan svg.plan .room .room-name-hidden{display:none!important}
+.af49-tour-plan svg.plan .room[data-t="Archivio"] .room-name-hidden,.af49-tour-plan svg.plan .room[data-t="Caldaie"] .room-name-hidden,.af49-tour-plan svg.plan .room[data-t="Palestra"] .room-name-hidden{display:block!important}
+.af49-tour-plan svg.plan .room .room-number{fill:#102f49!important;font-weight:800!important}
+.af49-tour-plan svg.plan .room.af49-tour-selected .box{stroke:#ed4889!important;stroke-width:2px!important}
+.af49-route-line{fill:none;stroke:#9258d9;stroke-width:3.3;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:7 2;pointer-events:none}
+.af49-route-controls{display:flex;gap:8px;justify-content:space-between;margin-top:8px}
+.af49-tour-footer{display:grid;gap:14px}.af49-tour-footer h2{margin:0 0 4px;font-size:16px}.af49-tour-footer p{margin:0;font-size:12px;line-height:1.6}.af49-tour-footer a{overflow-wrap:anywhere}
+html[data-theme="dark"] .af49-tutorial .af49-demo{background:linear-gradient(160deg,#152c41,#123e46)!important;border-color:#477678!important}
+html[data-theme="dark"] .af49-demo label{color:#d7fff6}
+html[data-theme="dark"] .af49-demo input,html[data-theme="dark"] .af49-demo select,html[data-theme="dark"] .af49-demo-result{background:#112e3b;color:#ecfffd;border-color:#477a81}
+html[data-theme="dark"] .af49-demo-result small,html[data-theme="dark"] .af49-mini-result span{color:#c5dfdd}
+html[data-theme="dark"] .af49-demo-switch button[aria-pressed="false"]{background:#254f56;color:#f5fffd}
+html[data-theme="dark"] .af49-tour-plan{background:#102c38;border-color:#44717b}
+html[data-theme="dark"] .af49-tour-plan svg.plan .room .box{fill:#2a515e!important;stroke:#95c6c8!important}
+html[data-theme="dark"] .af49-tour-plan svg.plan .room .room-number{fill:#f4fffe!important}
+html[data-theme="dark"] .af49-tour-plan svg.plan .room .room-name-hidden{fill:#e2f7f1!important}
+@media(max-width:680px){.af49-tutorial .af48-tour-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.af49-tutorial .af48-tour-panel{grid-template-columns:1fr}.af49-tutorial .af48-tour-preview.af49-demo{min-height:180px;padding:12px}.af49-mini-schedule>div{grid-template-columns:75px 1fr}.af49-demo-line{flex-wrap:wrap}.af49-demo-line>button{min-width:88px}}
+/* Home: due scorciatoie riconoscibili, senza cambiare layout. */
+#freeRoomsShortcut,#freeTeachersShortcut{position:relative;overflow:hidden;isolation:isolate;min-height:53px;border-radius:13px;border:1px solid #62c5b9;background:linear-gradient(115deg,#0f5365,#16778a,#1d9891);background-size:230% 230%;color:#fff;font-weight:850;box-shadow:0 7px 17px #0a4a502d;animation:af49-shortcut-flow 8s ease-in-out infinite}
+#freeTeachersShortcut{background-image:linear-gradient(115deg,#173a69,#4a69a6,#176b86);border-color:#8ea7d5}
+#freeRoomsShortcut::after,#freeTeachersShortcut::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,#ffffff28 50%,transparent 73%);transform:translateX(-120%);animation:af49-shimmer 6s ease-in-out infinite;z-index:-1}
+@keyframes af49-shortcut-flow{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+@keyframes af49-shimmer{0%,65%,100%{transform:translateX(-120%)}80%{transform:translateX(120%)}}
+#freeRoomsShortcut .home-room-icon,#freeTeachersShortcut .home-coffee-icon{display:inline-grid;place-items:center;color:#e7fffb}
+/* Indicatori di tocco e focus: mai eliminare il focus visibile da tastiera. */
+@keyframes af49-touch-shine{0%{box-shadow:0 0 0 0 #79fbe780;filter:brightness(1)}52%{box-shadow:0 0 0 4px #79fbe788,0 0 16px #8cffe55b;filter:brightness(1.12)}100%{box-shadow:0 0 0 0 transparent;filter:brightness(1)}}
+button.af49-tap-glow,.floor-option.af49-tap-glow,summary.af49-tap-glow{animation:af49-touch-shine .43s ease both}
+:where(button,input,select,summary,a,[role="button"]):focus-visible{outline:3px solid #19cbbf!important;outline-offset:3px!important;box-shadow:0 0 0 5px #7d7cff33,0 0 14px #20dac333!important}
+html[data-theme="dark"] :where(button,input,select,summary,a,[role="button"]):focus-visible{outline-color:#abf5e8!important;box-shadow:0 0 0 5px #7d7cff58,0 0 16px #7dfce954!important}
+/* Versioni: anteprime storiche autentiche ed evidenza V49. */
+.versioni-entry--current{border-color:#3bcab7!important;box-shadow:0 9px 25px #37d2c51e!important}
+.versioni-entry--current .versioni-number{background:linear-gradient(120deg,#0c5965,#188991,#635ada)}
+.af49-version-preview-button{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;margin:10px 0;border:1px solid #2f9999;border-radius:10px;background:#195a69;color:#fff;font-size:12px;font-weight:800}
+.af49-version-preview-panel{display:grid;gap:8px;margin:8px 0 12px;padding:10px;border-radius:13px;background:#eff9f6;border:1px solid #c4e4dc}
+.af49-version-preview-panel img{width:100%;height:auto;display:block;object-fit:contain;border-radius:9px;background:#fff;box-shadow:0 4px 13px #07293120}
+.af49-version-preview-panel figcaption{font-size:11px;color:#356570}
+html[data-theme="dark"] .af49-version-preview-panel{background:#113440;border-color:#528982}
+html[data-theme="dark"] .af49-version-preview-panel figcaption{color:#d7f8f1}
+.versioni-search-label input:focus-visible{border-color:#38bfb6}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important}
+ .af49-brand-glow,#finderLaunch,#finderLaunch::before,#freeRoomsShortcut,#freeTeachersShortcut,#freeRoomsShortcut::after,#freeTeachersShortcut::after,.af49-tap-glow,#navigatorPage .nav-field-indicator,#navigatorPage .nav-legend-line{animation:none!important;transition:none!important}
+ .af49-map-viewer-stage{transition:none!important}
+}

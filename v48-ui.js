@@ -22,11 +22,11 @@
     if(!page)return null;
     if(page.id==='orariPage')return page.querySelector('#scheduleContents') || page.querySelector('h1');
     if(page.id==='navigatorPage')return page.querySelector('#navRouteResult:not([hidden])')||page.querySelector('#navigatorForm');
-    if(page.id==='tutorialPage')return page.querySelector('#tutorialStage');
+    if(page.id==='tutorialPage')return page.querySelector('h1');
     if(page.id==='versioniPage')return page.querySelector('#versioniList');
     return page.querySelector('h1')||page;
   }
-  const contentSelectors='[data-page],[data-schedule],[data-room],[data-choice],[data-suggest],[data-free-teacher],[data-favorite],[data-history],[data-full-schedule],[data-tutorial-select],[data-nav-choice],.orari-category-tabs button';
+  const contentSelectors='[data-page],[data-schedule],[data-room],[data-choice],[data-suggest],[data-free-teacher],[data-favorite],[data-history],[data-full-schedule],[data-nav-choice],.orari-category-tabs button';
   document.addEventListener('click',event=>{
     if(!event.target.closest)return;
     const accordion=event.target.closest('#versioniPage summary, #tutorialPage .tutorial-faq summary');
