@@ -965,5 +965,44 @@
       "loading.js",
       "sw.js"
     ]
+  },
+  {
+    "number": 51,
+    "version": "V51",
+    "title": "Esperienza completa",
+    "details": [
+      "Finder con orb originale, apertura silenziosa, finestra ridimensionabile, suggerimenti contestuali e visualizzazione dell'ascolto vocale.",
+      "Tutorial con AulaFinder vero incorporato, sette tappe guidate e interazioni reali.",
+      "Console Admin locale con accesso, modifica orari, controlli di conflitto, esportazione e importazione.",
+      "Ricerca, Versioni, Orari, navigatore, layout e accessibilità migliorati.",
+      "Correzione 4AS, mercoledì 4ª ora: Informatica nel laboratorio 1.07; aggiornati tutti gli indici coerenti.",
+      "Nessun suono o animazione acqua; archivio storico V1–V50 conservato."
+    ],
+    "source": "Implementazione V51 e verifiche automatiche",
+    "documented": true,
+    "preview": "assets/versioni-home/V51.webp",
+    "changedFiles": [
+      "index.html",
+      "finder.js",
+      "data.js",
+      "versioni.js",
+      "sw.js",
+      "v51.css",
+      "v51-ui.js",
+      "admin-data.js",
+      "admin-ui.js"
+    ]
+  },
+  {
+    "number": 52,
+    "version": "V52",
+    "title": "Esperienza rifinita",
+    "details": [
+      "Tutorial guidato solo con demo reale",
+      "Design aurico uniforme",
+      "Navigatore e Finder ottimizzati",
+      "Admin con panoramica locale"
+    ],
+    "preview": "assets/versioni-home/V52.webp"
   }
 ]

@@ -1,28 +1,37 @@
-# AulaFinder V51 | 18 novembre 2026
+# AulaFinder V51 · Note di rilascio
 
-## Aprire il progetto
-Apri `index.html` con un server locale o pubblica l'intera cartella su GitHub Pages / un hosting statico HTTPS. Per una prova locale con Python, dalla cartella AulaFinderV51:
+**Base:** ZIP originale AulaFinder V50 allegato dall'utente.  **Data:** 18 novembre 2026.  **Cartella di consegna:** `AulaFinderV51/`.
 
-```bash
-python -m http.server 8000
-```
+## Modifiche implementate
 
-Poi visita `http://localhost:8000`. **È importante servire i file via HTTP(S)**: il Tutorial incorpora il sito dentro un iframe della stessa origine e, aprendolo direttamente come `file://`, alcuni browser bloccano o limitano la comunicazione fra i documenti. Microfono e riconoscimento vocale richiedono un browser compatibile e un contesto sicuro (HTTPS o localhost) e il permesso dell'utente.
+**Finder**
+- Riutilizzato integralmente il nuovo file originale dell'orb allegato dall'utente (`assets/finder-orb.webm`), con poster WebP compatto e video MP4 di fallback della V50.
+- Nessun autofocus su campo testo o classe all'apertura; non richiama involontariamente la tastiera mobile.
+- Finestra trascinabile e ridimensionabile dall'angolo destro inferiore con mouse/touch/pen o frecce della tastiera; dimensioni ricordate localmente e limitate al viewport. Resta l'espansione a schermo intero.
+- Chiusura accelerata verso il pulsante orb; rimosso il contorno ciano non desiderato su focus non da tastiera; suggerimenti contestuali animati relativi a tutte le sezioni principali.
+- Waveform esclusivamente **visiva** durante la registrazione vocale, dove disponibile. Nessuna voce di sintesi e nessun effetto sonoro.
 
-## Cosa cambia nella V51
+**Tutorial**
+- Tutorial originale di sette tappe preservato, arricchito con un iframe del **sito reale** nella stessa sezione. I comandi della guida aprono nella demo ricerca, orari, disponibilità, navigatore, Finder, piantine e footer.
+- Prevenuto ricorsivamente il caricamento di altre copie del tutorial dentro il tutorial; schermata di caricamento iniziale saltata nell'istanza incorporata.
 
-- **Finder**: all'apertura non seleziona automaticamente i campi e non apre la tastiera mobile; finestra trascinabile e ridimensionabile con presa dedicata (anche da tastiera), comando a schermo intero corretto, bordo di focus non ciano, logo video originale silenzioso, suggerimenti che ruotano senza elenco invasivo, risposta orientata a tutte le sezioni del sito e percorsi da/a più ambienti; microfono con barre animate dall'intensità del suono quando consentito dal browser.
-- **Suoni**: eliminata la sintesi vocale dell'assistente; i video restano muti e le animazioni non producono effetti audio.
-- **Navigatore**: il tratto disegnato si estende dal centro geometrico dell'ambiente di partenza al centro dell'ambiente di arrivo (conservando il grafo dei corridoi). Animazioni sobrie in loop per i simboli della legenda. I percorsi sono schemi informativi basati sulle piantine, non misurazioni certificate né indicazioni per evacuazione.
-- **Tutorial**: sette tappe con una copia interattiva del sito vero all'interno della sezione. La navigazione della mini-app non porta fuori dal tutorial e non duplica i dati. Il tutorial non si incorpora ricorsivamente.
-- **Admin**: nuova area grafica ad alto contrasto, keypad virtuale QWERTY con feedback, pulsante per mostrare il codice, schermata di riepilogo e blocco sessione. Password locale impostata a **kiwi**. **Attenzione**: essendo un sito statico, la password verificata nel browser è dimostrativa e **non è una protezione server**. Nessun dato amministrativo sensibile è modificabile nell'area.
-- **Versioni**: sezione con V1–V51 navigabili e ricercabili, parole trovate evidenziate, barra cronologica con gradiente e selezione arrotondata, anteprime verificabili e pulsante di ingrandimento con sola icona. Non sono inventate immagini o cronologie per versioni assenti nei file disponibili.
-- **Interfaccia**: animazioni intelligenti del marchio senza spostamenti di pagina; focus più pulito su mouse/touch; risposta di sfondo al tocco come increspature d'acqua, con limitazione delle animazioni e rispetto della preferenza di riduzione del movimento; menu Orari e palette ritoccati, numeri delle ore totali in forte contrasto, pulsanti e simboli riallineati, gradiente mobile più uniforme, pulsante Finder non sovrapposto ad Admin nel footer.
-- **Offline**: versione del service worker aggiornata alla V51; aggiunti i nuovi script alla cache dell'app.
+**Admin**
+- Accesso locale `kiwi` con tastiera virtuale, visibilità password e pulsanti accessibili.
+- Editor su classe, giorno, ora, materia, docente, aula. Ricostruzione degli indici docenti/aule/stanze disponibili, blocco dei conflitti introdotti su aula/docente e limiti di validazione.
+- Salvataggio in `localStorage` con ricaricamento, annullamento per singola lezione e totale, export e import JSON.
+- Chiarito nell'interfaccia che questo sistema statico non ha sicurezza server e le modifiche non vengono automaticamente pubblicate.
 
-## Provenienza e limite importante
+**Altre sezioni**
+- Corretto **4AS, mercoledì 4ª ora, Informatica 1.07** in tutte le strutture dati.
+- Home, barra laterale, elementi mobili, pulsante Professori liberi e leggibilità con gradienti/contrasti migliorati.
+- Versioni: ricostruita anteprima V51, archivio a **51 versioni** preservando tutte quelle precedenti, evidenziazione dei termini cercati e controllo fullscreen discreto sulle anteprime; andamento cromatico locale lungo la timeline.
+- Orari: rimossa intestazione ridondante; controllo dei contrasti e microinterazioni.
+- Navigatore: conservata e verificata la logica V50 che instrada dal centro stanza al corridoio e dal corridoio al centro della destinazione, con animazioni continue sulla legenda e sui marcatori.
+- Nessuna animazione acqua o effetto sonoro; rispettato `prefers-reduced-motion`.
+- Service worker aggiornato a `aulafinder-pwa-v51`, asset di tutte le 51 preview e nuovi script inclusi nella cache.
 
-**Questa V51 è stata sviluppata dalla copia completa di AulaFinder V48 recuperabile nella sessione di lavoro.** Gli ZIP V49 e V50 menzionati nella conversazione precedente non erano disponibili come file originali in questa sessione. Di conseguenza **non è garantita la conservazione delle modifiche introdotte esclusivamente in V49/V50**. Non sostituire una V50 in produzione senza prima confrontare le cartelle. L'animazione Finder riutilizza `assets/finder-orb.webm` presente nella V48: non è stato fornito un nuovo file del logo nel turno corrente.
+## Pubblicazione e limiti
 
-## Test
-Leggere `VERIFICHE_V51.md`. Le prove DOM in Chromium sono state effettuate caricando HTML/CSS/JS locali e simulando le interazioni; questa piattaforma ha bloccato la normale navigazione HTTP/file nel browser di test, quindi non è stato possibile completare un collaudo integrale dell'iframe live, dell'installazione PWA e della registrazione audio su dispositivi reali. Sono richieste prove finali manuali su Chrome/Firefox/Safari e su telefono prima della consegna.
+Pubblicare il contenuto della cartella `AulaFinderV51/` nel repository GitHub Pages, mantenendo le cartelle degli asset. Il tutorial con sito incorporato richiede origine web coerente; provare con HTTP(S), non `file://`. Audio e acquisizione vocale non sono richiesti per le ricerche testuali. La disponibilità oraria è derivata dai dati locali e non dai movimenti effettivi degli studenti.
+
+Per i risultati dei controlli e ciò che non è stato possibile verificare in un sito distribuito, consultare `VERIFICHE_V51.md`.

@@ -1,3 +1,22 @@
+# V52 · Esperienza rifinita (19 novembre 2026)
+
+- Effetti aurici a dissolvenza estesi a Home, header, aside e footer, con coerenza mobile/desktop e temi chiaro/scuro.
+- Focus senza cornici ciano ridondanti su logo, ricerca Versioni, navigator, Orari e comandi giorno/ora. Logo Home con animazione d’ingrandimento rallentata.
+- Due scorciatoie Home equivalenti per Aule libere e Professori liberi, entrambe con gradiente aurico.
+- Piantine fullscreen centrate, zoom più flessibile e colori del cartello Ingresso allineati alla piantina originale.
+- Tutorial unificato: demo reale guidata per 7 tappe, senza minidemonstratori separati; FAQ e pulsanti tab centrati.
+- Navigatore con instradamento basato sulle linee mediane dei corridoi, controllo geometrico, pin centrati e fallback dei percorsi.
+- Versioni con evidenza del testo dentro i singoli rilasci e anteprime, logo nelle miniature, nuova scheda V52, disclaimer storico rimosso.
+- Finder con orb in loop, animazioni di apertura/chiusura ripulite, posizione fissabile, ottimizzazione media e quadro Admin locale.
+- PWA e materiali predisposti per GitHub Pages; video e ritratti molto più leggeri senza alterare i dati.
+
+# V51 · Esperienza completa (18 novembre 2026)
+
+- Partenza dalla V50 preservando il funzionamento esistente. Orb originale nuovo, Finder silenzioso, ridimensionabile e privo di autofocus.
+- Tutorial con sito vero incorporato; Admin locale con modifiche, validazione, import/export; navigazione e Versioni più leggibili.
+- Correzione classe 4AS mercoledì quarta ora: Informatica 1.07 in dati collegati; eliminati suoni ed effetto acqua.
+- Anteprima V51, cache PWA V51 e 48 test interattivi superati.
+
 # Registro delle versioni di AulaFinder
 
 ## V50 · Orizzonti nuovi (18 novembre 2026)

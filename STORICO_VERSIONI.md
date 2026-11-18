@@ -1,8 +1,26 @@
-# AulaFinder · Storico verificato delle versioni V1–V50
+# AulaFinder · Registro delle versioni V1–V52
 
 Le note sono ricostruite a partire dai file/rapporti originali contenuti negli archivi storici. L’anteprima della Home di ogni versione è consultabile nella pagina **Versioni** del sito.
 
-**Versione attuale: V50 · Orizzonti nuovi.**
+**Versione attuale: V52 · Esperienza rifinita.**
+
+## V52 · Esperienza rifinita
+- Effetti aurici e gradienti coerenti su desktop e mobile; focus e contrasto corretti.
+- Tutorial solo con demo reale guidata, sette tappe, FAQ corrette.
+- Navigatore centrato sui corridoi; marcatori allineati, piantine fullscreen corrette.
+- Finder posizionabile e bloccabile; orb trasparente ottimizzato, anima in loop.
+- Archivio Versioni consultabile con evidenza nei testi e miniatura V52.
+- Console Admin ampliata con panoramica locale e archiviazione JSON esistente.
+- **Fonte:** Implementazione V52; `README_V52.md`, `VERIFICHE_V52.md`.
+- **Anteprima Home:** `assets/versioni-home/V52.webp`.
+
+## V51 · Esperienza completa
+- Nuovo orb Finder fornito, finestra ridimensionabile, nessun autofocus o suono.
+- Tutorial con sito reale incorporato e console Admin locale funzionante.
+- Nuove animazioni/contrasti, ricerca Versioni evidenziata, anteprima V51.
+- Correzione 4AS, mercoledì quarta ora: Informatica 1.07.
+- **Fonte:** Implementazione V51; `README_V51.md`, `VERIFICHE_V51.md`.
+- **Anteprima Home:** `assets/versioni-home/V51.webp`.
 
 ## V50 · Orizzonti nuovi
 
