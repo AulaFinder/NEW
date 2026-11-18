@@ -22,14 +22,16 @@ function showActions(g){
   if(hasRoomSchedule(code)){
     var schedule=document.createElement('button');schedule.type='button';schedule.dataset.mapAction='schedule';schedule.textContent='Vedi orario';box.appendChild(schedule);
   }
-  actionsPanel=box;actionRoom=code;
-  if(window.matchMedia('(max-width:680px)').matches){
-    // Outside the SVG container: never covers the selected room on phones.
-    box.classList.add('room-actions--mobile');
-    holder.parentElement.insertBefore(box,holder);
+  var mobile=window.matchMedia('(max-width:680px)').matches;
+  if(mobile){
+    var card=g.closest('.plan-card');
+    card.querySelector('.plan-banner').insertAdjacentElement('afterend',box);
+    box.classList.add('room-actions-inline');
+    actionsPanel=box;actionRoom=code;
+    requestAnimationFrame(function(){focusRoom(g);});
     return;
   }
-  holder.appendChild(box);
+  holder.appendChild(box);actionsPanel=box;actionRoom=code;
   var rect=g.getBoundingClientRect(),h=holder.getBoundingClientRect();
   var maxLeft=Math.max(8,holder.clientWidth-box.offsetWidth-8);
   var left=Math.min(maxLeft,Math.max(8,(rect.left+rect.width/2)-h.left-box.offsetWidth/2));
@@ -75,7 +77,7 @@ function pick(g){
   hideTip();
   if(cur===g && actionsPanel){clear();return;}
   clear();cur=g;mark(g);showActions(g);
-  requestAnimationFrame(function(){focusRoom(g);});
+  if(!window.matchMedia('(max-width:680px)').matches) requestAnimationFrame(function(){focusRoom(g);});
 }
 function mark(g){
   var cx=+g.dataset.cx,cy=+g.dataset.cy,s=+g.dataset.s,c=g.cloneNode(true);

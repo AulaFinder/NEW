@@ -1755,3 +1755,277 @@ html[data-theme="dark"] .tutorial-faq details p{color:#c7e4dc}
   .tutorial-route-draw{stroke-dasharray:none;stroke-dashoffset:0}
   .page:not([hidden]),.tutorial-panel,.finder-panel:not([hidden]){animation:none!important}
 }
+
+
+/* AulaFinder V48 - interventi mirati */
+.search-form:focus-within{outline:none!important;box-shadow:none!important;border-color:var(--mint,#9DE8D7)!important;}
+#searchInput:focus,#searchInput:focus-visible{outline:none!important;box-shadow:none!important;}
+#piantinaPage .room-actions-inline{position:relative!important;top:auto!important;left:auto!important;z-index:4;width:calc(100% - 20px);max-width:none;min-width:0;margin:10px;box-sizing:border-box;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 12px;box-shadow:0 5px 16px rgba(7,31,41,.13);}
+#piantinaPage .room-actions-inline .room-actions-title{grid-column:1/-1;margin:0;font-size:14px;}
+#piantinaPage .room-actions-inline button{text-align:center;min-width:0;}
+#piantinaPage .room-actions-inline button:only-of-type{grid-column:1/-1;}
+@media(max-width:360px){#piantinaPage .room-actions-inline{grid-template-columns:1fr}#piantinaPage .room-actions-inline button{grid-column:1/-1}}
+/* Finder launch: user provided icon */
+.finder-launch{touch-action:none;user-select:none;-webkit-user-select:none;max-width:calc(100vw - 12px);}
+.finder-launch-icon{width:30px;height:30px;flex:0 0 30px;display:block;border-radius:50%;object-fit:cover;pointer-events:none;}
+.finder-launch.is-dragging{cursor:grabbing!important;transition:none!important;transform:none!important;}
+.finder-orb-video{display:block;flex:0 0 53px;width:53px;height:53px;border-radius:50%;object-fit:cover;background:#0A252F;border:1.5px solid #9DE8D7;box-shadow:0 0 10px #9de8d755;}
+/* More distinct message ownership in light and dark themes */
+.finder-message-assistant{background:#DCF9EE!important;color:#073B3A!important;border:1.5px solid #49B7A5!important;box-shadow:0 1px 4px rgba(7,31,41,.07)}
+.finder-message-user{background:#123E69!important;color:#FFF!important;border:1.5px solid #398EC4!important;box-shadow:0 2px 6px rgba(7,31,41,.12)}
+html[data-theme="dark"] .finder-message-assistant{background:#2A6762!important;color:#FFF!important;border:1.5px solid #82F1D9!important}
+html[data-theme="dark"] .finder-message-user{background:#164A88!important;color:#FFF!important;border:1.5px solid #7DCBFF!important}
+/* Route progress column: yellow animated gradient, synchronized with step index */
+.nav-stepper{position:relative;padding-left:27px!important;}
+.nav-progress-rail{position:absolute;left:10px;top:15px;bottom:15px;width:7px;border-radius:999px;background:rgba(149,164,144,.25);overflow:hidden;border:1px solid rgba(25,64,74,.18);}
+.nav-progress-fill{position:absolute;left:0;bottom:0;width:100%;height:0;transition:height .46s ease;background:linear-gradient(180deg,#FFF3A5 0%,#FFC21E 30%,#FFE96C 55%,#F7B621 70%,#FFF3A5 100%);background-size:100% 220%;box-shadow:0 0 9px #f6ca2699;animation:af48-progress-flow 3s linear infinite;}
+@keyframes af48-progress-flow{to{background-position:0 220%}}
+html[data-theme="dark"] .nav-progress-rail{background:#274A4F;border-color:#5B6660;}
+/* Shared heading icons for all main sections */
+.page h1:has(>.section-title-icon){display:flex;align-items:center;gap:12px;}
+.section-title-icon{display:inline-flex;align-items:center;justify-content:center;color:#138E96;width:31px;height:31px;flex:none;}
+.section-title-icon svg{width:100%;height:100%;stroke-linecap:round;stroke-linejoin:round;}
+html[data-theme="dark"] .section-title-icon{color:#9DE8D7}
+@media(max-width:680px){.section-title-icon{width:26px;height:26px}.page h1:has(>.section-title-icon){gap:9px}}
+/* Tutorial screenshots are genuine site captures, not synthetic mockups */
+.tutorial-page>.page-topline{margin-bottom:10px}
+.tutorial-lead{max-width:760px;margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.55}
+.tutorial-lead p{margin:0}
+.tutorial-real-panel{align-items:start!important}
+.tutorial-real-preview{min-width:0;width:100%;margin:0;border:1px solid #A5CEC9;border-radius:15px;overflow:hidden;background:#E7F4F0;box-shadow:0 8px 22px #071F2914}
+.tutorial-real-preview img{width:100%;height:290px;display:block;object-fit:contain;object-position:center top;background:#EEF8F5}
+.tutorial-real-preview figcaption{padding:9px 12px;color:#356769;font-size:11px;line-height:1.35}
+.tutorial-return{position:fixed;z-index:50;bottom:82px;right:17px;background:#19404A;color:#fff;border:1.5px solid #9DE8D7;box-shadow:0 7px 22px #071F2955;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;}
+.tutorial-return[hidden]{display:none!important}.tutorial-return:hover{background:#267780}
+html[data-theme="dark"] .tutorial-real-preview{background:#11333B;border-color:#4B948A}
+html[data-theme="dark"] .tutorial-real-preview img{background:#122D36}
+html[data-theme="dark"] .tutorial-real-preview figcaption{color:#C5E8E0}
+@media(max-width:680px){.tutorial-real-preview img{height:240px}.tutorial-return{right:10px;bottom:77px;font-size:12px;padding:10px 13px}}
+@media(prefers-reduced-motion:reduce){.nav-progress-fill{animation:none!important;transition:none!important}}
+
+/* Seven chapters on desktop, three columns on compact viewports. */
+@media(min-width:951px){.tutorial-steps{grid-template-columns:repeat(7,minmax(0,1fr))}}
+
+/* Keep Finder's default floating button from covering tutorial navigation. */
+@media(min-width:681px){#tutorialPage .tutorial-nav-bottom{padding-right:130px}}
+@media(max-width:680px){#tutorialPage .tutorial-nav-bottom{margin-bottom:64px}}
+
+/* ===== V51 · polish, full-site tutorial, no-audio Finder, local Admin ===== */
+/* Uniform background from the very first pixel of the mobile header. */
+@media(max-width:680px){
+  .site-header{background:linear-gradient(155deg,#071f29 0%,#16434e 43%,#237e85 78%,#26a7a9 100%)!important;background-color:#071f29!important;}
+  .app-shell{background:#fff}
+}
+/* No inadvertent square focus rings on graphical branding. Keyboard users get a glow instead. */
+#logoButton:focus,#logoButton:focus-visible,.af-animated-brand:focus,.af-animated-brand:focus-visible,
+#sidebarClose:focus,#sidebarClose:focus-visible{outline:none!important;outline-offset:0!important}
+#logoButton:focus-visible,.af-animated-brand:focus-visible,#sidebarClose:focus-visible{
+  filter:drop-shadow(0 0 7px #9de8d7);text-decoration:underline;text-decoration-color:#9de8d7;text-underline-offset:6px
+}
+.af-animated-brand.is-brand-activated{animation:afBrandPulse .52s cubic-bezier(.2,.85,.35,1) both}
+@keyframes afBrandPulse{0%{filter:brightness(1)}38%{filter:brightness(1.65) drop-shadow(0 0 10px #9de8d7)}100%{filter:brightness(1)}}
+#sidebarClose:hover .sidebar-brand-logo,#sidebarClose.is-brand-activated .sidebar-brand-logo,
+#sidebarClose:focus-visible .sidebar-brand-logo{filter:brightness(1.35) drop-shadow(0 0 12px #6fffe9);transform:scale(1.06)}
+#sidebarClose .sidebar-brand-logo{transition:filter .28s,transform .28s}
+.logo-dialog[open] img{animation-duration:.27s!important}
+.search-form:focus-within,.finder-form:focus-within{outline:none!important;box-shadow:0 8px 20px #137e8c12!important;border-color:#80bfb6!important}
+.search-form:focus-within input,.finder-form:focus-within input{outline:none!important;box-shadow:none!important}
+/* Elastic sub-navigation: the moving gradient lives only under the hovered option. */
+.schedule-subnav{border-left:3px solid transparent;border-image:linear-gradient(180deg,#9de8d7,#26a7a9,#568db8) 1;
+  background:linear-gradient(165deg,#e9faf5 0%,#f3fbf8 60%,#d8f3ed 100%);
+  border-radius:0 13px 13px 0;overflow:hidden;animation:afSubnavReveal .29s cubic-bezier(.2,.85,.3,1) both}
+@keyframes afSubnavReveal{from{opacity:.35;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.schedule-subnav button{position:relative;overflow:hidden;border-radius:10px;transition:background .2s,transform .22s,color .2s;}
+.schedule-subnav button:hover,.schedule-subnav button.is-active{background:linear-gradient(105deg,#c4f3e8,#d6f4f1,#ceeaf6)!important;color:#104651!important;transform:translateX(2px)}
+html[data-theme="dark"] .schedule-subnav{background:linear-gradient(140deg,#153b44,#1b4b52)!important;border-image:linear-gradient(#6cf5e2,#2bc0d2,#89bfff) 1}
+html[data-theme="dark"] .schedule-subnav button:hover,html[data-theme="dark"] .schedule-subnav button.is-active{background:linear-gradient(90deg,#245e66,#265c73)!important;color:#fff!important}
+/* Distinct greener-blue accent for free teachers, with readable text. */
+#freeTeachersShortcut,.free-rooms-shortcut[data-schedule="freeTeachers"]{background:linear-gradient(125deg,#185e6e,#218493 62%,#35b2ac)!important;border-color:#257c8d!important;color:#fff!important}
+#freeTeachersShortcut:hover{background:linear-gradient(125deg,#1b6a79,#238f9e,#40c6ba)!important}
+#freeTeachersShortcut *{color:inherit!important}
+.orari-panel-row:has(dt:first-child) dd{color:#0b3543}
+.orari-panel-row:has(dt) dd{line-height:1.6}
+.orari-panel-row.is-total-hours{border-radius:12px;border:1px solid #74beb9!important;padding:13px!important;
+  background:linear-gradient(125deg,#d8f6ed,#cfedfa)!important;box-shadow:0 3px 14px #114e5716}
+.orari-panel-row.is-total-hours dt{font-weight:800;color:#215765!important}
+.orari-panel-row.is-total-hours dd{font-size:22px;font-weight:900;color:#083d4a!important}
+html[data-theme="dark"] .orari-panel-row.is-total-hours{background:linear-gradient(120deg,#22626b,#254d70)!important;border-color:#83dbc9!important}
+html[data-theme="dark"] .orari-panel-row.is-total-hours dt,html[data-theme="dark"] .orari-panel-row.is-total-hours dd{color:#f3fffb!important}
+/* Navigator subtle perpetual beacons, no layout movement. */
+.nav-route-legend [data-nav-legend="departure"] .nav-legend-symbol{animation:afBeacon 3s ease-in-out infinite}
+.nav-route-legend [data-nav-legend="stairs"] .nav-legend-symbol{animation:afBeacon 3.4s ease-in-out .4s infinite}
+.nav-route-legend [data-nav-legend="destination"] .nav-legend-destination{animation:afBeacon 3.1s ease-in-out .9s infinite}
+@keyframes afBeacon{0%,100%{filter:drop-shadow(0 0 0 transparent);transform:scale(1)}50%{filter:drop-shadow(0 0 5px #26a7a9a8);transform:scale(1.09)}}
+/* Center the + in the FAQ buttons to avoid optical shift. */
+.tutorial-faq summary>span:last-child{display:grid!important;place-items:center!important;line-height:1!important;vertical-align:middle;text-align:center;flex:0 0 25px!important;width:25px!important;height:25px!important;transform-origin:center}
+/* Finder open at rest, freely resizable on touch using visible corner, on desktop using browser handle. */
+.finder-panel{min-width:min(285px,calc(100vw - 16px));min-height:215px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);
+  resize:both;overflow:hidden;transition:box-shadow .22s ease,border-color .22s ease;}
+.finder-panel:has(.finder-resize:hover){box-shadow:0 23px 65px #071f2970;border-color:#34bdbb}
+.finder-panel.is-expanded{position:fixed!important;top:3vh!important;bottom:3vh!important;left:3vw!important;right:3vw!important;
+  width:94vw!important;height:94dvh!important;max-height:94dvh!important;max-width:94vw!important;resize:none;border-radius:23px}
+.finder-panel.is-expanded .finder-conversation{max-height:none;flex:1}
+.finder-panel.is-expanded .finder-panel-content{flex:1;overflow:auto}
+.finder-panel-head{flex-shrink:0}
+.finder-expand{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;background:#19404a;color:white;border:1px solid #9de8d7;border-radius:9px;cursor:pointer}
+.finder-expand svg{display:block;width:18px;height:18px;margin:auto}
+.finder-expand:hover{background:#296c73}
+.finder-resize{position:absolute;bottom:0;right:0;width:32px;height:32px;border:0;border-radius:10px 0 18px 0;
+  color:#357d83;background:linear-gradient(130deg,transparent,#d7f3ed);cursor:nwse-resize;touch-action:none;z-index:2}
+.finder-resize svg{width:20px;height:20px;display:block;margin:auto}
+.finder-panel-content{padding-bottom:34px}
+.finder-form:focus-within{box-shadow:none!important}
+.finder-mic,.search-voice-button{position:relative;overflow:hidden}
+.af-voice-bars{position:absolute;inset:5px;display:none;align-items:center;justify-content:center;gap:2.5px;pointer-events:none}
+.af-voice-bars i{width:3px;height:22px;min-height:7px;border-radius:3px;background:currentColor;display:block;transform-origin:center;
+  transform:scaleY(var(--bar-level,.3));transition:transform 75ms ease}
+.finder-mic.is-listening>svg,.search-voice-button.is-listening>svg{display:none}
+.finder-mic.is-listening>.af-voice-bars,.search-voice-button.is-listening>.af-voice-bars{display:flex}
+.finder-mic.is-listening .af-voice-bars i:not([style]),.search-voice-button.is-listening .af-voice-bars i:not([style]){animation:afAudioFallback 760ms ease-in-out infinite alternate}
+.finder-mic.is-listening .af-voice-bars i:nth-child(2),.search-voice-button.is-listening .af-voice-bars i:nth-child(2){animation-delay:110ms}
+.finder-mic.is-listening .af-voice-bars i:nth-child(3),.search-voice-button.is-listening .af-voice-bars i:nth-child(3){animation-delay:220ms}
+.finder-mic.is-listening .af-voice-bars i:nth-child(4),.search-voice-button.is-listening .af-voice-bars i:nth-child(4){animation-delay:330ms}
+@keyframes afAudioFallback{from{transform:scaleY(.24)}to{transform:scaleY(.95)}}
+.finder-prompt-zone{padding:9px 10px;border:1px solid #b3ddd5;background:linear-gradient(130deg,#effbf7,#deeff4);border-radius:12px;}
+.finder-prompt-heading{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px;font-weight:800;color:#31616a;margin-bottom:6px}
+.finder-prompt-next{width:28px;height:28px;border:1px solid #aad9d1;background:#fff;color:#1b6773;display:grid;place-items:center;border-radius:9px;font-size:19px;line-height:1}
+.finder-suggestions{display:flex;flex-wrap:nowrap;gap:7px}
+.finder-suggestions button{flex:1 1 0;min-width:0;max-width:none;font-size:11px;background:linear-gradient(110deg,#fafffd,#eff9fd);border:1px solid #81c7c4;
+  box-shadow:0 3px 10px #19404a0f;animation:afPromptAppear .34s ease both}
+@keyframes afPromptAppear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+html[data-theme="dark"] .finder-prompt-zone{background:linear-gradient(110deg,#174650,#143744);border-color:#4d8d91}
+html[data-theme="dark"] .finder-prompt-heading{color:#def8f1}
+html[data-theme="dark"] .finder-prompt-next{background:#1c5863;color:#fff;border-color:#4da5a9}
+html[data-theme="dark"] .finder-suggestions button{background:linear-gradient(130deg,#24545c,#224452);color:#fff}
+@media(max-width:680px){.finder-panel{min-height:230px;max-height:calc(100dvh - 16px)}.finder-panel.is-expanded{top:8px!important;left:8px!important;right:8px!important;bottom:8px!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 16px)!important;max-height:calc(100dvh - 16px)!important;border-radius:17px}.finder-suggestions button{font-size:10px}.finder-resize{width:40px;height:40px}}
+/* Water response lives over background but below clicks. */
+.af-water-layer{position:fixed;inset:0;pointer-events:none;z-index:9997;overflow:hidden;isolation:isolate}
+.af-water-ring{position:absolute;display:block;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  border:1.5px solid #59e0df85;box-shadow:0 0 0 1px #5fe9db32,inset 0 0 9px #6dfff152;
+  background:radial-gradient(circle at 50% 50%,#7cfde229 0%,#36aac217 36%,transparent 72%);
+  will-change:transform,opacity;animation:afWaterRipple 650ms cubic-bezier(.1,.7,.4,1) forwards}
+.af-water-ring.is-trail{animation-duration:460ms}
+@keyframes afWaterRipple{0%{transform:scale(.2);opacity:.9}45%{opacity:.57}100%{transform:scale(5.6);opacity:0}}
+/* Full actual site embedded in tutorial panel. */
+.tutorial-real-panel{display:flex!important;flex-direction:column!important;gap:0!important;}
+.tutorial-real-panel .tutorial-panel-text{width:100%;padding:18px 24px 12px!important;background:linear-gradient(120deg,#f7fffc,#e7f7f2)}
+.tutorial-real-panel .tutorial-panel-text>p{max-width:760px;margin-bottom:4px}
+.tutorial-live-mount{width:100%;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:#081f29;border-top:1px solid #b4dad4}
+.af-tutorial-live-banner{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 14px;
+  background:linear-gradient(110deg,#102b37,#205968 65%,#247b82);color:#e9fffb;font-size:11px}
+.af-tutorial-live-banner>span:last-child{color:#d1f6ef;font-size:11px}
+.af-tutorial-live-dot{height:8px;width:8px;border-radius:50%;background:#7af7de;box-shadow:0 0 0 4px #7af7de26;animation:afBeacon 3s ease-in-out infinite}
+.af-tutorial-site-frame{display:block;width:100%;height:600px;min-height:400px;border:0;background:#fff;color-scheme:light}
+body.af-tutorial-embed .app-loading{display:none!important}
+body.af-tutorial-embed .side-link[data-page="tutorial"]{display:none!important}
+body.af-tutorial-embed .site-header{min-height:70px}
+@media(max-width:680px){.af-tutorial-site-frame{height:570px}.tutorial-real-panel .tutorial-panel-text{padding:16px!important}.af-tutorial-live-banner{padding:10px;font-size:10px}.af-tutorial-live-banner>span:last-child{font-size:10px}}
+/* Admin: deliberately high contrast in both appearance modes. */
+.af-admin-page{position:relative}
+.af-admin-wrap{position:relative;isolation:isolate;padding:clamp(19px,4vw,43px);border-radius:24px;overflow:hidden;
+  background:linear-gradient(147deg,#071f29,#153a4b 51%,#19626b);color:#f0fffc;box-shadow:0 18px 48px #071f2937}
+.af-admin-glow{position:absolute;z-index:-1;top:-160px;right:-100px;width:440px;height:440px;max-width:100%;border-radius:50%;background:radial-gradient(circle,#52c9cb35,transparent 68%);pointer-events:none}
+.af-admin-page h1,.af-admin-page h2{color:#fff}
+.af-admin-heading{max-width:720px;margin-bottom:22px}
+.af-admin-heading h1{font-size:clamp(29px,4vw,47px);margin:9px 0 9px}
+.af-admin-heading h1 span{font-size:23px;color:#8cf8e3}
+.af-admin-page p{color:#d9f1ef}
+.af-admin-eyebrow{font-size:10px;letter-spacing:.18em;font-weight:850;color:#8cf8e3}
+.af-admin-lock,.af-admin-unlocked{max-width:590px;margin:0 auto 12px;padding:clamp(20px,3vw,30px);border:1px solid #70bdbb;
+  border-radius:22px;background:linear-gradient(155deg,#103443ee,#214b58ed);box-shadow:0 10px 28px #041c263d}
+.af-admin-seal{display:grid;place-items:center;width:55px;height:55px;margin:0 auto 9px;border-radius:18px;
+  background:linear-gradient(135deg,#1e7080,#37afaa);color:#fff;font-size:33px;box-shadow:0 0 22px #69e3da33}
+.af-admin-lock h2{text-align:center;font-size:22px;margin:4px 0 6px}
+.af-admin-caption{text-align:center;font-size:12px;line-height:1.55}
+.af-admin-lock label{display:block;font-size:12px;font-weight:800;color:#effffa;margin:12px 0 7px}
+.af-admin-input-row{display:flex;background:#f3fffb;border:2px solid #8ae7dc;border-radius:13px;overflow:hidden}
+.af-admin-input-row input{flex:1;width:100%;border:none;outline:none;background:transparent;color:#113b47;font-size:20px;letter-spacing:.26em;padding:12px 14px}
+.af-admin-input-row input:focus-visible{outline:none}
+.af-admin-input-row:focus-within{box-shadow:0 0 0 3px #8cf8e44d}
+.af-admin-input-row button{width:48px;border:none;border-left:1px solid #94d3cc;background:#e4f5f0;color:#134853;font-size:22px}
+#adminError{min-height:20px;font-size:12px;margin:9px 0 12px;color:#effffa}
+.af-admin-keyboard{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+.af-admin-keyboard button{height:38px;min-width:0;border:1px solid #78bec3;border-radius:9px;background:linear-gradient(135deg,#285e70,#317983);
+  color:#fff;font-weight:850;font-size:12px;transition:transform .15s,box-shadow .16s,background .16s}
+.af-admin-keyboard button:hover,.af-admin-keyboard button:focus-visible{background:linear-gradient(135deg,#368c98,#3bb5a7);color:#fff;box-shadow:0 0 0 2px #9de8d7a3;outline:none}
+.af-admin-keyboard button.is-pressed{animation:afKeydown .21s ease-out}
+@keyframes afKeydown{0%{transform:scale(.87);background:#79eddb}100%{transform:scale(1)}}
+.af-admin-keyboard button.af-admin-key-special{grid-column:span 5;background:#1d5060}
+.af-admin-enter{width:100%;min-height:49px;border:none;border-radius:12px;margin-top:13px;
+  background:linear-gradient(110deg,#91fbe9,#42d3c9);color:#07313c;font-size:14px;font-weight:900;box-shadow:0 9px 24px #031d2830}
+.af-admin-enter:hover{filter:brightness(1.07)}
+.af-admin-security{max-width:760px;margin:20px auto 0;font-size:11px;color:#d0ece8!important;text-align:center}
+.af-admin-unlocked h2{font-size:23px}.af-admin-success{color:#a3ffe9!important;font-weight:800}
+.af-admin-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
+.af-admin-stats>div{display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid #67b0b5;border-radius:14px;background:#24596888}
+.af-admin-stats strong{color:#b1ffeb;font-size:30px}.af-admin-stats span{color:#f5fffb;font-size:12px}
+.af-admin-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
+.af-admin-actions button{padding:12px 15px;background:#a4f6e6;color:#113e4a;border-radius:10px;border:0;font-weight:800}
+.af-admin-error-shake{animation:afAdminShake .32s ease}
+@keyframes afAdminShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+@media(max-width:680px){.af-admin-wrap{border-radius:16px;padding:15px}.af-admin-keyboard{grid-template-columns:repeat(7,minmax(0,1fr))}.af-admin-keyboard button{height:43px;font-size:13px}.af-admin-keyboard button.af-admin-key-special{grid-column:span 3}.af-admin-keyboard button.af-admin-key-special:last-child{grid-column:span 4}.af-admin-lock{padding:16px}}
+/* Version timeline with an individual animated hover highlight rather than a giant solid stripe. */
+.af-version-head{padding:23px 25px;color:white;border-radius:20px;margin-bottom:20px;
+  background:linear-gradient(125deg,#071f29,#1d5664 59%,#28a7a2)}
+.af-version-head h1{color:white;margin:8px 0}.af-version-head p{color:#e9f9f4;margin:0;font-size:13px}
+.af-version-layout{display:grid;grid-template-columns:minmax(225px,260px) minmax(0,1fr);gap:17px;align-items:stretch}
+.af-version-timeline{padding:14px;border-radius:18px;background:linear-gradient(145deg,#e8faf5,#dceff2);border:1px solid #a5d8d4;min-width:0}
+.af-version-timeline label{font-size:12px;font-weight:850;color:#164851;display:block;margin-bottom:7px}
+#versionsSearch{display:block;width:100%;height:42px;padding:10px 12px;border:1px solid #84bebc;border-radius:11px;background:#fff;color:#153c47;outline-color:#269c9e;font-size:13px}
+.af-version-scroll{position:relative;margin-top:11px;padding-left:9px;max-height:570px;overflow:auto;scrollbar-width:thin;scrollbar-color:#65b6b3 transparent}
+.af-version-scroll:before{content:"";position:absolute;left:3px;top:2px;bottom:0;width:3px;border-radius:9px;
+  background:linear-gradient(#8eefe5,#27a7a9 52%,#5c96d3);pointer-events:none}
+.af-version-item{position:relative;width:100%;display:flex;align-items:center;gap:10px;padding:10px 8px 10px 14px;margin:3px 0;
+  color:#3e6168;background:transparent;border:1px solid transparent;border-radius:12px;text-align:left;font-size:12px;transition:background .22s,color .22s,transform .2s,border .2s}
+.af-version-item.is-available{color:#184b53;font-weight:800}
+.af-version-item:hover,.af-version-item:focus-visible{outline:none;background:linear-gradient(90deg,#c3f8e9,#b7e9ed,#d3edfa);color:#11434e;
+  transform:translateX(3px);border-color:#7ebdbc;box-shadow:0 4px 14px #154c5511}
+.af-version-item.is-current{background:linear-gradient(110deg,#1a6576,#26a7a9);color:#fff;box-shadow:0 5px 14px #13596435;border-color:#56bcb7}
+.af-version-item.is-current:hover{background:linear-gradient(110deg,#267f8d,#318eae)}
+.af-version-badge{font-weight:900;min-width:30px;font-variant-numeric:tabular-nums}
+.af-version-name{flex:1;overflow-wrap:anywhere}
+.af-version-dot{position:absolute;left:-11px;top:50%;width:7px;height:7px;transform:translateY(-50%);border-radius:50%;background:#3aa6a9;border:1px solid #fff;z-index:1}
+.af-version-item:hover .af-version-dot{background:#77e9d9;box-shadow:0 0 0 4px #4ed4ca35}
+.af-version-item mark{border-radius:3px;padding:0 2px;background:#f8d968;color:#092b32}
+.af-version-detail{border:1px solid #b8d6d1;border-radius:19px;padding:clamp(16px,3vw,26px);background:#fafffd;min-height:385px;min-width:0}
+.af-version-detail .af-admin-eyebrow{color:#117e82}.af-version-detail h2{font-size:25px;color:#163e48;margin:10px 0}
+.af-version-detail p{font-size:13px;color:#3b5d63}
+.af-version-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-top:14px}
+.af-version-image{position:relative;overflow:hidden;border-radius:12px;border:1px solid #c5e0db;background:#e5efed;margin:0;aspect-ratio:4/3}
+.af-version-image img{width:100%;height:100%;object-fit:cover;display:block}
+.af-version-image>button{position:absolute;right:7px;top:7px;display:grid;place-items:center;width:32px;height:32px;
+  border:1px solid #d3fffaad;border-radius:9px;background:#071f2999;color:#fff;opacity:.87;transition:opacity .2s,background .2s}
+.af-version-image>button:hover,.af-version-image>button:focus-visible{opacity:1;background:#147a89;outline:2px solid #a3fae7;outline-offset:1px}
+.af-version-image>button svg{width:16px;height:16px;display:block;margin:auto}
+.af-archive-empty{margin-top:18px;padding:32px 16px;border:1px dashed #a1cbc5;border-radius:13px;color:#4c7580;text-align:center;background:#f0f9f6}
+.af-version-lightbox{padding:15px;border:none;border-radius:17px;background:#071f29;max-width:min(95vw,1200px);max-height:90dvh}
+.af-version-lightbox img{display:block;max-width:100%;max-height:calc(90dvh - 30px);object-fit:contain;margin:auto}
+.af-version-lightbox::backdrop{background:#071f29cd;backdrop-filter:blur(8px)}
+.af-version-lightbox-close{position:absolute;top:8px;right:8px;border:1px solid #a9ece1;border-radius:9px;background:#1d606b;color:white;font-size:24px;width:36px;height:36px}
+.af-version-empty{font-size:12px;color:#36616b}
+html[data-theme="dark"] .af-version-timeline{background:linear-gradient(150deg,#153b46,#1a4a55);border-color:#457f82}
+html[data-theme="dark"] .af-version-timeline label{color:#dcfff8}
+html[data-theme="dark"] .af-version-item{color:#d0e9e7}
+html[data-theme="dark"] .af-version-item:hover{color:#07303a}
+html[data-theme="dark"] .af-version-item.is-current{color:white}
+html[data-theme="dark"] .af-version-detail{background:#143641;border-color:#457f82}
+html[data-theme="dark"] .af-version-detail h2,html[data-theme="dark"] .af-version-detail p{color:#e8fffb}
+html[data-theme="dark"] .af-version-detail .af-admin-eyebrow{color:#a0f8e8}
+html[data-theme="dark"] .af-archive-empty{background:#1a4853;color:#e6fff9}
+@media(max-width:800px){.af-version-layout{grid-template-columns:1fr}.af-version-scroll{max-height:165px}.af-version-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.af-version-gallery{grid-template-columns:1fr}.af-version-image{aspect-ratio:16/10}}
+@media(prefers-reduced-motion:reduce){.af-water-layer{display:none!important}.af-water-ring,.af-admin-error-shake,.af-admin-keyboard button.is-pressed,
+  .nav-route-legend [data-nav-legend] .nav-legend-symbol,.nav-route-legend [data-nav-legend] .nav-legend-destination,
+  .af-animated-brand.is-brand-activated,.af-tutorial-live-dot,.finder-suggestions button,.schedule-subnav{animation:none!important}
+  .af-version-item,.af-admin-keyboard button{transition:none!important}}
+
+/* V51 · Contrasto forte del totale ore anche aprendo un docente dai Professori liberi. */
+.teacher-total-highlight{display:flex;align-items:center;justify-content:space-between;gap:1.2rem;background:linear-gradient(118deg,#0e5260,#1e8285);color:#fff;border-radius:18px;padding:14px 19px;margin:14px 0;box-shadow:0 8px 22px #0c45532b}
+.teacher-total-highlight>span{font-size:.92rem;font-weight:700;letter-spacing:.01em}
+.teacher-total-highlight strong{font-size:2rem;font-variant-numeric:tabular-nums;line-height:1;color:#c7fff5}
+@media(prefers-reduced-motion:reduce){.teacher-total-highlight{box-shadow:none}}
+/* Non coprire l'accesso Admin nel footer col pulsante Finder flottante. */
+.footer-admin-button{margin-inline-end:132px;scroll-margin-block-end:100px}
+@media(max-width:680px){.footer-admin-button{margin-inline-end:100px}}
+/* Schermata riservata: il launcher flottante non deve coprire la tastiera o il submit. */
+body:has(#adminPage:not([hidden])) #finderLaunch{display:none!important}

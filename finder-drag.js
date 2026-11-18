@@ -21,26 +21,41 @@
     positionPanel();
   }
   function positionPanel(){
-    if(panel.hidden || !custom)return;
-    const r=button.getBoundingClientRect();
-    const {w,h}=bounds();
-    const pw=Math.min(395,w-16);
+    if(panel.hidden||panel.classList.contains('is-expanded')||!custom)return;
+    const r=button.getBoundingClientRect();const {w,h}=bounds();
+    const pw=Math.min(panel.offsetWidth||395,w-16);
     const left=clamp(r.right-pw,8,Math.max(8,w-pw-8));
-    panel.style.width=`${pw}px`;
-    panel.style.left=`${left}px`;
-    panel.style.right='auto';
-    const spaceAbove=r.top-10;
-    const spaceBelow=h-r.bottom-10;
-    if(spaceAbove>=Math.min(350,h*.45) || spaceAbove>spaceBelow){
-      panel.style.bottom=`${Math.max(7,h-r.top+8)}px`;
-      panel.style.top='auto';
-      panel.style.maxHeight=`${Math.max(150,spaceAbove-12)}px`;
+    panel.style.left=`${left}px`;panel.style.right='auto';
+    const ph=Math.min(panel.offsetHeight||520,h-24);
+    const spaceAbove=r.top-10,spaceBelow=h-r.bottom-10;
+    if(spaceAbove>spaceBelow&&spaceAbove>=Math.min(240,ph*.65)){
+      panel.style.top='auto';panel.style.bottom=`${Math.max(7,h-r.top+8)}px`;
     }else{
-      panel.style.top=`${r.bottom+8}px`;
-      panel.style.bottom='auto';
-      panel.style.maxHeight=`${Math.max(150,spaceBelow-10)}px`;
+      panel.style.top=`${r.bottom+8}px`;panel.style.bottom='auto';
     }
   }
+  const grip=document.getElementById('finderResize');
+  function resizePanel(w,h){
+    panel.classList.remove('is-expanded');
+    document.getElementById('finderExpand')?.setAttribute('aria-pressed','false');
+    const maxW=Math.max(265,window.innerWidth-16),maxH=Math.max(210,window.innerHeight-16);
+    panel.style.width=`${clamp(w,265,maxW)}px`;
+    panel.style.height=`${clamp(h,210,maxH)}px`;
+    panel.style.maxHeight=`${maxH}px`;
+    panel.classList.add('is-custom-sized');positionPanel();
+    try{localStorage.setItem('aulafinder.finder.size',JSON.stringify({w:panel.offsetWidth,h:panel.offsetHeight}));}catch(_){}
+  }
+  let sizing=null;
+  grip?.addEventListener('pointerdown',e=>{
+    if(e.button!==0&&e.pointerType==='mouse')return;
+    const r=panel.getBoundingClientRect();sizing={id:e.pointerId,x:e.clientX,y:e.clientY,w:r.width,h:r.height};
+    try{grip.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();
+  });
+  grip?.addEventListener('pointermove',e=>{if(!sizing||e.pointerId!==sizing.id)return;resizePanel(sizing.w+e.clientX-sizing.x,sizing.h+e.clientY-sizing.y);});
+  ['pointercancel','pointerup'].forEach(type=>grip?.addEventListener(type,()=>{sizing=null;}));
+  grip?.addEventListener('keydown',e=>{if(!e.key.startsWith('Arrow'))return;e.preventDefault();const step=e.shiftKey?40:16;resizePanel(panel.offsetWidth+(e.key==='ArrowRight'?step:e.key==='ArrowLeft'?-step:0),panel.offsetHeight+(e.key==='ArrowDown'?step:e.key==='ArrowUp'?-step:0));});
+  panel.addEventListener('finder:resize',()=>{if(!panel.classList.contains('is-expanded'))positionPanel();});
+  try{const stored=JSON.parse(localStorage.getItem('aulafinder.finder.size')||'null');if(Number.isFinite(stored?.w)&&Number.isFinite(stored?.h))resizePanel(stored.w,stored.h);}catch(_){}
   button.addEventListener('pointerdown',e=>{
     if(e.button!==0 && e.pointerType==='mouse')return;
     const r=button.getBoundingClientRect();
