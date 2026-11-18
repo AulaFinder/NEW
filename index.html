@@ -27,12 +27,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AulaFinder">
 <script>
-(()=>{try{const saved=localStorage.getItem('aulafinder.theme');const dark= saved==='dark'||(saved!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';}catch(e){document.documentElement.dataset.theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}})();
+(()=>{try{const mobile=window.matchMedia('(max-width:680px)').matches;const saved=localStorage.getItem(mobile?'aulafinder.theme.mobile':'aulafinder.theme');const dark=saved==='dark'||(saved!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';}catch(e){document.documentElement.dataset.theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}})();
 </script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="piantina.css">
   <link rel="stylesheet" href="v48.css">
   <link rel="stylesheet" href="v49.css">
+  <link rel="stylesheet" href="v50.css">
   <!-- V42: correzioni puntuali dell'header e del menu. Regole mantenute
        qui per prevalere anche quando la PWA conserva un vecchio style.css. -->
   <style id="aulafinder-v42-header-fix">
@@ -66,6 +67,7 @@
   <script src="versioni.js" defer></script>
   <script src="v48-ui.js" defer></script>
   <script src="v49-ui.js" defer></script>
+  <script src="v50-ui.js" defer></script>
 </head>
 <body>
   <!-- Video di apertura fornito dagli studenti. Silenziato per consentire autoplay su mobile. -->
@@ -240,10 +242,10 @@
 
         <section id="versioniPage" class="page content-page versioni-page" hidden aria-labelledby="versioniTitle">
           <div class="page-topline"><h1 id="versioniTitle" class="af48-title"><svg class="af48-title-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h5M9 13h6M9 17h6"/></svg> Versioni</h1></div>
-          <div class="versioni-intro"><div><p class="versioni-kicker">LA STORIA DEL PROGETTO</p><h2>Come si è evoluto AulaFinder</h2><p>Esplora tutte le versioni, dalla prima alla V49. Scopri cosa è cambiato e apri le anteprime delle Home originali.</p></div><div class="versioni-current"><span>Versione attuale</span><strong>V49</strong><small>Salto di qualità</small></div></div>
+          <div class="versioni-intro"><div><p class="versioni-kicker">LA STORIA DEL PROGETTO</p><h2>Come si è evoluto AulaFinder</h2><p>Esplora tutte le versioni, dalla prima alla V50. Scopri cosa è cambiato e apri le anteprime delle Home originali.</p></div><div class="versioni-current"><span>Versione attuale</span><strong>V50</strong><small>Orizzonti nuovi</small></div></div>
           <div class="versioni-toolbar"><label class="versioni-search-label" for="versioniSearch">Cerca una versione o una funzione <input type="search" id="versioniSearch" placeholder="Es. V45, Finder, navigatore…" autocomplete="off"></label><span id="versioniCount" class="versioni-count" role="status" aria-live="polite"></span></div>
           <div id="versioniList" class="versioni-list"></div>
-          <p class="versioni-disclaimer">Cronologia ricostruita dai file di rilascio disponibili. Una versione senza note non equivale a una versione senza modifiche.</p>
+          <p class="versioni-disclaimer">Anteprime ricavate dai pacchetti storici; le icone riportate riflettono gli elementi dei rispettivi rilasci. Una versione senza note non equivale a una versione senza modifiche.</p>
         </section>
 
         <section id="orariPage" class="page content-page orari-dashboard" hidden aria-labelledby="scheduleTitle">
@@ -403,9 +405,9 @@
   </div>
 
   <!-- Finder: risposte basate soltanto sugli orari integrati, con riconoscimento vocale se disponibile. -->
-  <button type="button" id="finderLaunch" class="finder-launch" aria-controls="finderPanel" aria-expanded="false" aria-label="Apri Finder, assistente scolastico" title="Trascina per spostare Finder oppure premi per aprirlo"><img class="finder-launch-icon" src="assets/finder-icon.png" alt="" aria-hidden="true"><span>Finder</span></button>
+  <button type="button" id="finderLaunch" class="finder-launch" aria-controls="finderPanel" aria-expanded="false" aria-label="Apri Finder, assistente scolastico" title="Trascina per spostare Finder oppure premi per aprirlo"><img class="finder-launch-icon" src="assets/finder-icon.png" alt="" aria-hidden="true"></button>
   <section id="finderPanel" class="finder-panel" role="dialog" aria-modal="false" aria-labelledby="finderTitle" hidden>
-    <div class="finder-panel-head" title="Trascina questa barra per spostare Finder"><span class="finder-head-orb" aria-hidden="true"><video autoplay muted playsinline loop preload="auto" poster="assets/finder-orb-loop.webp" disablepictureinpicture><source src="assets/finder-orb-loop.mp4" type="video/mp4"><source src="assets/finder-orb.webm" type="video/webm"></video></span><div><h2 id="finderTitle">Finder</h2><p>Il tuo assistente per orari, lezioni e aule.</p></div><div class="finder-window-controls"><button type="button" id="finderExpand" class="finder-window-btn" aria-label="Espandi o riduci la finestra Finder" title="Espandi o riduci">⤢</button><button type="button" id="finderMinimize" class="finder-window-btn" aria-label="Riduci Finder" title="Riduci Finder">−</button><button type="button" id="finderClose" class="finder-close" aria-label="Chiudi Finder"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg></button></div></div>
+    <div class="finder-panel-head" title="Trascina questa barra per spostare Finder"><span class="finder-head-orb" aria-hidden="true"><video autoplay muted playsinline loop preload="auto" poster="assets/finder-orb-loop.webp" disablepictureinpicture><source src="assets/finder-orb-loop.mp4" type="video/mp4"><source src="assets/finder-orb.webm" type="video/webm"></video></span><div><h2 id="finderTitle">Finder</h2><p>Il tuo assistente per orari, lezioni e aule.</p></div><div class="finder-window-controls"><button type="button" id="finderExpand" class="finder-window-btn" aria-label="Espandi o riduci la finestra Finder" title="Espandi o riduci">⤢</button><button type="button" id="finderClose" class="finder-close" aria-label="Chiudi Finder"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg></button></div></div>
     <div class="finder-panel-content">
       <label for="finderClass">La tua classe</label><select id="finderClass" aria-label="Scegli la tua classe"><option value="">Seleziona la tua classe</option></select>
       <details id="finderPromptsWrap" class="finder-prompt-wrap"><summary>Idee per le domande a Finder <span aria-hidden="true">⌄</span></summary><div class="finder-suggestions" id="finderPrompts" aria-label="Domande suggerite">

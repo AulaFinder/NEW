@@ -935,5 +935,35 @@
       "assets/aulafinder-open.wav",
       "assets/versioni-home/"
     ]
+  },
+  {
+    "number": 50,
+    "version": "V50",
+    "title": "Orizzonti nuovi",
+    "details": [
+      "Tema mobile inizialmente sincronizzato con il dispositivo e navigazione intelligente senza salti involontari.",
+      "Avvio visivamente uniforme, suoni originali dedicati e animazioni del marchio stabili, su desktop e smartphone.",
+      "Finder con pulsante orb luminoso, apertura e chiusura verso il pulsante, senza comando di riduzione ridondante.",
+      "Piantine in fullscreen realmente scorrevoli e zoomabili e anteprime storiche apribili a schermo intero.",
+      "Navigatore con estremi nel centro delle aule e collegamenti controllati alle corsie, oltre alle informazioni settimanali dei docenti.",
+      "Versioni, tutorial, FAQ e scorciatoie Home rifiniti con contrasto e microinterazioni.",
+      "Verifiche automatiche V50 e report delle limitazioni documentate."
+    ],
+    "source": "Implementazione e verifica V50; README_V50.md e VERIFICHE_V50.md",
+    "documented": true,
+    "preview": "assets/versioni-home/V50.webp",
+    "changedFiles": [
+      "index.html",
+      "script.js",
+      "navigator.js",
+      "finder.js",
+      "versioni.js",
+      "v48-ui.js",
+      "v49-ui.js",
+      "v50-ui.js",
+      "v50.css",
+      "loading.js",
+      "sw.js"
+    ]
   }
 ]

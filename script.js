@@ -351,7 +351,7 @@
       <div class="result-banner"><span class="banner-icon" aria-hidden="true">${icon}</span><h2>${escapeHtml(headline)}</h2>${favButton(kind,item.id)}</div>
       <div class="result-body">
         <div class="result-header">${planButton}<span class="status-pill ${v?'':'free'}">${escapeHtml(badge)}</span></div>
-        <section class="current-lesson"><p class="eyebrow">${escapeHtml(extra)}</p><h3>${escapeHtml(heading)}</h3><p>${escapeHtml(line)}</p></section>
+        <section class="current-lesson"><p class="eyebrow">${escapeHtml(extra)}</p><h3>${escapeHtml(heading)}</h3><p>${escapeHtml(line)}</p>${kind==='teachers'?`<p class="af50-teacher-total">${Object.values(item.days||{}).flat().filter(Boolean).length} ore di lezione previste nella settimana</p>`:''}</section>
         <div class="daily-heading"><h3><span class="icon-inline">${clockIcon}</span>Orario</h3><span>${escapeHtml(day)}</span></div>
         <div class="hours-list">${item.days[day].map((slot,i)=>hourRow(kind,slot,i,selected)).join('')}</div>
         <button class="complete-schedule-button" type="button" data-full-schedule="${escapeHtml(kind)}" data-entity="${escapeHtml(item.id)}">Apri l’orario completo →</button>
@@ -570,6 +570,7 @@
       const item=DATA.teachers[id]; if(!item) return '';
       title=teacherBase(id);
       rows=panelRow('Materia',teachingSubject(id));
+      rows+=panelRow('Ore settimanali previste',String(Object.values(item.days||{}).flat().filter(Boolean).length));
       const classes=[...new Set(Object.values(item.days).flat().filter(Boolean).map(x=>x.class))].sort((a,b)=>a.localeCompare(b,'it',{numeric:true}));
       rows+=panelRow('Classi',classes.join(' · ')||'Non indicate');
     }else if(kind==='freeRooms'){
@@ -822,7 +823,7 @@
   themeButton.addEventListener('click',()=>{
     const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
     document.documentElement.dataset.theme=next;
-    try{localStorage.setItem('aulafinder.theme',next);}catch(_){}
+    try{localStorage.setItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme',next);}catch(_){}
     refreshThemeLabel();
     themeButton.classList.remove('theme-switching');
     // Re-trigger the short icon transition when toggled repeatedly.
@@ -830,7 +831,8 @@
     themeButton.classList.add('theme-switching');
   });
   themeButton.addEventListener('animationend',()=>themeButton.classList.remove('theme-switching'));
-  systemTheme.addEventListener('change',e=>{try{if(localStorage.getItem('aulafinder.theme'))return;}catch(_){}document.documentElement.dataset.theme=e.matches?'dark':'light';refreshThemeLabel()});
+  systemTheme.addEventListener('change',e=>{try{if(localStorage.getItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme'))return;}catch(_){}document.documentElement.dataset.theme=e.matches?'dark':'light';refreshThemeLabel()});
+  matchMedia('(max-width:680px)').addEventListener('change',()=>{let saved=null;try{saved=localStorage.getItem(matchMedia('(max-width:680px)').matches?'aulafinder.theme.mobile':'aulafinder.theme');}catch(_){}document.documentElement.dataset.theme=saved==='dark'||(saved!=='light'&&systemTheme.matches)?'dark':'light';refreshThemeLabel();});
   refreshThemeLabel();
   renderFavorites();
   renderHistory();

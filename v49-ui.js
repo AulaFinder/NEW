@@ -5,72 +5,21 @@
  const isMobile=()=>matchMedia('(max-width:680px)').matches;
  const prefers=()=>reduce()?'instant':'smooth';
 
- // I marchi sul telefono diventano controlli di animazione, non scorciatoie Home.
- function markBrand(element){
-  if(!element)return;
-  element.classList.remove('af49-brand-glow');void element.offsetWidth;
-  element.classList.add('af49-brand-glow');
-  const end=()=>element.classList.remove('af49-brand-glow');
-  element.addEventListener('animationend',end,{once:true});
-  setTimeout(end,1000);
- }
- function refreshBrandLabels(){
-  document.querySelectorAll('.brand-title[data-page="home"],#sidebarClose').forEach(el=>{
-   if(!el.dataset.af49OriginalLabel)el.dataset.af49OriginalLabel=el.getAttribute('aria-label')||'';
-   if(isMobile())el.setAttribute('aria-label','Anima il marchio AulaFinder');
-   else if(el.dataset.af49OriginalLabel)el.setAttribute('aria-label',el.dataset.af49OriginalLabel);
-  });
- }
- document.addEventListener('click',event=>{
-  if(!isMobile())return;
-  const brand=event.target.closest('.brand-title[data-page="home"],#sidebarClose,.footer-logo');
-  if(brand){
-   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-   markBrand(brand);
-  }
- },true);
- refreshBrandLabels();window.addEventListener('resize',refreshBrandLabels,{passive:true});
-
- // Ritorno animato del logo dal dialogo alla sua posizione nel titolo.
- const dialog=document.getElementById('logoDialog');
- const originalLogo=document.querySelector('#logoButton img');
- let closingLogo=false;
- function closeLogo(){
-  if(!dialog?.open||closingLogo)return;
-  if(reduce()||!originalLogo){dialog.close();return;}
-  closingLogo=true;dialog.classList.add('af49-logo-returning');
-  const picture=dialog.querySelector('img');
-  const a=picture.getBoundingClientRect(),b=originalLogo.getBoundingClientRect();
-  const startX=a.left+a.width/2,startY=a.top+a.height/2,endX=b.left+b.width/2,endY=b.top+b.height/2;
-  const sx=b.width/a.width,sy=b.height/a.height;
-  const anim=picture.animate([
-   {transform:'translate(0,0) scale(1)',opacity:1,filter:'brightness(1)'},
-   {transform:`translate(${endX-startX}px,${endY-startY}px) scale(${sx},${sy})`,opacity:.9,filter:'brightness(1.42) drop-shadow(0 0 13px #8efdea)'}
-  ],{duration:480,easing:'cubic-bezier(.23,.83,.2,1)',fill:'forwards'});
-  const finish=()=>{
-   try{dialog.close();}catch(_){}
-   dialog.classList.remove('af49-logo-returning');closingLogo=false;
-   originalLogo.closest('button')?.classList.add('af49-logo-landing');
-   setTimeout(()=>originalLogo.closest('button')?.classList.remove('af49-logo-landing'),600);
-  };
-  anim.finished.then(finish).catch(finish);
- }
- dialog?.addEventListener('click',e=>{
-  if(isMobile()&&e.target===dialog){e.preventDefault();e.stopImmediatePropagation();closeLogo();}
- },true);
- dialog?.addEventListener('cancel',e=>{if(isMobile()){e.preventDefault();closeLogo();}},true);
-
+ // V50 gestisce marchi e finestra logo in modo unificato su tutti i dispositivi.
  // Le piantine esistenti vengono CLONATE: stessi SVG, stessa geometria e stessi testi.
  const cards=[...document.querySelectorAll('#piantinaPage .plan-card')];
  const viewer=document.createElement('div');viewer.id='af49MapViewer';viewer.className='af49-map-viewer';viewer.hidden=true;
  viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-label','Piantina a schermo intero');
- viewer.innerHTML=`<div class="af49-map-viewer-bar"><strong id="af49ViewerTitle">Piantina</strong><div class="af49-viewer-buttons"><button type="button" id="af49ZoomOut" aria-label="Riduci ingrandimento">−</button><span id="af49ZoomLabel" aria-live="polite">100%</span><button type="button" id="af49ZoomIn" aria-label="Ingrandisci mappa">+</button><button type="button" id="af49ViewerClose" aria-label="Chiudi la piantina a schermo intero">✕</button></div></div><div class="af49-map-viewer-scene"><div class="af49-map-viewer-stage" id="af49ViewerStage"></div></div><div class="af49-map-viewer-note" id="af49ViewerNote" aria-live="polite">Tocca un'aula per vedere il nome.</div>`;
+ viewer.innerHTML=`<div class="af49-map-viewer-bar"><strong id="af49ViewerTitle">Piantina</strong><div class="af49-viewer-buttons"><button type="button" id="af49ZoomOut" aria-label="Riduci ingrandimento">−</button><span id="af49ZoomLabel" aria-live="polite">100%</span><button type="button" id="af49ZoomIn" aria-label="Ingrandisci mappa">+</button><button type="button" id="af49ViewerClose" aria-label="Chiudi la piantina a schermo intero">✕</button></div></div><div class="af49-map-viewer-scene" tabindex="0" aria-label="Mappa scorrevole: trascina per esplorare le aule"><div class="af49-map-viewer-stage" id="af49ViewerStage"></div></div><div class="af49-map-viewer-note" id="af49ViewerNote" aria-live="polite">Tocca un'aula per vedere il nome.</div>`;
  document.body.append(viewer);
  const stage=viewer.querySelector('#af49ViewerStage');
- let opener=null,zoom=1;
+ const scene=viewer.querySelector('.af49-map-viewer-scene');
+ let opener=null,zoom=1,fitWidth=900,fitHeight=600;
  function setZoom(value){
   zoom=Math.min(2.6,Math.max(.75,value));
-  stage.style.setProperty('--af49-viewer-zoom',zoom);
+  stage.style.width=Math.round(fitWidth*zoom)+'px';stage.style.height=Math.round(fitHeight*zoom)+'px';
+  const svg=stage.querySelector('svg.plan');if(svg){svg.style.width='100%';svg.style.height='100%';}
+  stage.style.transform='none';
   viewer.querySelector('#af49ZoomLabel').textContent=Math.round(zoom*100)+'%';
  }
  function showFloor(card){
@@ -82,7 +31,10 @@
   stage.append(copy);
   viewer.querySelector('#af49ViewerTitle').textContent=card.querySelector('.plan-banner h2')?.textContent||'Piantina';
   viewer.dataset.theme=document.documentElement.dataset.theme||'light';
-  viewer.hidden=false;document.body.classList.add('af49-map-fullscreen-open');setZoom(1);
+  viewer.hidden=false;document.body.classList.add('af49-map-fullscreen-open');
+  const vb=copy.viewBox.baseVal;const sceneWidth=scene.clientWidth||innerWidth,sceneHeight=scene.clientHeight||innerHeight-100;
+  const ratio=vb.width&&vb.height?vb.width/vb.height:1.5;fitWidth=Math.min(sceneWidth,sceneHeight*ratio);fitHeight=fitWidth/ratio;
+  setZoom(1);scene.scrollLeft=0;scene.scrollTop=0;
   viewer.querySelector('#af49ViewerClose').focus({preventScroll:true});
   viewer.querySelector('#af49ViewerNote').textContent="Ruota il telefono per una visione più ampia oppure usa i controlli di ingrandimento.";
   // Fullscreen API opzionale: l'overlay funziona anche su Safari senza supporto alla API.
@@ -110,9 +62,22 @@
   banner.append(button);
   button.addEventListener('click',()=>showFloor(card));
  });
+ function zoomAt(value,px=.5,py=.5){
+  const before=zoom;const left=scene.scrollLeft,top=scene.scrollTop;
+  setZoom(value);
+  const ratio=zoom/before;
+  scene.scrollLeft=(left+scene.clientWidth*px)*ratio-scene.clientWidth*px;
+  scene.scrollTop=(top+scene.clientHeight*py)*ratio-scene.clientHeight*py;
+ }
+ let pan=null;
+ scene.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;pan={id:e.pointerId,x:e.clientX,y:e.clientY,left:scene.scrollLeft,top:scene.scrollTop,moved:false};});
+ scene.addEventListener('pointermove',e=>{if(!pan||e.pointerId!==pan.id)return;const dx=e.clientX-pan.x,dy=e.clientY-pan.y;
+  if(Math.hypot(dx,dy)>7){pan.moved=true;try{scene.setPointerCapture(e.pointerId);}catch(_){}scene.scrollLeft=pan.left-dx;scene.scrollTop=pan.top-dy;}});
+ scene.addEventListener('pointerup',()=>{pan=null;});scene.addEventListener('pointercancel',()=>{pan=null;});
+ scene.addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();const r=scene.getBoundingClientRect();zoomAt(zoom+(e.deltaY<0?.15:-.15),(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{passive:false});
  viewer.querySelector('#af49ViewerClose').addEventListener('click',closeViewer);
- viewer.querySelector('#af49ZoomIn').addEventListener('click',()=>setZoom(zoom+.25));
- viewer.querySelector('#af49ZoomOut').addEventListener('click',()=>setZoom(zoom-.25));
+ viewer.querySelector('#af49ZoomIn').addEventListener('click',()=>zoomAt(zoom+.25));
+ viewer.querySelector('#af49ZoomOut').addEventListener('click',()=>zoomAt(zoom-.25));
  viewer.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();closeViewer();}
   if(e.key==='Tab'){
@@ -138,7 +103,7 @@
  // Feedback visivo su touch senza eliminare il focus visibile per chi usa tastiera.
  document.addEventListener('pointerdown',e=>{
   const target=e.target.closest('button,.floor-option,summary');
-  if(!target||target.closest('#af49MapViewer')&&target.disabled)return;
+  if(!target||target.matches('.team-member')||target.closest('#af49MapViewer')&&target.disabled)return;
   target.classList.remove('af49-tap-glow');void target.offsetWidth;target.classList.add('af49-tap-glow');
   setTimeout(()=>target.classList.remove('af49-tap-glow'),480);
  },{passive:true});

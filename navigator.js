@@ -333,7 +333,7 @@
         // A decisive penalty for bends avoids the staircase/zigzag effect.
         // Near doors, a short segment close to a wall is still allowed.
         const turn=oldDir===d?0:7;
-        const clearancePenalty=3.0/(clearance[next]+1.0);
+        const clearancePenalty=7.0/(clearance[next]+.9);
         const v=(next<<2)|d;
         const candidate=g+1+turn+clearancePenalty;
         if(candidate+1e-8<costs[v]){costs[v]=candidate;prev[v]=u;push(v,candidate);}
@@ -392,6 +392,40 @@
       if(target)target.replaceChildren(el);
     });
   }
+  // La linea entra e termina in centro alle aule. Ogni tratto fuori dal
+  // corridoio è limitato al collegamento aula→corridoio, mai una scorciatoia tra stanze.
+  const centerOf=loc=>loc?.rect?point(loc.rect.x+loc.rect.w/2,loc.rect.y+loc.rect.h/2):point(loc.cx,loc.cy);
+  function routeRoomBridge(loc,hall,floor){
+    if(!loc||!hall)return [];
+    const r=loc.rect,center=centerOf(loc);
+    if(!r)return [center];
+    const inset=Math.min(1.2,r.w*.06,r.h*.06);
+    const candidates=[point(center.x,r.y),point(center.x,r.y+r.h),point(r.x,center.y),point(r.x+r.w,center.y)];
+    const corridor=geometryCorridors.get(floor);
+    const rooms=locations.filter(q=>q.floor===floor&&q!==loc&&canon(q.id)!==canon(loc.id));
+    const segmentPenalty=(a,b)=>{
+      let score=0;
+      for(let i=1;i<=14;i++){
+        const t=i/15,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;
+        if(rooms.some(room=>x>room.rect.x+inset&&x<room.rect.x+room.rect.w-inset&&y>room.rect.y+inset&&y<room.rect.y+room.rect.h-inset))score+=100;
+        if(!corridor?.isPointInFill?.(new DOMPoint(x,y)))score+=1;
+      }
+      return score;
+    };
+    let best=null;
+    for(const door of candidates){
+      const bends=[point(door.x,hall.y),point(hall.x,door.y)];
+      for(const bend of bends){
+        const d=distance(door,bend)+distance(bend,hall);
+        const penalty=segmentPenalty(door,bend)+segmentPenalty(bend,hall);
+        const cost=d+penalty*8;
+        if(!best||cost<best.cost)best={door,bend,cost};
+      }
+    }
+    if(!best)return [center];
+    const sequence=[center,best.door,best.bend,hall];
+    return sequence.filter((v,i)=>i===0||!close(v,sequence[i-1]));
+  }
   function cloneMap(floor,where,{routePoints=[],start=null,end=null,transfer=false,entryPoint=null,exitPoint=null}={}){
     where.innerHTML='';
     const original=document.querySelector('#'+floor+' svg.plan');
@@ -409,7 +443,12 @@
     if(routePoints.length){
       const layer=svgNode('g',{class:'nav-route-layer','aria-hidden':'true'});
       // Draw the route BEHIND the room text and icons (the original g.room are appended afterwards).
-      const unique=routePoints.filter((p,i)=>i===0||!close(p,routePoints[i-1]));
+      const hallway=routePoints.filter((p,i)=>i===0||!close(p,routePoints[i-1]));
+      // Aulas are centered; hallway route remains the same validated path.
+      const beginning=start&&hallway.length?routeRoomBridge(start,hallway[0],floor):[];
+      const ending=end&&hallway.length?routeRoomBridge(end,hallway.at(-1),floor):[];
+      const painted=[...beginning,...hallway,...ending.reverse()];
+      const unique=painted.filter((p,i)=>i===0||!close(p,painted[i-1]));
       const d=unique.length?`M ${fmt(unique[0].x)} ${fmt(unique[0].y)} `+unique.slice(1).map(p=>`L ${fmt(p.x)} ${fmt(p.y)}`).join(' '):'';
       // Coordinate reali per il gradiente: objectBoundingBox ha altezza zero
       // nei tratti perfettamente orizzontali e alcuni browser disegnano solo il contorno.
@@ -435,7 +474,7 @@
         layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
         layer.append(svgNode('path',{d,class:'nav-route-polyline'}));
       }
-      const a=unique[0],b=unique.at(-1);
+      const a=hallway[0],b=hallway.at(-1);
       const firstRoom=map.querySelector('g.room');
       if(firstRoom)firstRoom.parentNode.insertBefore(layer,firstRoom);else (map.querySelector('.plan-rotated')||map).appendChild(layer);
 
@@ -443,30 +482,10 @@
       // Partenza: doppio cerchio; scale ENTRATA e USCITA: unico cerchio verde acqua;
       // arrivo: SOLO il pin delle aule, senza cerchio né sfondo.
       const markers=[];
-      if(a&&start){
-        const r=start.rect;
-        const inside=start.id==='Palestra'&&r?point(r.x+r.w/2,r.y+r.h/2):a;
-        markers.push({p:inside,kind:'departure'});
-        // Accesso al corridoio: è una breve connessione visiva dal centro
-        // della palestra al punto di ingresso usato dall'algoritmo invariato.
-        if(start.id==='Palestra'&&distance(inside,a)>.5){
-          layer.append(svgNode('path',{d:`M ${fmt(inside.x)} ${fmt(inside.y)} L ${fmt(a.x)} ${fmt(a.y)}`,class:'nav-room-entrance-spur'}));
-        }
-      }
+      if(start)markers.push({p:centerOf(start),kind:'departure'});
       if(entryPoint)markers.push({p:entryPoint,kind:'stairs'});
       if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'stairs'});
-      if(b&&end){
-        // V47: il percorso resta invariato sul corridoio. Il SOLO simbolo d'arrivo
-        // è centrato sul rettangolo dell'aula, non sull'ultimo punto della linea.
-        const box=end.rect;
-        const center=box&&Number.isFinite(box.x+box.w/2)&&Number.isFinite(box.y+box.h/2)
-          ? point(box.x+box.w/2,box.y+box.h/2)
-          : point(end.cx,end.cy);
-        markers.push({p:center,kind:'destination'});
-        if(end.id==='Palestra'&&distance(center,b)>.5){
-          layer.append(svgNode('path',{d:`M ${fmt(center.x)} ${fmt(center.y)} L ${fmt(b.x)} ${fmt(b.y)}`,class:'nav-room-entrance-spur'}));
-        }
-      }
+      if(end)markers.push({p:centerOf(end),kind:'destination'});
       if(markers.length){
         const overlay=svgNode('g',{class:'nav-transfer-marker-layer nav-point-marker-layer','aria-hidden':'true'});
         const dedup=[];

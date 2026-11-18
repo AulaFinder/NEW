@@ -28,19 +28,42 @@
     try {localStorage.setItem('aulafinder.finder.class',selectedClass);}catch(_){}
   });
 
+  // Origin-aware opening and closing, independent of device width.
+  let panelMotion=null,desiredOpen=false;
+  const prefersReduced=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function animatePanel(open){
+    panelMotion?.cancel();panelMotion=null;
+    const r=panel.getBoundingClientRect(),b=launch.getBoundingClientRect();
+    const dx=b.left+b.width/2-r.left-r.width/2;
+    const dy=b.top+b.height/2-r.top-r.height/2;
+    const compact={transform:`translate(${dx}px, ${dy}px) scale(.10)`,opacity:0,filter:'blur(5px)'};
+    const full={transform:'translate(0,0) scale(1)',opacity:1,filter:'blur(0)'};
+    const anim=panel.animate(open?[compact,full]:[full,compact],{
+       duration:open?430:330,easing:open?'cubic-bezier(.18,.86,.23,1)':'cubic-bezier(.45,0,.7,.18)',fill:'both'
+    });panelMotion=anim;
+    anim.finished.then(()=>{
+      if(panelMotion!==anim)return;
+      if(!open&&!desiredOpen)panel.hidden=true;
+      anim.cancel();panelMotion=null;
+    }).catch(()=>{});
+  }
   const setOpen = open => {
-    panel.hidden=!open;
-    if(open)requestAnimationFrame(updatePanelPosition);
-    launch.setAttribute('aria-expanded',String(open));
+    desiredOpen=!!open;
     if(open){
+      panel.hidden=false;
+      updatePanelPosition();
+      if(!prefersReduced())animatePanel(true);
       const active=window.AulaFinderBridge?.getCurrentClass?.();
       if(active && allClasses.includes(active) && !selectedClass){selectedClass=active;select.value=active;}
-      if(!selectedClass)select.focus({preventScroll:true});
-      else input.focus({preventScroll:true});
+      if(!selectedClass)select.focus({preventScroll:true});else input.focus({preventScroll:true});
     }else{
-      try {activeRecognition?.stop();} catch (_) {}
+      try{activeRecognition?.stop();}catch(_){}
+      if(panel.hidden){launch.setAttribute('aria-expanded','false');return;}
+      if(prefersReduced()){panelMotion?.cancel();panel.hidden=true;panelMotion=null;}
+      else animatePanel(false);
       launch.focus({preventScroll:true});
     }
+    launch.setAttribute('aria-expanded',String(open));
   };
   // Drag button by pointer (mouse/touch/stylus), keep native keyboard click.
   const posKey='aulafinder.finder.position.v48';
@@ -88,7 +111,7 @@
   launch.addEventListener('pointercancel',finishDrag);
   launch.addEventListener('click',event=>{
     if(suppressNextClick){suppressNextClick=false;event.preventDefault();return;}
-    setOpen(panel.hidden);
+    setOpen(!desiredOpen);
     updatePanelPosition();
   });
   window.addEventListener('resize',()=>{
@@ -97,9 +120,9 @@
   });
   requestAnimationFrame(restorePosition);
   close.addEventListener('click',()=>setOpen(false));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape' && !panel.hidden)setOpen(false);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape' && desiredOpen)setOpen(false);});
   document.addEventListener('click',e=>{
-    if(!panel.hidden && !panel.contains(e.target) && !launch.contains(e.target))setOpen(false);
+    if(desiredOpen && !panel.contains(e.target) && !launch.contains(e.target))setOpen(false);
   });
 
   // Finestra mobile: spostamento trascinando la testata e posizione persistente.
@@ -142,7 +165,6 @@
     event.preventDefault();const r=panel.getBoundingClientRect();const step=event.shiftKey?40:15;
     movePanel(r.left+(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0),r.top+(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0));savePanel();
   });
-  $('finderMinimize')?.addEventListener('click',()=>setOpen(false));
   $('finderExpand')?.addEventListener('click',()=>{
     const expanded=panel.classList.toggle('is-maximized');$('finderExpand').setAttribute('aria-pressed',String(expanded));
     $('finderExpand').textContent=expanded?'⤡':'⤢';
@@ -321,6 +343,14 @@
     if(/navigat|percors|come arriv|come raggiung|indicazioni|scale o ascensore/.test(q))return siteHelp.navigatore;
     if(/come cerc|ricerc|come trovo una classe|cercare un prof/.test(q))return siteHelp.ricerca;
 
+    if(/(?:quante|numero|totale|ore).*ore|ore.*(?:settimanali|settimana|totale)|quanto (?:insegna|lavora)/.test(q)&&/prof|docent|insegn|sigla/.test(q)){
+      const ids=Object.keys(DATA.teachers);
+      const matched=ids.filter(k=>{const l=lower(k);return q.includes(l)&&l.length>1;})
+        .sort((a,b)=>b.length-a.length)[0];
+      if(!matched)return 'Per calcolare il totale settimanale scrivimi la sigla del docente, ad esempio «Quante ore fa il prof BA AN?». Puoi anche aprire Orari → Professori.';
+      const hours=Object.values(DATA.teachers[matched].days||{}).flat().filter(Boolean).length;
+      return `Il docente ${matched} ha ${hours} ore di lezione previste in totale dal lunedì al venerdì, in base agli orari caricati. Non rappresentano tutte le ore lavorative del docente.`;
+    }
     // Indicazioni per una stanza. Distingue sempre posizione/orario previsto da presenza reale.
     const roomMatch=q.match(/\b([stp])\s*\.?\s*(\d{1,2})\b|\b([123])\s*\.\s*(\d{1,2})\b|\b(palestra|archivio|caldaie|caldaia)\b/i);
     const code=roomMatch?roomMatch[5]?roomMatch[5].replace(/^caldaia$/,'Caldaie').replace(/^./,c=>c.toUpperCase()):roomMatch[1]?`${roomMatch[1].toUpperCase()}.${roomMatch[2].padStart(2,'0')}`:`${roomMatch[3]}.${roomMatch[4].padStart(2,'0')}`:null;
@@ -389,9 +419,12 @@
       window.speechSynthesis.speak(msg);
     }catch(_){}
   }
+  const soundAsk=new Audio('assets/finder-ask.wav');soundAsk.preload='auto';soundAsk.volume=.37;
+  function playAskSound(){try{soundAsk.pause();soundAsk.currentTime=0;const result=soundAsk.play();result?.catch?.(()=>{});}catch(_){}}
   function ask(question){
     const q=String(question||'').trim();if(!q)return;
-    if(panel.hidden)setOpen(true);
+    if(!desiredOpen)setOpen(true);
+    playAskSound();
     addMessage(q,'user');
     let reply;
     try{reply=answer(q);}catch(e){console.error('Finder error:',e);reply='Non riesco a consultare questa informazione. Riprova a selezionare la classe.';}

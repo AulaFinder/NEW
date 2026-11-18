@@ -2,7 +2,7 @@
    Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
    A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v49';
+const CACHE_NAME = 'aulafinder-pwa-v50';
 const APP_SHELL = [
   "./index.html",
   "./style.css",
@@ -23,10 +23,14 @@ const APP_SHELL = [
   "./v48.css",
   "./v49-ui.js",
   "./v49.css",
+  "./v50.css",
+  "./v50-ui.js",
   "./versioni-data.json",
   "./assets/finder-orb-loop.mp4",
   "./assets/finder-orb-loop.webp",
   "./assets/aulafinder-open.wav",
+  "./assets/finder-ask.wav",
+  "./assets/logo-tap.wav",
   "./assets/finder-icon.png",
   "./assets/versioni-home/V1.webp",
   "./assets/versioni-home/V2.webp",
@@ -77,6 +81,7 @@ const APP_SHELL = [
   "./assets/versioni-home/V47.webp",
   "./assets/versioni-home/V48.webp",
   "./assets/versioni-home/V49.webp",
+  "./assets/versioni-home/V50.webp",
   "./assets/versioni-home/V8a.webp",
   "./assets/versioni-home/V8b.webp",
   "./assets/finder-orb.webm",

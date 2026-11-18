@@ -1,48 +1,24 @@
-/* AulaFinder V48: centering of selections without touching the business logic. */
+/* V50 · Scroll intelligente: il menu non nasconde più intestazione e controlli. */
 (()=>{
-  'use strict';
-  // V47 replaces the result title text dynamically; preserve the requested icon.
-  const resultHeading=document.getElementById('resultsTitle');
-  if(resultHeading){
-    const svg=resultHeading.querySelector('svg')?.cloneNode(true);
-    if(svg){
-      new MutationObserver(()=>{
-        if(!resultHeading.querySelector('svg'))resultHeading.prepend(svg.cloneNode(true));
-      }).observe(resultHeading,{childList:true});
-    }
+ 'use strict';
+ const h=document.getElementById('resultsTitle');
+ if(h){const svg=h.querySelector('svg')?.cloneNode(true);if(svg)new MutationObserver(()=>{if(!h.querySelector('svg'))h.prepend(svg.cloneNode(true));}).observe(h,{childList:true});}
+ const reduced=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+ function reveal(el){
+  if(!el||el.closest('[hidden]')||!el.getClientRects().length)return;
+  const r=el.getBoundingClientRect(),topPad=96,bottomPad=20;
+  if(r.top>=topPad && r.top<=innerHeight-bottomPad)return;
+  const delta=r.top<topPad?r.top-topPad:r.top-innerHeight+bottomPad;
+  window.scrollTo({top:Math.max(0,scrollY+delta),behavior:reduced()?'instant':'smooth'});
+ }
+ document.addEventListener('click',e=>{
+  const target=e.target.closest('button,summary');if(!target)return;
+  if(target.matches('[data-page],.side-link,#menuButton,#sidebarClose,.brand-title,[data-schedule]'))return;
+  if(target.matches('#versioniPage summary,#tutorialPage .tutorial-faq summary')){
+   setTimeout(()=>reveal(target),140);return;
   }
-  const prefersReduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function center(element,block='center'){
-    if(!element||element.closest('[hidden]')||!element.getClientRects().length)return;
-    try{element.scrollIntoView({behavior:prefersReduced()?'instant':'smooth',block,inline:'nearest'});}catch(_){}
+  if(target.matches('[data-nav-choice], [data-suggest], [data-room], [data-free-teacher]')){
+   setTimeout(()=>reveal(document.querySelector('.page:not([hidden]) h1')),90);
   }
-  // Focus on actual selected result rather than the menu button that triggered it.
-  function activeContent(){
-    const page=document.querySelector('.page:not([hidden])');
-    if(!page)return null;
-    if(page.id==='orariPage')return page.querySelector('#scheduleContents') || page.querySelector('h1');
-    if(page.id==='navigatorPage')return page.querySelector('#navRouteResult:not([hidden])')||page.querySelector('#navigatorForm');
-    if(page.id==='tutorialPage')return page.querySelector('h1');
-    if(page.id==='versioniPage')return page.querySelector('#versioniList');
-    return page.querySelector('h1')||page;
-  }
-  const contentSelectors='[data-page],[data-schedule],[data-room],[data-choice],[data-suggest],[data-free-teacher],[data-favorite],[data-history],[data-full-schedule],[data-nav-choice],.orari-category-tabs button';
-  document.addEventListener('click',event=>{
-    if(!event.target.closest)return;
-    const accordion=event.target.closest('#versioniPage summary, #tutorialPage .tutorial-faq summary');
-    if(accordion){setTimeout(()=>center(accordion.closest('details'),'center'),90);return;}
-    if(!event.target.closest(contentSelectors))return;
-    // Delayed until the existing page handler has rendered the destination.
-    setTimeout(()=>center(activeContent(),event.target.closest('[data-schedule]')?'center':'start'),100);
-  },true);
-  document.addEventListener('change',event=>{
-    const target=event.target;
-    if(!target.matches('select,input[type="checkbox"],input[type="radio"]'))return;
-    setTimeout(()=>{
-      const page=document.querySelector('.page:not([hidden])');
-      if(page?.id==='orariPage')center(page.querySelector('#scheduleContents'),'center');
-      else if(page?.id==='piantinaPage')center(target.closest('.floor-filter')||target,'center');
-      else if(page?.id==='navigatorPage')center(target.closest('.navigator-field')||target,'center');
-    },110);
-  },true);
+ },true);
 })();

@@ -1,4 +1,4 @@
-/* V49: caricamento resiliente. Il sito non rimane mai bloccato dietro il filmato. */
+/* V50: caricamento resiliente. Il sito non rimane mai bloccato dietro il filmato. */
 (()=>{
  'use strict';
  const overlay=document.getElementById('appLoading');
@@ -24,7 +24,7 @@
    status.closed=true;overlay.hidden=true;try{video?.pause();}catch(_){}
   };
   overlay.addEventListener('transitionend',hide,{once:true});
-  setTimeout(hide,440);
+  setTimeout(hide,750);
  }
  if(appReady)ready();else window.addEventListener('load',ready,{once:true});
  if(reduced||!video){finish();return;}
