@@ -14,9 +14,8 @@
   const days = DATA.days;
   const lower = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const teacherLabel = code => code || 'Docente non indicato';
-  const maxOutput = 900;
+  const maxOutput = 2600;
   let selectedClass = '';
-  let lastVoiceInput = false;
   let activeRecognition = null;
 
   const allClasses = Object.keys(DATA.classes).sort((a,b)=>a.localeCompare(b,'it',{numeric:true}));
@@ -28,27 +27,224 @@
     try {localStorage.setItem('aulafinder.finder.class',selectedClass);}catch(_){}
   });
 
+  // Origin-aware opening and closing, independent of device width.
+  let panelMotion=null,desiredOpen=false;
+  const prefersReduced=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function animatePanel(open){
+    panelMotion?.cancel();panelMotion=null;
+    const r=panel.getBoundingClientRect(),b=launch.getBoundingClientRect();
+    const dx=b.left+b.width/2-r.left-r.width/2;
+    const dy=b.top+b.height/2-r.top-r.height/2;
+    const compact={transform:`translate3d(${dx}px, ${dy}px, 0) scale(.14)`,opacity:0};
+    const full={transform:'translate3d(0,0,0) scale(1)',opacity:1};
+    const anim=panel.animate(open?[compact,full]:[full,compact],{
+       duration:open?465:280,easing:open?'cubic-bezier(.17,.86,.22,1)':'cubic-bezier(.4,0,.55,1)',fill:'both'
+    });panelMotion=anim;
+    anim.finished.then(()=>{
+      if(panelMotion!==anim)return;
+      if(!open&&!desiredOpen)panel.hidden=true;
+      anim.cancel();panelMotion=null;
+    }).catch(()=>{});
+  }
   const setOpen = open => {
-    panel.hidden=!open;
-    launch.setAttribute('aria-expanded',String(open));
+    desiredOpen=!!open;
     if(open){
+      panel.hidden=false;
+      updatePanelPosition();
+      if(!prefersReduced())animatePanel(true);
       const active=window.AulaFinderBridge?.getCurrentClass?.();
       if(active && allClasses.includes(active) && !selectedClass){selectedClass=active;select.value=active;}
-      // Non spostare il focus su input/select: su mobile aprirebbe la tastiera.
+      // Nessun autofocus: su telefono non si apre la tastiera da sola.
     }else{
-      try {activeRecognition?.stop();} catch (_) {}
-      stopMeter();
-      if(document.activeElement?.closest?.("#finderPanel"))launch.focus({preventScroll:true});
+      try{activeRecognition?.stop();}catch(_){}
+      if(panel.hidden){launch.setAttribute('aria-expanded','false');return;}
+      if(prefersReduced()){panelMotion?.cancel();panel.hidden=true;panelMotion=null;}
+      else animatePanel(false);
+      launch.focus({preventScroll:true});
     }
+    launch.setAttribute('aria-expanded',String(open));
   };
-  const expand=$('finderExpand');
-  expand?.addEventListener('click',()=>{const expanded=panel.classList.toggle('is-expanded');expand.setAttribute('aria-pressed',String(expanded));expand.setAttribute('aria-label',expanded?'Riduci Finder':'Espandi Finder');panel.dispatchEvent(new Event('finder:resize'));});
-  launch.addEventListener('click',()=>setOpen(panel.hidden));
-  close.addEventListener('click',()=>setOpen(false));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape' && !panel.hidden)setOpen(false);});
-  document.addEventListener('click',e=>{
-    if(!panel.hidden && !panel.contains(e.target) && !launch.contains(e.target))setOpen(false);
+  // Drag button by pointer (mouse/touch/stylus), keep native keyboard click.
+  const posKey='aulafinder.finder.position.v48';
+  const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
+  let drag=null, suppressNextClick=false;
+  function applyPosition(right,bottom){
+    launch.style.right=clamp(right,8,Math.max(8,innerWidth-launch.offsetWidth-8))+'px';
+    launch.style.bottom=clamp(bottom,8,Math.max(8,innerHeight-launch.offsetHeight-8))+'px';
+  }
+  function restorePosition(){try{const saved=JSON.parse(localStorage.getItem(posKey)||'null');if(saved&&Number.isFinite(saved.right)&&Number.isFinite(saved.bottom))applyPosition(saved.right,saved.bottom);}catch(_){}}
+  function updatePanelPosition(){
+    if(panel.hidden||panel.classList.contains('is-maximized'))return;
+    if(typeof panelCustom!=='undefined'&&panelCustom&&panelSaved){movePanel(panelSaved.x,panelSaved.y);return;}
+    const r=launch.getBoundingClientRect();
+    const w=panel.offsetWidth,h=panel.offsetHeight;
+    // Prefer above the button, otherwise below it; never leave the viewport.
+    const left=clamp(r.right-w,8,Math.max(8,innerWidth-w-8));
+    const top=r.top>=h+16?r.top-h-8:clamp(r.bottom+8,8,Math.max(8,innerHeight-h-8));
+    panel.style.left=left+'px';panel.style.top=top+'px';panel.style.right='auto';panel.style.bottom='auto';
+  }
+  launch.addEventListener('pointerdown',event=>{
+    if(event.button!==0)return;
+    const r=launch.getBoundingClientRect();
+    drag={pointerId:event.pointerId,x:event.clientX,y:event.clientY,right:innerWidth-r.right,bottom:innerHeight-r.bottom,moved:false};
+    try{launch.setPointerCapture(event.pointerId);}catch(_){}
   });
+  launch.addEventListener('pointermove',event=>{
+    if(!drag||drag.pointerId!==event.pointerId)return;
+    const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+    if(Math.hypot(dx,dy)>7)drag.moved=true;
+    if(!drag.moved)return;
+    launch.classList.add('is-dragging');
+    applyPosition(drag.right-dx,drag.bottom-dy);
+    updatePanelPosition();
+  });
+  function finishDrag(event){
+    if(!drag||drag.pointerId!==event.pointerId)return;
+    if(drag.moved){
+      suppressNextClick=true;
+      try{localStorage.setItem(posKey,JSON.stringify({right:parseFloat(launch.style.right),bottom:parseFloat(launch.style.bottom)}));}catch(_){}
+    }
+    drag=null;launch.classList.remove('is-dragging');
+  }
+  launch.addEventListener('pointerup',finishDrag);
+  launch.addEventListener('pointercancel',finishDrag);
+  launch.addEventListener('click',event=>{
+    if(suppressNextClick){suppressNextClick=false;event.preventDefault();return;}
+    setOpen(!desiredOpen);
+    updatePanelPosition();
+  });
+  window.addEventListener('resize',()=>{
+    if(launch.style.right){applyPosition(parseFloat(launch.style.right),parseFloat(launch.style.bottom));}
+    updatePanelPosition();
+  });
+  requestAnimationFrame(restorePosition);
+  close.addEventListener('click',()=>setOpen(false));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape' && desiredOpen)setOpen(false);});
+  document.addEventListener('click',e=>{
+    if(desiredOpen && !panel.contains(e.target) && !launch.contains(e.target))setOpen(false);
+  });
+
+  // Finestra mobile: spostamento trascinando la testata e posizione persistente.
+  const panelKey='aulafinder.finder.panel.v49';
+  const panelHead=panel.querySelector('.finder-panel-head');
+  let windowDrag=null,panelCustom=false,panelSaved=null;
+  try{const v=JSON.parse(localStorage.getItem(panelKey)||'null');if(v&&Number.isFinite(v.x)&&Number.isFinite(v.y)){panelSaved=v;panelCustom=true;}}catch(_){}
+  function limitPanel(x,y){
+    const w=panel.offsetWidth||320,h=panel.offsetHeight||350;
+    return {x:clamp(x,8,Math.max(8,innerWidth-w-8)),y:clamp(y,8,Math.max(8,innerHeight-h-8))};
+  }
+  function movePanel(x,y){
+    const p=limitPanel(x,y);panel.style.left=p.x+'px';panel.style.top=p.y+'px';panel.style.right='auto';panel.style.bottom='auto';
+    return p;
+  }
+  function savePanel(){
+    const rect=panel.getBoundingClientRect();panelSaved=movePanel(rect.left,rect.top);panelCustom=true;
+    try{localStorage.setItem(panelKey,JSON.stringify(panelSaved));}catch(_){}
+  }
+  panelHead.tabIndex=0;
+  panelHead.setAttribute('aria-label','Intestazione di Finder. Trascina per spostare la finestra; da tastiera usa Ctrl più frecce.');
+  panelHead.addEventListener('pointerdown',event=>{
+    if(event.button!==0||event.target.closest('button')||panel.classList.contains('is-maximized'))return;
+    const r=panel.getBoundingClientRect();windowDrag={id:event.pointerId,x:event.clientX,y:event.clientY,left:r.left,top:r.top,moved:false};
+    try{panelHead.setPointerCapture(event.pointerId);}catch(_){}
+  });
+  panelHead.addEventListener('pointermove',event=>{
+    if(!windowDrag||windowDrag.id!==event.pointerId)return;
+    const dx=event.clientX-windowDrag.x,dy=event.clientY-windowDrag.y;
+    if(Math.hypot(dx,dy)>6)windowDrag.moved=true;
+    if(windowDrag.moved){panel.classList.add('is-window-dragging');movePanel(windowDrag.left+dx,windowDrag.top+dy);}
+  });
+  function finishWindowDrag(event){
+    if(!windowDrag||windowDrag.id!==event.pointerId)return;
+    if(windowDrag.moved)savePanel();windowDrag=null;panel.classList.remove('is-window-dragging');
+  }
+  panelHead.addEventListener('pointerup',finishWindowDrag);panelHead.addEventListener('pointercancel',finishWindowDrag);
+  panelHead.addEventListener('keydown',event=>{
+    if(!event.ctrlKey||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
+    event.preventDefault();const r=panel.getBoundingClientRect();const step=event.shiftKey?40:15;
+    movePanel(r.left+(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0),r.top+(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0));savePanel();
+  });
+  // V51: manual resizing by pointer (mouse/touch/pen) and accessible keyboard.
+  const resizeHandle=$('finderResize');
+  const dimensionsKey='aulafinder.finder.dimensions.v51';
+  let panelSize=null, resizeDrag=null;
+  const limits=()=>({minW:Math.min(295,innerWidth-16),minH:Math.min(300,innerHeight-16),maxW:innerWidth-16,maxH:innerHeight-16});
+  function applySize(w,h){
+    const l=limits();
+    const width=clamp(w,l.minW,l.maxW),height=clamp(h,l.minH,l.maxH);
+    panel.style.width=width+'px';panel.style.height=height+'px';panel.style.maxHeight='none';
+    panelSize={width,height};
+    if(!panel.hidden&&!panel.classList.contains('is-maximized')){
+      const p=limitPanel(panel.getBoundingClientRect().left,panel.getBoundingClientRect().top);
+      movePanel(p.x,p.y);
+    }
+  }
+  function saveSize(){try{localStorage.setItem(dimensionsKey,JSON.stringify(panelSize));}catch(_){}}
+  try{
+    const stored=JSON.parse(localStorage.getItem(dimensionsKey)||'null');
+    if(stored && Number.isFinite(stored.width)&&Number.isFinite(stored.height))applySize(stored.width,stored.height);
+  }catch(_){}
+  resizeHandle?.addEventListener('pointerdown',e=>{
+    if(e.button!==0||panel.classList.contains('is-maximized'))return;
+    e.preventDefault();e.stopPropagation();
+    resizeDrag={id:e.pointerId,x:e.clientX,y:e.clientY,width:panel.offsetWidth,height:panel.offsetHeight};
+    try{resizeHandle.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  resizeHandle?.addEventListener('pointermove',e=>{
+    if(!resizeDrag||resizeDrag.id!==e.pointerId)return;
+    e.preventDefault();applySize(resizeDrag.width+e.clientX-resizeDrag.x,resizeDrag.height+e.clientY-resizeDrag.y);
+  });
+  const finishResize=e=>{if(!resizeDrag||resizeDrag.id!==e.pointerId)return;resizeDrag=null;saveSize();};
+  resizeHandle?.addEventListener('pointerup',finishResize);
+  resizeHandle?.addEventListener('pointercancel',finishResize);
+  resizeHandle?.addEventListener('keydown',e=>{
+    if(!['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key))return;
+    e.preventDefault();const step=e.shiftKey?50:18;
+    applySize(panel.offsetWidth+(e.key==='ArrowRight'?step:e.key==='ArrowLeft'?-step:0),
+      panel.offsetHeight+(e.key==='ArrowDown'?step:e.key==='ArrowUp'?-step:0));saveSize();
+  });
+  window.addEventListener('resize',()=>{
+    if(panelSize)applySize(panelSize.width,panelSize.height);
+  });
+  $('finderExpand')?.addEventListener('click',()=>{
+    const expanded=panel.classList.toggle('is-maximized');$('finderExpand').setAttribute('aria-pressed',String(expanded));
+    $('finderExpand').innerHTML=expanded?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 9h6V3M21 9h-6V3M3 15h6v6m12-6h-6v6"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 3H3v6M15 3h6v6M3 15v6h6m12-6v6h-6"/></svg>'; 
+    if(!expanded){if(panelCustom&&panelSaved)movePanel(panelSaved.x,panelSaved.y);else updatePanelPosition();}
+  });
+  // Riavvia il filmato leggero soltanto quando Finder è visibile; evita un timer continuo.
+  const orb=panel.querySelector('.finder-head-orb video');
+  function resumeOrb(){
+    if(panel.hidden||document.hidden||!orb)return;
+    orb.loop=true;orb.muted=true;
+    if(orb.paused || orb.ended){try{const p=orb.play();p?.catch?.(()=>{});}catch(_){}}
+  }
+  orb?.addEventListener('pause',()=>orb.classList.add('is-paused'));
+  orb?.addEventListener('playing',()=>orb.classList.remove('is-paused'));
+  orb?.addEventListener('ended',()=>{orb.currentTime=0;resumeOrb();});
+  document.addEventListener('visibilitychange',resumeOrb);
+  window.addEventListener('focus',resumeOrb);
+  const panelObserver=new MutationObserver(()=>{if(!panel.hidden)resumeOrb();});
+  panelObserver.observe(panel,{attributes:true,attributeFilter:['hidden']});
+  window.addEventListener('resize',()=>{
+    if(panelCustom&&panelSaved&&!panel.classList.contains('is-maximized'))movePanel(panelSaved.x,panelSaved.y);
+  });
+  // Suggerimenti organizzati per casi d'uso; nessun testo è inviato a servizi esterni.
+  const questions=[
+    ['Per la scuola',['Sono distrutto, aiutami a preparare lo zaino per domani','Che materie ho domani?','Che lezioni ho oggi?','Quali materie ho venerdì?','Cosa ho alla prossima ora?','Che aula ho dopo?','Mostrami l’orario di lunedì','Quante lezioni ho mercoledì?']],
+    ['Aule e docenti',['Quali aule sono libere?','Ci sono aule disponibili alla terza ora?','Quali professori sono liberi?','Quali docenti hanno un’ora buca?','Dove si trova S.07?','Dov’è l’Archivio?','A che piano si trova la Palestra?','Come trovo la T.08?']],
+    ['Come usare AulaFinder',['Come funziona il navigatore?','Come posso aprire una piantina a schermo intero?','Come aggiungo un preferito?','Come cambio il tema scuro?','Come cerco un professore?','Dove vedo le versioni precedenti?','Come uso il tutorial?','Come posso contattarvi?','A cosa serve Finder?','Non mi funziona il microfono, cosa faccio?']]
+  ];
+  const promptBox=$('finderPrompts');
+  if(promptBox){
+    promptBox.replaceChildren();
+    questions.forEach(([heading,items])=>{
+      const group=document.createElement('div');group.className='finder-prompt-group';
+      const title=document.createElement('strong');title.textContent=heading;group.append(title);
+      items.forEach(q=>{const b=document.createElement('button');b.type='button';b.dataset.finderPrompt=q;b.textContent=q;group.append(b);});
+      promptBox.append(group);
+    });
+  }
+
 
   function nowRome(){
     const now=new Date();
@@ -64,7 +260,7 @@
   const roomLabel = room => room ? (room==='Palestra' ? 'Palestra' : `aula ${room}`) : 'aula non indicata';
   const slotText = (slot, idx) => slot ? `${idx+1}: ${slot.subject} (${roomLabel(slot.room)}, ${teacherLabel(slot.teacher)})` : `${idx+1}: nessuna lezione prevista`;
 
-  function answer(raw){
+  function answerLegacy(raw){
     const q=lower(raw).replace(/[?!.]/g,' ');
     const day=daySel.value, index=Number(hourSel.value)-1;
     const classId=selectedClass || window.AulaFinderBridge?.getCurrentClass?.();
@@ -122,22 +318,125 @@
       const floor=code[0]==='S'||code[0]==='P'?'semiterrato':code[0]==='T'?'piano terra':`piano ${code[0]}`;
       return `L'aula ${code} si trova al ${floor}. Per vedere la posizione esatta, apri Piantina o Navigatore.`;
     }
-    if(/navig|percors|come arriv|come raggiung|strad|andare (a|da)/.test(q)){
-      const rooms=[...raw.matchAll(/(?:[STP]\s*\.?\s*\d{1,2}|[123]\s*\.\s*\d{1,2})/gi)].map(x=>x[0].replace(/\s+/g,'').toUpperCase().replace(/^([STP])(?=\d)/,'$1.'));
-      const [fromRoom,toRoom]=rooms;
-      if(fromRoom&&toRoom&&window.AulaFinderNavigator?.setRoute){const done=window.AulaFinderNavigator.setRoute(fromRoom,toRoom);return done?`Percorso pronto da ${fromRoom} a ${toRoom}. Apri Navigatore per seguire i passaggi.`:`Non riesco a verificare il percorso da ${fromRoom} a ${toRoom}. Controlla i codici delle aule e riprova dal Navigatore.`;}
-      if(toRoom||fromRoom){const room=toRoom||fromRoom;window.AulaFinderNavigator?.setDestination?.(room);return `Ho impostato ${room} come destinazione nel navigatore. Indica anche l'aula di partenza per calcolare il percorso.`;}
-      return 'Per usare il navigatore, indicami due aule. Esempio: “Come vado da 1.01 a 3.04?”. Puoi anche aprire Navigatore e scegliere le aule direttamente sulla piantina.';
+    return `Posso rispondere a domande come: “Che materie ho domani?”, “Che lezione ho la prossima ora?”, “Dove sarà la mia prossima aula?”, “Quali aule sono libere?” oppure “Mostrami l'orario della mia classe”.\nPer “prossima ora” e le disponibilità seguo Giorno e Ora selezionati nell'intestazione del sito.`;
+  }
+
+  // Motore locale: interpreta richieste naturali senza inviare messaggi a servizi esterni.
+  const dialogue={lastIntent:null,lastDay:null};
+  function normalizedText(s){return lower(s).replace(/[’']/g,"'").replace(/[?!,:;]+/g,' ').replace(/\s+/g,' ').trim();}
+  function schoolDay(raw){
+    const s=normalizedText(raw);
+    const base=nowRome().dayIndex;
+    if(/dopodomani|dopo domani/.test(s))return {day:days[base+2]||null,label:'dopodomani'};
+    if(/domani/.test(s))return {day:days[base+1]||null,label:'domani'};
+    if(/oggi|stasera|stamattina/.test(s))return {day:days[base]||null,label:'oggi'};
+    const found=days.find(d=>s.includes(lower(d)));
+    if(found)return {day:found,label:found};
+    if(/prossim[oa] giorno|prossim[oa] settimana|giorno dopo/.test(s))return {day:days[(base+1)%5],label:'prossimo giorno scolastico'};
+    return null;
+  }
+  function itemClass(classOverride=''){
+    const id=classOverride||selectedClass||window.AulaFinderBridge?.getCurrentClass?.()||'';
+    return {id,item:DATA.classes[id]||null};
+  }
+  function classesForDay(item,day){return (item?.days?.[day]||[]).slice(0,6);}
+  function prettyLesson(slot,i){
+    return slot?`${i+1}ª ora: ${slot.subject||'Materia non indicata'} · ${slot.room||'aula non indicata'}${slot.teacher?' · '+slot.teacher:''}`:`${i+1}ª ora: nessuna lezione prevista`;
+  }
+  function subjectsFor(item,day){return [...new Set(classesForDay(item,day).filter(Boolean).map(s=>s.subject).filter(Boolean))];}
+  const siteHelp={
+    versioni:'Apri Versioni dal menu laterale. Puoi cercare per parola o per numero e aprire le schede con le anteprime delle Home storiche.',
+    preferiti:'Apri il risultato di un’aula, classe o professore e tocca la stella. Troverai le ricerche salvate nei Preferiti del menu.',
+    mappe:'Apri Piantina, scegli il piano e tocca l’aula. Puoi anche ingrandire la mappa a schermo intero con il pulsante in alto a destra.',
+    navigatore:'Apri Navigatore, scegli partenza e destinazione digitando il nome dell’aula o selezionandola sulla piantina. Poi premi «Mostra percorso». Le indicazioni sono schematiche e non vanno usate per emergenze.',
+    ricerca:'Nella Home digita un’aula, una classe o la sigla di un docente. Puoi scegliere un suggerimento, poi consultare il risultato e il relativo orario.',
+    tutorial:'Apri Tutorial per provare tutte le funzioni in sette tappe, rimanendo sempre nella guida.',
+    tema:'In alto c’è il pulsante con il sole o la luna. Ti permette di passare dal tema chiaro a quello scuro.',
+    contatti:'Per aiuto, domande o segnalazioni puoi scrivere a aulafinder@gmail.com.'
+  };
+  function smartAnswer(raw,override='',options={}){
+    const q=normalizedText(raw), compact=q.replace(/[.\s]+/g,'');
+    if(!q)return 'Scrivimi pure la tua domanda.';
+    const {id,item}=itemClass(override);
+    const soft=/stanc[oa]|esaust[oa]|non ho voglia|sono distrutt[oa]|sono cotto|sono sfatt[oa]|stressat[oa]|ansia|sfinito/.test(q);
+    const prefix=soft?'Capisco, quando sei stanco anche preparare lo zaino sembra un’impresa. Ti semplifico tutto. 💚\n\n':'';
+    const mentionedDay=schoolDay(q);
+    const carry=/cartella|zaino|portare a scuola|cosa port|preparare le cose|materiale|libri da portare/.test(q);
+    const study=/materie|lezion|orari|orario|lezione|cosa ho|che ho|programma|prossim.*aula|che aula|dove.*prossima aula|ore ho/.test(q);
+    const follow=/^(e |invece |anche |per |martedi|mercoledi|giovedi|venerdi|lunedi|domani|dopodomani)/.test(q);
+    const intent=carry?'bag':/aule? liber|stanza libera|aule? disponibil/.test(q)?'freeRooms':/professor[ie] liber|docent[ie] liber|ore buche/.test(q)?'freeTeachers':study?'schedule':null;
+    const effective=intent||(follow&&mentionedDay?dialogue.lastIntent:null);
+    const day=mentionedDay?.day|| (carry?days[(nowRome().dayIndex+1)%5]:(dialogue.lastDay||$('daySelect').value));
+    const dayLabel=mentionedDay?.label||day;
+
+    if(/chi sei|cosa sai fare|come funziona finder|sei un'ai|sei un'intelligenza artificiale|sei vero/.test(q)){
+      return 'Sono Finder, l’assistente locale di AulaFinder. Posso capire tante domande scritte normalmente e consultare gli orari della scuola, ma non sono un chatbot con accesso a Internet e non invento informazioni. Prova: «Sono stanco e devo preparare lo zaino per domani».';
     }
-    if(/piantin|mapp|piano|edific|dov.e.*(aula|laboratorio)/.test(q))return 'Nella sezione Piantina puoi scegliere il piano, selezionare un’aula e visualizzarne la posizione. Per andare da una stanza a un’altra usa il Navigatore.';
-    if(/tutorial|guida|come funziona|come si usa|aiuto|cosa (puoi|sai) fare/.test(q))return 'Posso aiutarti a trovare orari di classi, aule e docenti, disponibilità e percorsi. La sezione Tutorial contiene esercizi interattivi su tutte le funzioni.';
-    if(/version|aggiornam|novita|novità|cambiament/.test(q))return 'La sezione Versioni racconta le revisioni del progetto e mostra le anteprime disponibili. Le vecchie anteprime non presenti nei file non vengono inventate.';
-    if(/preferit|salva|stellina|cronologia/.test(q))return 'Usa la stella ★ nei risultati per aggiungere un’aula, una classe o un docente ai Preferiti. Le ricerche recenti si trovano nel menu laterale.';
-    if(/admin|password|accesso riservato/.test(q))return 'La sezione Admin si trova nell’intestazione e nel footer. L’accesso locale ha una tastiera dedicata, ma non sostituisce una protezione server.';
-    if(/(professor|docent|insegnant).*(quante|totale|ore)|(quante|totale).*(ore).*(professor|docent)/.test(q))return 'Apri la scheda del docente dalla ricerca o da Orari → Professori. Lì trovi la distribuzione delle lezioni settimanali.';
-    if(/(orari|orario).*(aula|professor|docent)/.test(q))return 'In Orari puoi scegliere “Aule” o “Professori”, cercare la sigla o il codice e consultare la settimana completa.';
-    if(/(liber|disponib).*(aula|professor|docent)/.test(q))return 'In Orari → Aule libere e Orari → Professori liberi trovi la disponibilità prevista per giorno e ora. Per i docenti puoi distinguere le vere ore buche dalle ore senza lezione.';
-    return 'Posso aiutarti con ricerca, orari, professori e aule libere, piantine, navigatore, preferiti, tutorial e versioni. Prova a formulare la domanda con il nome della funzione o un codice aula, e ti guiderò con le informazioni effettivamente disponibili.';
+    if(/microfono|audio|non mi sente|non funziona la voce|riconoscimento vocal/.test(q)){
+      return 'Puoi usare Finder scrivendo. Per dettare, controlla i permessi del microfono nelle impostazioni del browser e che nessun’altra app lo stia usando. Il riconoscimento vocale dipende dal browser e può non funzionare offline.';
+    }
+    if(/mail|email|contatt|scrivervi|segnalazione|aiuto umano/.test(q))return siteHelp.contatti;
+    if(/version[ie]|changelog|aggiornament|novit[aà]|cronologia versioni|storia del progetto/.test(q))return siteHelp.versioni;
+    if(/preferit|stella|salvar|memorizz/.test(q))return siteHelp.preferiti;
+    if(/tema|scur[oa]|chiar[oa]|notturn[oa]|luna|luminosit/.test(q))return siteHelp.tema;
+    if(/tutorial|guida|spiegami il sito|come si usa aulafinder/.test(q))return siteHelp.tutorial;
+    if(/piantin|mapp[ae]|schermo intero|pian[oi] dell[ao] scuol|dove si trova.*pian/.test(q)&& !/dove si trova.*(?:[stp]\.?\d+|[123]\.\d+|palestra|archivio|caldaie)/.test(q))return siteHelp.mappe;
+    if(/navigat|percors|come arriv|come raggiung|indicazioni|scale o ascensore/.test(q))return siteHelp.navigatore;
+    if(/come cerc|ricerc|come trovo una classe|cercare un prof/.test(q))return siteHelp.ricerca;
+
+    if(/(?:quante|numero|totale|ore).*ore|ore.*(?:settimanali|settimana|totale)|quanto (?:insegna|lavora)/.test(q)&&/prof|docent|insegn|sigla/.test(q)){
+      const ids=Object.keys(DATA.teachers);
+      const matched=ids.filter(k=>{const l=lower(k);return q.includes(l)&&l.length>1;})
+        .sort((a,b)=>b.length-a.length)[0];
+      if(!matched)return 'Per calcolare il totale settimanale scrivimi la sigla del docente, ad esempio «Quante ore fa il prof BA AN?». Puoi anche aprire Orari → Professori.';
+      const hours=Object.values(DATA.teachers[matched].days||{}).flat().filter(Boolean).length;
+      return `Il docente ${matched} ha ${hours} ore di lezione previste in totale dal lunedì al venerdì, in base agli orari caricati. Non rappresentano tutte le ore lavorative del docente.`;
+    }
+    // Indicazioni per una stanza. Distingue sempre posizione/orario previsto da presenza reale.
+    const roomMatch=q.match(/\b([stp])\s*\.?\s*(\d{1,2})\b|\b([123])\s*\.\s*(\d{1,2})\b|\b(palestra|archivio|caldaie|caldaia)\b/i);
+    const code=roomMatch?roomMatch[5]?roomMatch[5].replace(/^caldaia$/,'Caldaie').replace(/^./,c=>c.toUpperCase()):roomMatch[1]?`${roomMatch[1].toUpperCase()}.${roomMatch[2].padStart(2,'0')}`:`${roomMatch[3]}.${roomMatch[4].padStart(2,'0')}`:null;
+    if(code && /dove|trov|piano|posizione|aula|stanza/.test(q) && !/(materie|lezioni|orario|liber)/.test(q)){
+      const floors=code==='Palestra'?'tra piano terra e sotterraneo':code==='Archivio'||code==='Caldaie'?'al piano sotterraneo':code.startsWith('S.')||code.startsWith('P.')?'al piano sotterraneo':code.startsWith('T.')?'al piano terra':`al piano ${code[0]}`;
+      return `${code} si trova ${floors}. Per vedere il punto preciso usa Piantina; per arrivarci usa Navigatore.`;
+    }
+    if(effective==='freeRooms'){
+      const d=day&&days.includes(day)?day:$('daySelect').value;
+      const hourMatch=q.match(/(?:ora|alla)\s*([1-6])/);
+      const hourIdx=hourMatch?Number(hourMatch[1])-1:Number($('hourSelect').value)-1;
+      const free=DATA.freeRooms[d]?.[hourIdx]||[];
+      dialogue.lastIntent='freeRooms';dialogue.lastDay=d;
+      return `${d}, ${hourIdx+1}ª ora: ${free.length} aule senza lezione prevista. ${free.length?free.join(', '):'Nessuna aula indicata.'}\nNon è una disponibilità aggiornata in tempo reale.`;
+    }
+    if(effective==='freeTeachers'){
+      const d=day&&days.includes(day)?day:$('daySelect').value;
+      const h=Number($('hourSelect').value)-1;
+      const gaps=/buca|intermed/.test(q);
+      const free=Object.entries(DATA.teachers).filter(([,t])=>{const a=t.days?.[d]||[];return !a[h]&&(!gaps||(a.slice(0,h).some(Boolean)&&a.slice(h+1).some(Boolean)));}).map(([id])=>id);
+      dialogue.lastIntent='freeTeachers';dialogue.lastDay=d;
+      return `${d}, ${h+1}ª ora: ${free.length} docenti ${gaps?'con un’ora buca':'senza lezione prevista'}. ${free.length?free.slice(0,25).join(', ')+(free.length>25?'…':''):'Nessuno segnalato.'}\nNon indica la presenza fisica dei docenti.`;
+    }
+    if(effective==='bag'||effective==='schedule'){
+      if(!item)return prefix+'Per consultare il tuo orario devo conoscere la tua classe. Selezionala nel menu «La tua classe».';
+      if(!day||!days.includes(day))return prefix+'Per quel giorno non risultano lezioni nel calendario disponibile, che va dal lunedì al venerdì. Puoi chiedermi il prossimo giorno scolastico.';
+      const slots=classesForDay(item,day);
+      dialogue.lastIntent=effective;dialogue.lastDay=day;
+      if(carry||effective==='bag'){
+        const subjects=subjectsFor(item,day);
+        return prefix+`Per ${dayLabel} (${day}), la classe ${id} ha queste materie:\n${subjects.map(s=>'• '+s).join('\n')||'Nessuna materia indicata.'}\n\nPrima di chiudere lo zaino, controlla sul registro i compiti e il materiale specifico. Quelli non sono disponibili in AulaFinder.`;
+      }
+      if(/solo materie|quali materie|che materie/.test(q))return prefix+`Materie di ${day} per ${id}: ${subjectsFor(item,day).join(', ')||'nessuna lezione'}.`;
+      if(/prossim|ora dopo|adesso|ora corrente/.test(q)){
+        const base=Number($('hourSelect').value)-1;
+        const idx=/prossim|dopo/.test(q)?Math.min(5,base+1):base;
+        return prefix+`Per la ${idx+1}ª ora di ${day} (${id}): ${prettyLesson(slots[idx],idx)}. Uso l’ora selezionata in alto nel sito.`;
+      }
+      return prefix+`Orario di ${day} per la classe ${id}:\n${slots.map(prettyLesson).join('\n')}`;
+    }
+    if(/ciao|buongiorno|buonasera|salve|hey finder|ehi finder/.test(q))return 'Ciao! Sono qui per darti una mano. Dimmi che classe fai oppure chiedimi qualcosa sul sito e sugli orari.';
+    return prefix+'Posso aiutarti con gli orari e con AulaFinder. Per esempio: «Sono stanco, cosa metto nello zaino domani?», «Che aula ho alla prossima ora?», «Quali aule sono libere?», «Dove si trova S.07?», «Come funziona il navigatore?» oppure «Dove trovo le versioni?».';
+  }
+  function answer(raw,classOverride='',options={}){
+    return smartAnswer(raw,classOverride,options);
   }
 
   function addMessage(text,who){
@@ -148,71 +447,17 @@
     while(log.children.length>13)log.removeChild(log.firstElementChild);
     log.scrollTop=log.scrollHeight;
   }
-  // V51: niente audio generato, nemmeno dopo una domanda via microfono.
-  function say(){lastVoiceInput=false;}
   function ask(question){
     const q=String(question||'').trim();if(!q)return;
-    if(panel.hidden)setOpen(true);
+    if(!desiredOpen)setOpen(true);
     addMessage(q,'user');
     let reply;
     try{reply=answer(q);}catch(e){console.error('Finder error:',e);reply='Non riesco a consultare questa informazione. Riprova a selezionare la classe.';}
     addMessage(reply,'assistant');
-    say(reply);
   }
   form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';});
-  const prompts=[
-    'Come arrivo da 1.01 a 3.04?', 'Che materie ho domani?', 'Quali aule sono libere alla seconda ora?',
-    'Come trovo un professore?', 'Come si usa la piantina?', 'Che lezione ho la prossima ora?',
-    'Che cosa sono le ore buche dei docenti?', 'Come aggiungo un preferito?',
-    'Dove si trova il laboratorio di informatica?', 'Come consulto le versioni?',
-    'Mostrami l’orario della mia classe', 'Cosa posso cercare nel sito?',
-    'Come vedo il percorso tra due piani?', 'Come funziona il tutorial?',
-    'Che cosa indica un’aula libera?', 'Dove trovo l’orario di un’aula?'];
-  let promptOffset=0;
-  function renderPrompts(){
-    const host=$('finderPrompts');host.replaceChildren();
-    for(let i=0;i<2;i++){
-      const text=prompts[(promptOffset+i)%prompts.length];
-      const b=document.createElement('button');b.type='button';b.textContent=text;b.dataset.finderPrompt=text;
-      b.style.animationDelay=`${i*110}ms`;host.append(b);
-    }
-  }
-  renderPrompts();
-  window.setInterval(()=>{if(!panel.hidden&&!document.activeElement?.closest?.('.finder-prompt-zone')){promptOffset=(promptOffset+2)%prompts.length;renderPrompts();}},7200);
-  $('finderPromptNext')?.addEventListener('click',()=>{promptOffset=(promptOffset+2)%prompts.length;renderPrompts();});
   $('finderPrompts').addEventListener('click',e=>{const btn=e.target.closest('[data-finder-prompt]');if(btn)ask(btn.dataset.finderPrompt);});
 
-  let meterStream=null,meterCtx=null,meterFrame=0;
-  const meterButtons=[voiceSearch,voiceFinder].filter(Boolean);
-  function stopMeter(){
-    if(meterFrame)cancelAnimationFrame(meterFrame);meterFrame=0;
-    meterStream?.getTracks().forEach(t=>t.stop());meterStream=null;
-    if(meterCtx){meterCtx.close().catch(()=>{});meterCtx=null;}
-    meterButtons.forEach(b=>{b.classList.remove('is-listening');b.style.removeProperty('--voice-level');b.querySelectorAll('.af-voice-bars i').forEach(x=>x.style.removeProperty('--bar-level'));});
-  }
-  async function startMeter(button){
-    stopMeter();button.classList.add('is-listening');
-    if(!navigator.mediaDevices?.getUserMedia||!(window.AudioContext||window.webkitAudioContext))return;
-    try{
-      const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
-      if(!button.classList.contains('is-listening')){stream.getTracks().forEach(t=>t.stop());return;}
-      meterStream=stream;meterCtx=new (window.AudioContext||window.webkitAudioContext)();
-      const analyser=meterCtx.createAnalyser();analyser.fftSize=512;analyser.smoothingTimeConstant=.68;
-      meterCtx.createMediaStreamSource(stream).connect(analyser);
-      const samples=new Uint8Array(analyser.frequencyBinCount);
-      const bars=[...button.querySelectorAll('.af-voice-bars i')];
-      const paint=()=>{
-        analyser.getByteFrequencyData(samples);
-        bars.forEach((bar,i)=>{
-          const lo=Math.floor((i+1)*samples.length/16),hi=Math.min(samples.length,lo+Math.floor(samples.length/16));
-          let sum=0;for(let j=lo;j<hi;j++)sum+=samples[j];
-          const level=Math.max(.14,Math.min(1,(sum/Math.max(1,hi-lo))/135));
-          bar.style.setProperty('--bar-level',String(level));
-        });
-        meterFrame=requestAnimationFrame(paint);
-      };paint();
-    }catch(_){/* Fallback visuale se il browser nega l'accesso separato all'analizzatore. */}
-  }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const micButtons=[voiceSearch,voiceFinder];
   if(!SR){
@@ -223,7 +468,7 @@
       if(activeRecognition){try{activeRecognition.stop();}catch(_){}return;}
       const rec=new SR();activeRecognition=rec;
       rec.lang='it-IT';rec.interimResults=false;rec.continuous=false;rec.maxAlternatives=1;
-      button.setAttribute('aria-pressed','true');startMeter(button);
+      button.setAttribute('aria-pressed','true');
       if(target==='finder')status.textContent='Ascolto in corso… parla ora.';
       rec.onresult=e=>{
         const transcript=Array.from(e.results).map(r=>r[0]?.transcript||'').join(' ').trim();
@@ -234,22 +479,21 @@
           mainSearch.focus();
         }else{
           input.value=transcript;
-          lastVoiceInput=true;
           ask(transcript);input.value='';
         }
       };
       rec.onerror=e=>{
         const err=e.error;
-        status.textContent=err==='not-allowed'?'Microfono non autorizzato. Concedi il permesso dal browser o scrivi.':err==='no-speech'?'Non ho sentito nulla. Riprova o scrivi la domanda.':`Riconoscimento vocale non disponibile (${err}). Puoi scrivere.`;
+        status.textContent=err==='not-allowed'?'Microfono bloccato: consenti l’accesso nelle impostazioni del browser.':err==='audio-capture'?'Il browser non riesce ad accedere al microfono. Controlla i permessi, chiudi altre app che lo usano e riprova. Puoi sempre scrivere.':err==='no-speech'?'Non ho sentito nulla. Riprova parlando vicino al microfono.':err==='network'?'Il riconoscimento vocale del browser richiede una connessione e ora non è disponibile. La chat scritta funziona offline.':`Microfono non disponibile (${err}). Puoi scrivere.`;
       };
       rec.onend=()=>{
-        button.setAttribute('aria-pressed','false');activeRecognition=null;stopMeter();
+        button.setAttribute('aria-pressed','false');activeRecognition=null;
         if(target==='finder'&&status.textContent.startsWith('Ascolto'))status.textContent='Premi il microfono per parlare o scrivi la tua domanda.';
       };
-      try{rec.start();}catch(_){button.setAttribute('aria-pressed','false');activeRecognition=null;stopMeter();status.textContent='Impossibile avviare il microfono. Puoi sempre scrivere.';}
+      try{rec.start();}catch(_){button.setAttribute('aria-pressed','false');activeRecognition=null;status.textContent='Impossibile avviare il microfono. Puoi sempre scrivere.';}
     };
     voiceSearch.addEventListener('click',()=>listen('search',voiceSearch));
     voiceFinder.addEventListener('click',()=>listen('finder',voiceFinder));
   }
-  window.AulaFinderVoice={ask,open:()=>setOpen(true),getClass:()=>selectedClass};
+  window.AulaFinderVoice={ask,respond:(question,classOverride,options)=>answer(question,classOverride,options),open:()=>setOpen(true),getClass:()=>selectedClass};
 })();

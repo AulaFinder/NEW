@@ -1,0 +1,173 @@
+/* AulaFinder V51 — improvements layered above V50. Original SVG maps remain unchanged. */
+:root{--af51-glow:#5af2da;--af51-purple:#8d82e9}
+/* Smooth header gradient, especially when entering from mobile. */
+@media(max-width:680px){
+ .site-header,.header-inner,.header-content{background-image:none}
+ .site-header{background:linear-gradient(125deg,#0c3349 0%,#176b70 52%,#2c6d89 100%)!important}
+ html[data-theme="dark"] .site-header{background:linear-gradient(125deg,#071c2c 0%,#0f3a4c 55%,#184459 100%)!important}
+ #logoButton,#logoButton:hover,#logoButton:active{outline:none!important;box-shadow:none!important;border-color:transparent!important;background:transparent!important}
+}
+#logoButton:focus:not(:focus-visible),.brand-title:focus:not(:focus-visible),#sidebarClose:focus:not(:focus-visible),.footer-logo:focus:not(:focus-visible){outline:0!important;box-shadow:none!important}
+#logoButton:focus-visible,.brand-title:focus-visible,#sidebarClose:focus-visible,.footer-logo:focus-visible{outline:3px solid #f5df89!important;outline-offset:4px!important;border-radius:12px}
+#sidebarClose .sidebar-brand-logo{filter:drop-shadow(0 0 9px #a5fff1) drop-shadow(0 0 16px #7ce8fc);transition:filter .3s ease,transform .3s ease}
+#sidebarClose:hover .sidebar-brand-logo{filter:drop-shadow(0 0 17px #a5fff1) drop-shadow(0 0 21px #79bcff);transform:scale(1.04)}
+/* Sidebar pointer-reactive gradient: background shifts to current cursor position. */
+#sidebar{--af51-side-y:45%;background-image:radial-gradient(ellipse 180px 280px at 97% var(--af51-side-y),#6ee5cc2e,transparent 83%),linear-gradient(170deg,#092b3e 0%,#135767 48%,#12485a 100%);background-attachment:local}
+html[data-theme="dark"] #sidebar{background-image:radial-gradient(ellipse 160px 240px at 97% var(--af51-side-y),#8c7ee82a,transparent 80%),linear-gradient(165deg,#071d2b,#10404b,#122d42)}
+#sidebar .side-navigation>.side-link,#sidebar .side-orari-heading .side-link{border-color:#72ddd234}
+#sidebar .side-link:hover,#sidebar .side-link.is-active{box-shadow:inset 3px 0 0 #96ffec,0 4px 14px #020f1f26}
+#sidebar .schedule-subnav{transition:opacity .18s ease,transform .18s ease}
+#sidebar .schedule-subnav:not([hidden]){animation:af51-menu-in .27s cubic-bezier(.2,.8,.2,1) both}
+#sidebar .schedule-subnav button{transition:background .2s ease,transform .18s ease,color .2s ease;border-radius:10px}
+#sidebar .schedule-subnav button:hover{transform:translateX(3px);background:linear-gradient(95deg,#70e9d53a,#9c8dff31)}
+@keyframes af51-menu-in{from{opacity:.45;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+/* Finder launcher uses the original seamless orb rather than a static icon. */
+#finderLaunch{overflow:visible!important}
+#finderLaunch .finder-launch-icon{width:57px!important;height:57px!important;flex:0 0 57px!important;object-fit:cover!important;border-radius:50%!important;background:#071f29!important;box-shadow:0 0 12px #7ffff27a!important;pointer-events:none}
+#finderLaunch::after{opacity:.26!important}
+#finderPanel{min-width:min(295px,calc(100vw - 16px));min-height:min(300px,calc(100dvh - 16px));max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);resize:none;overscroll-behavior:contain}
+#finderPanel.is-maximized{width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important}
+#finderPanel .finder-panel-head{flex:0 0 auto}
+#finderPanel .finder-panel-head:focus-visible{outline:3px solid #ffd76d;outline-offset:-3px}
+#finderPanel .finder-panel-content{flex:1 1 auto;min-height:0;overflow-y:auto;padding-bottom:29px}
+#finderPanel .finder-conversation{min-height:95px;flex:1 1 auto}
+#finderPanel .finder-resize{position:absolute;bottom:0;right:0;z-index:3;display:grid;place-items:center;width:35px;height:35px;border-radius:12px 0 18px 0;background:linear-gradient(135deg,#0d6473,#7567be);color:white;cursor:nwse-resize;touch-action:none;user-select:none;box-shadow:-3px -3px 12px #071f2938}
+#finderPanel .finder-resize svg{width:23px;height:23px}
+#finderPanel .finder-resize:focus-visible{outline:3px solid #ffdb72;outline-offset:-3px}
+#finderPanel.is-maximized .finder-resize{display:none}
+#finderPanel .finder-window-btn svg{display:block;margin:auto}
+#finderPanel .finder-head-orb video{object-fit:cover}
+#finderPanel .finder-form{margin-right:18px}
+#finderPanel{border-color:#47877c!important;box-shadow:0 20px 55px #071f2960,0 0 9px #63e8ce18}
+#finderPanel:focus:not(:focus-visible){outline:none}
+#finderLaunch:focus:not(:focus-visible){outline:none}
+#finderLaunch:focus-visible{outline:3px solid #ffd764;outline-offset:6px}
+@media(max-width:680px){
+ #finderLaunch .finder-launch-icon{width:51px!important;height:51px!important;flex-basis:51px!important}
+ #finderPanel{min-width:min(290px,calc(100vw - 16px));min-height:min(280px,calc(100dvh - 16px));max-height:calc(100dvh - 16px)!important}
+ #finderPanel.is-maximized{max-height:none!important}
+ #finderPanel .finder-panel-head{gap:7px}
+ #finderPanel .finder-panel-head p{line-height:1.25}
+}
+/* Visual sound meter replaces the mic icon WHILE recognition is active. */
+.af51-wave{display:none;height:23px;min-width:22px;align-items:center;justify-content:center;gap:2px}
+.af51-wave i{width:3px;height:100%;background:currentColor;border-radius:9px;transform:scaleY(var(--af51-bar,.35));transition:transform .08s linear}
+.af51-listening .af51-wave{display:flex}
+.af51-listening svg{display:none!important}
+.af51-listening .af51-wave i{animation:af51-wave-pulse .9s ease-in-out infinite alternate;animation-delay:calc(var(--af51-wave-i,0)*-.12s)}
+.af51-listening .af51-wave i:nth-child(1){--af51-wave-i:1}.af51-listening .af51-wave i:nth-child(2){--af51-wave-i:3}.af51-listening .af51-wave i:nth-child(3){--af51-wave-i:2}.af51-listening .af51-wave i:nth-child(4){--af51-wave-i:4}.af51-listening .af51-wave i:nth-child(5){--af51-wave-i:1}
+@keyframes af51-wave-pulse{from{opacity:.65;transform:scaleY(calc(var(--af51-bar,.35)*.55))}to{opacity:1;transform:scaleY(var(--af51-bar,.65))}}
+/* Keep a truly dynamic meter when WebAudio is available; CSS is fallback. */
+#finderMic,#searchVoiceButton{overflow:hidden}
+#finderPanel .finder-suggestions .af51-suggestion{animation:af51-prompt-enter .38s ease backwards;animation-delay:calc(var(--af51-index)*55ms)}
+@keyframes af51-prompt-enter{from{opacity:.3;transform:translateX(-7px)}to{opacity:1;transform:translateX(0)}}
+/* Home: no phantom aqua outline on pointer focus; a visible keyboard ring remains. */
+.search-form:focus-within{box-shadow:0 8px 25px #0e787b10!important;border-color:var(--teal)!important}
+.search-form input:focus{outline:none!important;box-shadow:none!important}
+.search-form:has(input:focus-visible){outline:3px solid #e9b95f;outline-offset:2px}
+.search-form:has(input:focus:not(:focus-visible)){outline:none}
+.search-form .search-voice-button:focus:not(:focus-visible){outline:0;box-shadow:none}
+/* New tone for Professori liberi, separated from room quick shortcut. */
+#freeTeachersShortcut{background:linear-gradient(110deg,#e4e5ff,#c5f0eb)!important;color:#1a3855!important;border-color:#a6b7eb!important}
+#freeTeachersShortcut:hover{background:linear-gradient(105deg,#c9d9ff,#a4e9dd)!important;box-shadow:0 8px 19px #7166aa28}
+html[data-theme="dark"] #freeTeachersShortcut{background:linear-gradient(105deg,#343c70,#1a5c65)!important;border-color:#817fe1!important;color:#f3f2ff!important}
+html[data-theme="dark"] #freeTeachersShortcut:hover{background:linear-gradient(105deg,#4c4a83,#226e78)!important}
+/* Orari: only one clock icon in heading; more vivid dropdown interactions. */
+#schedulePage .schedule-heading .af48-title-icon{display:none}
+#orariPage .af48-title-icon{opacity:1}
+#orariPage .schedule-quick-search,#orariPage select{transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+#orariPage select:hover,#orariPage .schedule-quick-search:hover{border-color:#45ada8;box-shadow:0 0 0 2px #64bda51c}
+#orariPage .orari-category-tabs button:hover,#orariPage .orari-category-tabs button[aria-pressed="true"]{background-image:linear-gradient(105deg,#46bbad30,#817bdf27)}
+#orariPage .free-teacher-slot strong{color:#123e46!important;font-weight:850!important}
+#orariPage .free-teacher-slot small{color:#466d73!important;font-weight:650}
+#orariPage .free-teacher-slot.is-current{background:#b6ede5!important}
+html[data-theme="dark"] #orariPage .free-teacher-slot strong{color:#e1fff8!important}
+html[data-theme="dark"] #orariPage .free-teacher-slot small{color:#c4e5e2!important}
+html[data-theme="dark"] #orariPage .free-teacher-slot.is-current{background:#28696d!important}
+#orariPage .af50-teacher-total,html[data-theme="dark"] #orariPage .af50-teacher-total{font-size:13px!important;font-weight:850!important;line-height:1.55}
+/* Versioni: always animated gradient timeline, softened frames, highlighted search. */
+.versioni-list::before{border-radius:99px;opacity:1!important;background:linear-gradient(180deg,#1ae5c8,#897af9,#55c9ee,#1ae5c8)!important;background-size:100% 300%!important;animation:af49-bar-flow 6s linear infinite!important}
+.versioni-entry{border-radius:16px!important;overflow:clip}
+.versioni-entry>summary{border-radius:15px!important}
+.versioni-entry:focus-within{border-color:#55beb0}
+.versioni-entry[open]{border-radius:17px!important}
+.af50-version-fullscreen::after{content:'⛶'!important;display:grid;place-items:center;width:28px;height:28px;padding:0;right:10px;bottom:10px;border-radius:9px;font-size:21px;line-height:1}
+.af50-version-fullscreen:focus-visible{outline:3px solid #f1ce6c;outline-offset:3px}
+mark.af51-match{background:#ffec93;color:#342c36;border-radius:4px;padding:0 2px;font-weight:900;box-shadow:0 0 0 1px #af8a32a1}
+html[data-theme="dark"] mark.af51-match{background:#ffdc7d;color:#1d2543}
+/* Navigator loop markers and legend coherent. */
+#navRouteResult [data-nav-legend="departure"] svg,#navRouteResult [data-nav-legend="stairs"] svg,#navRouteResult [data-nav-legend="destination"] svg{animation:af51-legend-glow 2.6s ease-in-out infinite}
+#navRouteResult [data-nav-legend="stairs"] svg{animation-delay:-.85s}#navRouteResult [data-nav-legend="destination"] svg{animation-delay:-1.6s}
+@keyframes af51-legend-glow{0%,100%{filter:drop-shadow(0 0 0 transparent);opacity:.8;transform:scale(.94)}50%{filter:drop-shadow(0 0 3px #47e3cb);opacity:1;transform:scale(1.07)}}
+.navigator-map .nav-point-marker-layer>*{animation:af51-route-marker 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes af51-route-marker{0%,100%{opacity:.87}50%{opacity:1;filter:drop-shadow(0 0 3px #96f5e1)}}
+/* Button gradient feedback WITHOUT water/ripple effects. */
+.af51-gradient-touch{animation:af51-touch-grad .42s ease both!important}
+@keyframes af51-touch-grad{0%{filter:brightness(1)}40%{filter:brightness(1.16) saturate(1.17)}100%{filter:brightness(1)}}
+/* Real live site embedded in the tutorial. */
+.af51-live-guide{margin:18px 0 20px;border:1px solid #69bfb7;border-radius:19px;overflow:hidden;background:linear-gradient(145deg,#f4fbfa,#eff7ff);box-shadow:0 14px 35px #133a3d22}
+.af51-live-guide-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px clamp(14px,3vw,24px)}
+.af51-live-guide-head h3{font-size:clamp(17px,2.1vw,22px);margin:4px 0;color:#173f4d}.af51-live-guide-head p{font-size:13px;line-height:1.55;color:#345962;max-width:610px;margin:5px 0}
+#af51LiveJump{min-height:43px;background:linear-gradient(100deg,#146a71,#555fa6);border:1px solid #4faaa8;color:white;border-radius:11px;padding:10px 15px;font-weight:800;cursor:pointer;transition:transform .2s,filter .2s}
+#af51LiveJump:hover{transform:translateY(-2px);filter:brightness(1.09)}
+.af51-live-frame{height:clamp(440px,67vh,780px);border-top:1px solid #73c9bf;overflow:hidden;background:#fff}
+#af51LiveFrame{width:100%;height:100%;display:block;border:0;background:#f9fffd}
+.af51-live-tip{color:#194655;font-size:12px;font-weight:750;padding:12px 20px;margin:0;background:#dcf5f0}
+html[data-theme="dark"] .af51-live-guide{background:linear-gradient(130deg,#102d3e,#182e49);border-color:#39796f}
+html[data-theme="dark"] .af51-live-guide-head h3,html[data-theme="dark"] .af51-live-guide-head p{color:#e6fcf7}
+html[data-theme="dark"] .af51-live-tip{background:#16404a;color:#d3f8f3}
+.af51-inside-demo #appLoading{display:none!important}
+@media(max-width:680px){.af51-live-guide{border-radius:14px}.af51-live-frame{height:570px}.af51-live-guide-head{padding:15px 12px}.af51-live-guide-head>div{min-width:0}}
+/* Admin: large accessible controls, purposeful visual keyboard. */
+.af51-admin-login,.af51-admin-console{margin:16px auto 24px;max-width:960px;border:1px solid #6dcbc2;border-radius:24px;background:linear-gradient(155deg,#062938,#134f64 58%,#344a80);color:#eafffa;box-shadow:0 18px 50px #08222e3a;padding:clamp(17px,3vw,32px);overflow:hidden}
+.af51-admin-login{max-width:610px;text-align:center}
+.af51-admin-login[hidden],.af51-admin-console[hidden]{display:none!important}
+.af51-admin-lock{font-size:46px;color:#7af3dd;filter:drop-shadow(0 0 14px #71fce5);animation:af51-admin-lock 4s ease-in-out infinite}
+@keyframes af51-admin-lock{0%,100%{filter:drop-shadow(0 0 9px #71fce5);transform:scale(.98)}50%{filter:drop-shadow(0 0 21px #d8d3ff);transform:scale(1.04)}}
+.af51-admin-eyebrow{color:#a1fae9;font-size:11px;letter-spacing:.17em;font-weight:900;margin:8px 0 5px}
+.af51-admin-login h2,.af51-admin-console h2{color:white;font-size:clamp(21px,3vw,30px);margin:4px 0 10px}
+.af51-admin-login p,.af51-admin-console p{line-height:1.5}
+#af51AdminAuth{display:grid;gap:9px;text-align:left;margin:20px auto;max-width:410px}
+#af51AdminAuth label,.af51-admin-editor label{font-size:14px;font-weight:800;color:#effffb}
+.af51-admin-pass-line{display:flex;background:#eefbf8;border:2px solid #95eee0;border-radius:11px;overflow:hidden}
+.af51-admin-pass-line input{flex:1;width:100%;min-width:0;border:none;background:transparent;color:#143442;font-size:20px;letter-spacing:.15em;padding:12px;outline:none}
+.af51-admin-pass-line button{width:50px;border:0;background:#cceae8;color:#193d4c;font-size:23px;cursor:pointer}
+.af51-admin-primary{border:0;border-radius:11px;background:linear-gradient(100deg,#7ef5d9,#95b9ff);color:#102d46;font-weight:900;font-size:15px;padding:13px 16px;cursor:pointer;min-height:48px}
+.af51-admin-primary:hover{filter:brightness(1.1)}
+.af51-admin-keyboard{display:grid;gap:7px;max-width:540px;margin:19px auto 12px}
+.af51-admin-key-row{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:nowrap}
+.af51-admin-key-row button{flex:1;min-width:0;min-height:43px;padding:4px 0;border-radius:9px;background:linear-gradient(145deg,#d9faf2,#b9ddf5);border:1px solid #b8fff2;color:#122f46;font-size:clamp(12px,2.8vw,20px);font-weight:800;cursor:pointer;box-shadow:0 3px 0 #417187;transition:transform .13s,background .15s}
+.af51-admin-key-row button:active{transform:translateY(3px);box-shadow:0 0 0 #417187}
+.af51-admin-key-row .af51-admin-key-action{font-size:12px;min-height:39px;margin-top:3px;padding:4px 8px;flex:0 1 155px}
+.af51-admin-shake{animation:af51-shake .35s ease both}
+@keyframes af51-shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}65%{transform:translateX(6px)}}
+#af51AdminLoginStatus{min-height:23px;color:#dcffed;font-weight:750}
+.af51-admin-console-head{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid #ffffff3c}
+.af51-admin-console-head p{font-size:13px;margin:0 0 8px}
+#af51AdminLock{padding:10px 15px;background:#ffffff1f;color:white;border:1px solid #c2eced;border-radius:10px;cursor:pointer}
+.af51-admin-editor{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 13px;padding:21px 0}
+.af51-admin-editor>div:not(.af51-admin-editor-actions){display:flex;flex-direction:column;gap:7px;min-width:0}
+.af51-admin-editor select,.af51-admin-editor input{height:46px;width:100%;border-radius:10px;border:1px solid #7bd7d2;background:#f4fffd;color:#123d4b;padding:10px 12px;font-size:16px;min-width:0}
+.af51-admin-editor-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px}
+.af51-admin-editor-actions>button:not(.af51-admin-primary),.af51-admin-tools button,.af51-admin-import{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;min-height:45px;border:1px solid #89d4d8;background:#165b6e;color:#fff;border-radius:10px;cursor:pointer;font-weight:750;font-size:13px}
+#af51AdminStatus{border-radius:10px;min-height:44px;background:#164357;padding:12px 14px;color:#d6fff5}
+#af51AdminStatus[data-error="true"]{background:#8b2737;color:#fff8f6;font-weight:800}
+.af51-admin-tools{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}
+.af51-admin-warning{padding:13px 16px;border-left:4px solid #f7d88a;background:#0b273b;color:#f0fff5;font-size:12px;margin-top:20px;border-radius:5px;line-height:1.65!important}
+.af51-admin button:focus-visible,.af51-admin input:focus-visible,.af51-admin select:focus-visible,.af51-admin-import:focus-visible{outline:3px solid #ffdf83;outline-offset:3px}
+@media(max-width:690px){.af51-admin-editor{grid-template-columns:repeat(2,minmax(0,1fr))}.af51-admin-editor>div:nth-child(n+4):not(.af51-admin-editor-actions){grid-column:1/-1}}
+@media(max-width:390px){.af51-admin-key-row{gap:3px}.af51-admin-key-row button{border-radius:6px;min-height:38px}.af51-admin-login{padding:15px 9px}.af51-admin-editor{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){
+ .af51-admin-lock,.af51-gradient-touch,.af51-suggestion,.versioni-list::before,#navRouteResult [data-nav-legend] svg,.navigator-map .nav-point-marker-layer>*,#sidebar .schedule-subnav:not([hidden]),.af51-listening .af51-wave i{animation:none!important;transition:none!important}
+}
+
+/* Leggibilità del conteggio sul nuovo gradiente Professori liberi. */
+#freeTeachersShortcut .af50-quick-body strong,#freeTeachersShortcut .af50-quick-meta,#freeTeachersShortcut svg{color:#163a4c!important;fill:currentColor}
+#freeTeachersShortcut .af50-quick-meta{font-size:11px!important;font-weight:750!important;opacity:1!important}
+html[data-theme="dark"] #freeTeachersShortcut .af50-quick-body strong,html[data-theme="dark"] #freeTeachersShortcut .af50-quick-meta,html[data-theme="dark"] #freeTeachersShortcut svg{color:#f2ffff!important}
+/* Timeline Versioni: luminosità localizzata sotto il puntatore/focus. */
+.versioni-list{--af51-history-y:50%;isolation:isolate}
+.versioni-list::before{background-image:radial-gradient(ellipse 80px 140px at 50% var(--af51-history-y),#fff 0%,#66fce1 21%,transparent 95%),linear-gradient(180deg,#1ae5c8,#897af9,#55c9ee,#1ae5c8)!important;background-blend-mode:screen,normal}
+
+/* V51: keep Admin explanatory copy readable inside the dark console. */
+.af51-admin-console-head p,.af51-admin-login>p,.af51-admin-warning{color:#e7fff9!important}

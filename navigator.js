@@ -229,6 +229,86 @@
   const notice=(message,error=false)=>{$('#navMessage').textContent=message;$('#navMessage').classList.toggle('nav-error',error)};
   const allSegments=floor=>(halls[floor]||[]).flatMap(line=>line.slice(1).map((pt,i)=>[point(...line[i]),point(...pt)]));
   function projection(p,a,b){const dx=b.x-a.x,dy=b.y-a.y;const len=dx*dx+dy*dy||1;const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/len));return point(a.x+t*dx,a.y+t*dy);}
+  // V52: build a segment graph from the hand-checked corridor centrelines.
+  // Intersection points are explicit graph vertices. This avoids A* detours
+  // toward walls or across dead-end corridors, while checking the SVG fill.
+  function spineHall(floor,start,end){
+    const corridor=geometryCorridors.get(floor);
+    const lines=allSegments(floor);
+    if(!corridor||!lines.length||!start||!end)return null;
+    const inHall=p=>{
+      try{return corridor.isPointInFill(new DOMPoint(p.x,p.y));}
+      catch(_){return false;}
+    };
+    const validSegment=(a,b)=>{
+      const n=Math.max(3,Math.ceil(distance(a,b)/3));
+      for(let i=0;i<=n;i++){
+        const t=i/n,p=point(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);
+        if(!inHall(p))return false;
+      }
+      return true;
+    };
+    const edges=lines.filter(([a,b])=>validSegment(a,b));
+    if(!edges.length)return null;
+    const attach=loc=>{
+      let best=null;
+      for(let i=0;i<edges.length;i++){
+        const projected=projection(centerOf(loc),...edges[i]);
+        const d=distance(centerOf(loc),projected);
+        if(!best||d<best.dist)best={segment:i,p:projected,dist:d};
+      }
+      return best;
+    };
+    const a=attach(start),b=attach(end);
+    if(!a||!b)return null;
+    const vertexKey=p=>fmt(p.x)+','+fmt(p.y);
+    const points=new Map(),links=new Map();
+    function vertex(p){const key=vertexKey(p);if(!points.has(key)){points.set(key,p);links.set(key,[]);}return key;}
+    function link(a,b){const x=vertex(a),y=vertex(b);if(x===y)return;
+      const length=distance(a,b);links.get(x).push([y,length]);links.get(y).push([x,length]);}
+    const onSegment=(p,start,end)=>{
+      const cross=Math.abs((p.x-start.x)*(end.y-start.y)-(p.y-start.y)*(end.x-start.x));
+      return cross<.03&&p.x>=Math.min(start.x,end.x)-.02&&p.x<=Math.max(start.x,end.x)+.02&&p.y>=Math.min(start.y,end.y)-.02&&p.y<=Math.max(start.y,end.y)+.02;
+    };
+    const intersections=[];
+    for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++){
+      const p=intersection(edges[i][0],edges[i][1],edges[j][0],edges[j][1]);
+      if(p&&onSegment(p,...edges[i])&&onSegment(p,...edges[j])&&inHall(p))intersections.push(p);
+    }
+    edges.forEach(([u,v],i)=>{
+      const pieces=[u,v,...intersections.filter(pt=>onSegment(pt,u,v))];
+      if(i===a.segment)pieces.push(a.p);
+      if(i===b.segment)pieces.push(b.p);
+      pieces.sort((x,y)=>distance(x,u)-distance(y,u));
+      for(let j=1;j<pieces.length;j++)link(pieces[j-1],pieces[j]);
+    });
+    const source=vertex(a.p),target=vertex(b.p);
+    if(source===target)return [points.get(source)];
+    const cost=new Map([...points.keys()].map(k=>[k,Infinity]));cost.set(source,0);
+    const previous=new Map(),pending=new Set(points.keys());
+    while(pending.size){
+      let current=null,min=Infinity;
+      for(const key of pending){if(cost.get(key)<min){current=key;min=cost.get(key);}}
+      if(!current||!Number.isFinite(min))break;
+      if(current===target)break;
+      pending.delete(current);
+      for(const [next,w] of links.get(current)||[]){
+        const total=min+w;
+        if(total<cost.get(next)){cost.set(next,total);previous.set(next,current);}
+      }
+    }
+    if(!Number.isFinite(cost.get(target)))return null;
+    const result=[];for(let k=target;k;k=previous.get(k)){
+      result.push(points.get(k));if(k===source)break;
+    }
+    result.reverse();
+    // Drop intermediate collinear vertices: smooth, geometrically verified path.
+    return result.filter((p,i)=>{
+      if(i===0||i===result.length-1)return true;
+      const before=result[i-1],after=result[i+1];
+      return Math.abs((p.x-before.x)*(after.y-p.y)-(p.y-before.y)*(after.x-p.x))>.05;
+    });
+  }
   function entranceFor(loc,segments){
     const {x,y,w,h}=loc.rect;
     const sides=[point(x+w/2,y),point(x+w/2,y+h),point(x,y+h/2),point(x+w,y+h/2)];
@@ -332,8 +412,8 @@
         if(next<0||next>=valid.length||!valid[next])continue;
         // A decisive penalty for bends avoids the staircase/zigzag effect.
         // Near doors, a short segment close to a wall is still allowed.
-        const turn=oldDir===d?0:7;
-        const clearancePenalty=3.0/(clearance[next]+1.0);
+        const turn=oldDir===d?0:10;
+        const clearancePenalty=16.0/(clearance[next]+.9);
         const v=(next<<2)|d;
         const candidate=g+1+turn+clearancePenalty;
         if(candidate+1e-8<costs[v]){costs[v]=candidate;prev[v]=u;push(v,candidate);}
@@ -354,6 +434,9 @@
     return compressed.filter((p,i)=>i===0||!close(p,compressed[i-1]));
   }
   function shortestHall(floor,start,end){
+    // Prefer the verified corridor centerline, with the old walkable grid as safe fallback.
+    const spine=spineHall(floor,start,end);
+    if(spine?.length)return spine;
     const actual=actualHall(floor,start,end);
     // Non presentare un tracciato schematico che taglia muri o esce dalla piantina.
     // Se i corridoi disegnati non collegano i due punti, nessun percorso viene mostrato.
@@ -392,6 +475,40 @@
       if(target)target.replaceChildren(el);
     });
   }
+  // La linea entra e termina in centro alle aule. Ogni tratto fuori dal
+  // corridoio è limitato al collegamento aula→corridoio, mai una scorciatoia tra stanze.
+  const centerOf=loc=>loc?.rect?point(loc.rect.x+loc.rect.w/2,loc.rect.y+loc.rect.h/2):point(loc.cx,loc.cy);
+  function routeRoomBridge(loc,hall,floor){
+    if(!loc||!hall)return [];
+    const r=loc.rect,center=centerOf(loc);
+    if(!r)return [center];
+    const inset=Math.min(1.2,r.w*.06,r.h*.06);
+    const candidates=[point(center.x,r.y),point(center.x,r.y+r.h),point(r.x,center.y),point(r.x+r.w,center.y)];
+    const corridor=geometryCorridors.get(floor);
+    const rooms=locations.filter(q=>q.floor===floor&&q!==loc&&canon(q.id)!==canon(loc.id));
+    const segmentPenalty=(a,b)=>{
+      let score=0;
+      for(let i=1;i<=14;i++){
+        const t=i/15,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;
+        if(rooms.some(room=>x>room.rect.x+inset&&x<room.rect.x+room.rect.w-inset&&y>room.rect.y+inset&&y<room.rect.y+room.rect.h-inset))score+=100;
+        if(!corridor?.isPointInFill?.(new DOMPoint(x,y)))score+=1;
+      }
+      return score;
+    };
+    let best=null;
+    for(const door of candidates){
+      const bends=[point(door.x,hall.y),point(hall.x,door.y)];
+      for(const bend of bends){
+        const d=distance(door,bend)+distance(bend,hall);
+        const penalty=segmentPenalty(door,bend)+segmentPenalty(bend,hall);
+        const cost=d+penalty*8;
+        if(!best||cost<best.cost)best={door,bend,cost};
+      }
+    }
+    if(!best)return [center];
+    const sequence=[center,best.door,best.bend,hall];
+    return sequence.filter((v,i)=>i===0||!close(v,sequence[i-1]));
+  }
   function cloneMap(floor,where,{routePoints=[],start=null,end=null,transfer=false,entryPoint=null,exitPoint=null}={}){
     where.innerHTML='';
     const original=document.querySelector('#'+floor+' svg.plan');
@@ -409,11 +526,12 @@
     if(routePoints.length){
       const layer=svgNode('g',{class:'nav-route-layer','aria-hidden':'true'});
       // Draw the route BEHIND the room text and icons (the original g.room are appended afterwards).
-      // Il corridoio resta quello calcolato dal grafo: aggiungiamo il tratto
-      // centro aula → corridoio e corridoio → centro aula (non soltanto i pin).
-      const centerOf=loc=>loc?.rect?point(loc.rect.x+loc.rect.w/2,loc.rect.y+loc.rect.h/2):point(loc.cx,loc.cy);
-      const extended=[...(start?[centerOf(start)]:[]),...routePoints,...(end?[centerOf(end)]:[])];
-      const unique=extended.filter((p,i)=>i===0||!close(p,extended[i-1]));
+      const hallway=routePoints.filter((p,i)=>i===0||!close(p,routePoints[i-1]));
+      // Aulas are centered; hallway route remains the same validated path.
+      const beginning=start&&hallway.length?routeRoomBridge(start,hallway[0],floor):[];
+      const ending=end&&hallway.length?routeRoomBridge(end,hallway.at(-1),floor):[];
+      const painted=[...beginning,...hallway,...ending.reverse()];
+      const unique=painted.filter((p,i)=>i===0||!close(p,painted[i-1]));
       const d=unique.length?`M ${fmt(unique[0].x)} ${fmt(unique[0].y)} `+unique.slice(1).map(p=>`L ${fmt(p.x)} ${fmt(p.y)}`).join(' '):'';
       // Coordinate reali per il gradiente: objectBoundingBox ha altezza zero
       // nei tratti perfettamente orizzontali e alcuni browser disegnano solo il contorno.
@@ -426,13 +544,20 @@
         x1:fmt(gradientFrom.x),y1:fmt(gradientFrom.y),
         x2:fmt(gradientTo.x+(noSpan?1:0)),y2:fmt(gradientTo.y+(noSpan?1:0))
       });
-      [['0%','#FFF2A8'],['36%','#FFE348'],['70%','#FFC324'],['100%','#FFE37D']].forEach(([offset,color])=>grad.append(svgNode('stop',{offset,'stop-color':color})));
+      [['0%','#65F0F5'],['33%','#A68BFF'],['67%','#FAD46B'],['100%','#65F0F5']].forEach(([offset,color],i)=>{
+        const stop=svgNode('stop',{offset,'stop-color':color});
+        if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+          const anim=svgNode('animate',{attributeName:'stop-color',values:i===2?'#FAD46B;#F994C9;#65F0F5;#FAD46B':'#65F0F5;#A68BFF;#FAD46B;#65F0F5',dur:'5s',repeatCount:'indefinite',begin:(i*-.9)+'s'});
+          stop.append(anim);
+        }
+        grad.append(stop);
+      });
       defs.append(grad);layer.append(defs);
       if(unique.length>1){
         layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
         layer.append(svgNode('path',{d,class:'nav-route-polyline'}));
       }
-      const a=unique[0],b=unique.at(-1);
+      const a=hallway[0],b=hallway.at(-1);
       const firstRoom=map.querySelector('g.room');
       if(firstRoom)firstRoom.parentNode.insertBefore(layer,firstRoom);else (map.querySelector('.plan-rotated')||map).appendChild(layer);
 
@@ -440,18 +565,10 @@
       // Partenza: doppio cerchio; scale ENTRATA e USCITA: unico cerchio verde acqua;
       // arrivo: SOLO il pin delle aule, senza cerchio né sfondo.
       const markers=[];
-      if(a&&start)markers.push({p:a,kind:'departure'});
+      if(start)markers.push({p:centerOf(start),kind:'departure'});
       if(entryPoint)markers.push({p:entryPoint,kind:'stairs'});
       if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'stairs'});
-      if(b&&end){
-        // V47: il percorso resta invariato sul corridoio. Il SOLO simbolo d'arrivo
-        // è centrato sul rettangolo dell'aula, non sull'ultimo punto della linea.
-        const box=end.rect;
-        const center=box&&Number.isFinite(box.x+box.w/2)&&Number.isFinite(box.y+box.h/2)
-          ? point(box.x+box.w/2,box.y+box.h/2)
-          : point(end.cx,end.cy);
-        markers.push({p:center,kind:'destination'});
-      }
+      if(end)markers.push({p:centerOf(end),kind:'destination'});
       if(markers.length){
         const overlay=svgNode('g',{class:'nav-transfer-marker-layer nav-point-marker-layer','aria-hidden':'true'});
         const dedup=[];
@@ -462,7 +579,7 @@
         dedup.forEach(({p,kind})=>{
           if(kind==='destination'){
             // La mappa è già ruotata di 180°; contro-ruotiamo solo l'icona dell'arrivo.
-            const pin=svgNode('g',{class:'nav-point-destination',transform:`translate(${fmt(p.x)} ${fmt(p.y)}) rotate(180) scale(.75) translate(-12 -12)`});
+            const pin=svgNode('g',{class:'nav-point-destination',transform:`translate(${fmt(p.x)} ${fmt(p.y)}) rotate(180) scale(.75) translate(-12 -22)`});
             pin.append(svgNode('path',{d:arrivalPath,'fill-rule':'evenodd'}));
             overlay.append(pin);
           }else{
@@ -586,8 +703,6 @@
     const i=stageState.index,r=stageState.stages[i];
     const count=stageState.stages.length;
     $('#navCurrentStep').textContent=`${i+1} / ${count}`;
-    const fill=$('#navProgressFill');if(fill)fill.style.height=`${((i+1)/count)*100}%`;
-    const rail=$('#navProgressRail');if(rail)rail.setAttribute('aria-valuenow',String(i+1));
     $('#navStepPrev').disabled=i===0;
     $('#navStepNext').disabled=i===count-1;
     const role=count===1?'Percorso':i===0?'Partenza':i===count-1?'Arrivo':'Cambio piano';
@@ -620,7 +735,7 @@
     notice(`Percorso trovato: ${result.a.id} → ${result.b.id} · ${result.stages.length} ${result.stages.length===1?'piano':'piani'}.`);
     const target=$('#navRouteResult');target.hidden=false;
     target.innerHTML=`<div class="navigator-summary"><p>${safe(result.a.id)} → ${safe(result.b.id)}<small>${safe(labels[result.a.floor])} → ${safe(labels[result.b.floor])}</small></p><span class="nav-mode-tag">${mode==='lift'?'Ascensore':'Scale'}</span></div>
-      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div id="navProgressRail" class="nav-progress-rail" role="progressbar" aria-label="Avanzamento del percorso" aria-valuemin="1" aria-valuemax="${result.stages.length}" aria-valuenow="1"><span id="navProgressFill" class="nav-progress-fill"></span></div><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
+      <section class="nav-stepper" aria-label="Navigazione passo dopo passo"><div class="nav-stepper-controls"><button type="button" id="navStepPrev" aria-label="Passaggio precedente">←</button><div><span class="nav-stepper-counter" id="navCurrentStep"></span><h2 id="navStepFloor"></h2><span id="navStepRole"></span></div><button type="button" id="navStepNext" aria-label="Passaggio successivo">→</button></div>
       <div class="nav-map-legend-layout"><div class="navigator-map" id="navActiveMap"></div>
       <aside class="nav-route-legend" aria-label="Legenda del percorso"><strong>Legenda</strong>
       <div class="nav-route-legend-item"><span data-nav-legend="departure" aria-hidden="true"></span><span>Partenza</span></div>
@@ -641,7 +756,8 @@
   $('#navSwap').addEventListener('click',()=>{const value=from.value;from.value=to.value;to.value=value;hideSuggestions(from);hideSuggestions(to);invalidateRoute()});
   $('#navTravelMode').addEventListener('change',invalidateRoute);
   [from,to].forEach(input=>{
-    input.addEventListener('change',()=>{hideSuggestions(input);invalidateRoute();});
+    // L'evento change puo scattare sul blur DOPO il submit: non cancellare il percorso appena calcolato.
+    input.addEventListener('change',()=>{hideSuggestions(input);});
     input.addEventListener('input',invalidateRoute);
   });
   // Prevent the existing Piantina click/keyboard handlers from selecting copied SVG elements.
@@ -665,21 +781,12 @@
       }
     },true);
   });
-  // Finder usa l'API pubblica per impostare entrambe le aule e calcolare
-  // immediatamente un percorso completo, senza richiedere un secondo invio.
-  function setRoute(origin,destination){
-    const a=lookup(origin),b=lookup(destination);
-    if(!a||!b||a.id===b.id)return false;
-    from.value=a.id;to.value=b.id;
-    invalidateRoute();
-    return performRoute(false);
-  }
   window.AulaFinderNavigator={
-    route:setRoute,
-    setRoute,
+    route:(origin,destination)=>{from.value=origin;to.value=destination;invalidateRoute();return true;},
     setDestination:(destination)=>{const loc=lookup(destination);if(!loc)return false;to.value=loc.id;hideSuggestions(to);
       invalidateRoute();notice(`Destinazione: ${loc.id}. ${lookup(from.value)?'Premi Visualizza percorso.':'Ora scegli da quale ambiente partire.'}`);
       return true;},
+    previewRoute:(origin,destination,mode="stairs")=>{const a=lookup(origin),b=lookup(destination);return a&&b&&a.id!==b.id?bestRoute(a,b,mode):null;},
     getRooms:()=>selectable.map(x=>x.id)
   };
 })();

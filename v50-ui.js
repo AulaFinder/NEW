@@ -2,8 +2,6 @@
 (()=>{
  'use strict';
  const reduced=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
- const actionSound=new Audio('assets/logo-tap.wav');actionSound.preload='auto';actionSound.volume=.30;
- const playTap=()=>{try{actionSound.pause();actionSound.currentTime=0;actionSound.play()?.catch?.(()=>{});}catch(_){}};
 
  // I tre marchi (header, menu e footer) attivano solo un'animazione, anche su PC.
  const brandSelector='.brand-title[data-page="home"],#sidebarClose,.footer-logo';
@@ -12,7 +10,7 @@
   target.classList.remove('af50-brand-active');void target.offsetWidth;
   target.classList.add('af50-brand-active');
   setTimeout(()=>target.classList.remove('af50-brand-active'),1100);
-  playTap();
+
  }
  document.querySelectorAll('.brand-title[data-page="home"],#sidebarClose').forEach(el=>{
   el.setAttribute('aria-label','Anima il marchio AulaFinder');
@@ -35,7 +33,7 @@
  let logoClosing=false,logoAnimation=null;
  function openLogo(){
   if(!dialog||dialog.open||logoClosing)return;
-  dialog.showModal();playTap();
+  dialog.showModal();
   if(reduced()||!photo)return;
   logoAnimation?.cancel();
   const a=logoButton.getBoundingClientRect(),b=photo.getBoundingClientRect();
@@ -45,7 +43,7 @@
    {transform:`translate(${dx}px,${dy}px) scale(${scale})`,opacity:.4,filter:'brightness(1.8) drop-shadow(0 0 14px #8fffea)'},
    {transform:'translate(0,0) scale(1.045)',opacity:1,offset:.72,filter:'brightness(1.15) drop-shadow(0 0 9px #76f9ef)'},
    {transform:'translate(0,0) scale(1)',opacity:1,filter:'brightness(1)'}
-  ],{duration:520,easing:'cubic-bezier(.18,.83,.22,1)',fill:'both'});
+  ],{duration:780,easing:'cubic-bezier(.18,.83,.22,1)',fill:'both'});
   logoAnimation.finished.finally(()=>{logoAnimation?.cancel();logoAnimation=null;}).catch(()=>{});
  }
  function closeLogo(){

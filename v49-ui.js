@@ -16,7 +16,7 @@
  const scene=viewer.querySelector('.af49-map-viewer-scene');
  let opener=null,zoom=1,fitWidth=900,fitHeight=600;
  function setZoom(value){
-  zoom=Math.min(2.6,Math.max(.75,value));
+  zoom=Math.min(3.2,Math.max(.65,value));
   stage.style.width=Math.round(fitWidth*zoom)+'px';stage.style.height=Math.round(fitHeight*zoom)+'px';
   const svg=stage.querySelector('svg.plan');if(svg){svg.style.width='100%';svg.style.height='100%';}
   stage.style.transform='none';
@@ -34,9 +34,14 @@
   viewer.hidden=false;document.body.classList.add('af49-map-fullscreen-open');
   const vb=copy.viewBox.baseVal;const sceneWidth=scene.clientWidth||innerWidth,sceneHeight=scene.clientHeight||innerHeight-100;
   const ratio=vb.width&&vb.height?vb.width/vb.height:1.5;fitWidth=Math.min(sceneWidth,sceneHeight*ratio);fitHeight=fitWidth/ratio;
-  setZoom(1);scene.scrollLeft=0;scene.scrollTop=0;
+  setZoom(1);
+  // Scroll to the central area only after layout, leaving the whole original SVG intact.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   scene.scrollLeft=Math.max(0,(scene.scrollWidth-scene.clientWidth)/2);
+   scene.scrollTop=Math.max(0,(scene.scrollHeight-scene.clientHeight)/2);
+  }));
   viewer.querySelector('#af49ViewerClose').focus({preventScroll:true});
-  viewer.querySelector('#af49ViewerNote').textContent="Ruota il telefono per una visione più ampia oppure usa i controlli di ingrandimento.";
+  viewer.querySelector('#af49ViewerNote').textContent="Piantina originale · usa +/− per ingrandire, trascina per esplorare.";
   // Fullscreen API opzionale: l'overlay funziona anche su Safari senza supporto alla API.
   if(viewer.requestFullscreen){
    try {

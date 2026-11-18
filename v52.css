@@ -1,0 +1,197 @@
+/* AulaFinder V52: coerenza aurica, motion accessibile, componenti desktop/mobile. */
+:root{--af52-mint:#63eed9;--af52-blue:#74bfea;--af52-violet:#a496ed;--af52-ink:#123746;--af52-aura:linear-gradient(112deg,#0b696f 0%,#1f7387 34%,#3c64a0 70%,#5373a8 100%);--af52-aura-light:linear-gradient(112deg,#c4f4e7 0%,#b5e9ec 36%,#d9d0fa 73%,#b3dae9 100%)}
+/* Smooth transitions only on composited/small properties, never transition:all. */
+#sidebar .side-link,#sidebar .schedule-subnav button,#siteFooter a,#siteFooter button,
+#homePage .free-rooms-shortcut,#orariPage .orari-category-tabs button{transition:background-color .22s ease,opacity .22s ease,filter .22s ease,transform .25s cubic-bezier(.2,.72,.3,1),box-shadow .25s ease,border-color .2s ease}
+#sidebar .side-link:hover,#sidebar .schedule-subnav button:hover,#siteFooter a:hover,#siteFooter button:hover{filter:brightness(1.12) saturate(1.05);opacity:.94}
+#sidebar .side-link:active,#siteFooter button:active{transform:scale(.99)}
+/* Pointer-followed side-like fading, consistent in header, home and footer. */
+.site-header{position:relative;isolation:isolate;background:linear-gradient(112deg,#0a4355,#16777b 48%,#2a6390)!important}
+.site-header::before,#siteFooter::before,.home-search-area::before{
+ content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.5;
+ background:radial-gradient(ellipse 67% 90% at var(--af52-px,37%) var(--af52-py,30%),#9fffee44 0%,#a29dff1b 44%,transparent 82%);
+ transition:opacity .38s ease;
+}
+.site-header>:where(*),#siteFooter>:where(*),.home-search-area>:where(*){position:relative;z-index:1}
+.site-header:hover::before,#siteFooter:hover::before,.home-search-area:hover::before{opacity:1}
+html[data-theme="dark"] .site-header{background:linear-gradient(112deg,#071e30,#135160 46%,#263f70)!important}
+#siteFooter{position:relative;isolation:isolate;overflow:hidden}
+#siteFooter::before{background:radial-gradient(ellipse 65% 95% at var(--af52-px,70%) var(--af52-py,54%),#7bfce72c 0%,#8984f72b 47%,transparent 84%);opacity:.55}
+#siteFooter .footer-bottom{position:relative}
+#siteFooter .footer-admin-button{margin-left:auto;align-self:center;flex-shrink:0;border:1px solid #9ee5e39e;background:linear-gradient(117deg,#0d5e71,#386793);color:#f3fffb;box-shadow:0 2px 10px #09242a37}
+#siteFooter .footer-admin-button:hover{background:linear-gradient(117deg,#177f85,#596cab);transform:translateY(-2px)}
+/* Same auric shortcut presentation for both home cards and related Orari sections. */
+#homePage #freeRoomsShortcut,#homePage #freeTeachersShortcut{
+ min-height:79px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:13px!important;text-align:left!important;padding:13px 17px!important;border-radius:15px!important;
+ background:var(--af52-aura-light)!important;border:1px solid #68bebd!important;color:#143c4b!important;
+ box-shadow:0 5px 17px #1e79821c!important;position:relative;overflow:hidden;
+}
+#homePage #freeRoomsShortcut::before,#homePage #freeTeachersShortcut::before{
+ content:'';position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(112deg,transparent 6%,#ffffff5a 46%,transparent 82%);
+ opacity:0;transform:translateX(-13%);transition:opacity .3s ease,transform .45s ease;
+}
+#homePage #freeRoomsShortcut:hover::before,#homePage #freeTeachersShortcut:hover::before{opacity:1;transform:translateX(12%)}
+#homePage #freeRoomsShortcut:hover,#homePage #freeTeachersShortcut:hover{transform:translateY(-2px);filter:saturate(1.1) brightness(1.04);box-shadow:0 11px 23px #0a777c35!important}
+#homePage #freeRoomsShortcut .af50-quick-body strong,#homePage #freeTeachersShortcut .af50-quick-body strong{font-size:14px;color:#163c4d!important}
+#homePage #freeRoomsShortcut .af50-quick-meta,#homePage #freeTeachersShortcut .af50-quick-meta{color:#355c6b!important;font-size:11px!important;font-weight:750!important;opacity:1!important}
+#homePage #freeRoomsShortcut svg,#homePage #freeTeachersShortcut svg{color:#165e72!important;fill:currentColor!important}
+html[data-theme="dark"] #homePage #freeRoomsShortcut,html[data-theme="dark"] #homePage #freeTeachersShortcut{
+ background:var(--af52-aura)!important;color:#e9fffb!important;border-color:#58aeb9!important;box-shadow:0 6px 21px #09182d50!important}
+html[data-theme="dark"] #homePage #freeRoomsShortcut :is(.af50-quick-body strong,.af50-quick-meta,svg),
+html[data-theme="dark"] #homePage #freeTeachersShortcut :is(.af50-quick-body strong,.af50-quick-meta,svg){color:#ecfffe!important}
+#orariPage .orari-category-tabs button[data-schedule="freeRooms"],#orariPage .orari-category-tabs button[data-schedule="freeTeachers"],
+#scheduleSubnav button[data-schedule="freeRooms"],#scheduleSubnav button[data-schedule="freeTeachers"]{background-image:linear-gradient(100deg,#79e9d633,#9b9eff33);background-color:transparent}
+#orariPage .orari-category-tabs button[aria-pressed="true"]{background-image:var(--af52-aura-light)!important;color:#113c4d!important;border-color:#58a9ad!important}
+html[data-theme="dark"] #orariPage .orari-category-tabs button[aria-pressed="true"]{background-image:var(--af52-aura)!important;color:#f5fffc!important}
+/* Hide decorative bright-cyan rectangle on pointer focus; keyboard remains visibly amber. */
+:is(#logoButton,#daySelect,#hourSelect,#versioniSearch,#navFrom,#navTo,#searchInput,#scheduleEntity,
+#scheduleQuickSearch,#scheduleSubnavToggle,#orariPage select,#orariPage input,#navigatorPage input,#navigatorPage select,
+#versioniPage input,#tutorialPage button,#finderQuestion,#finderClass,#finderLaunch):focus:not(:focus-visible){
+ outline:0!important;outline-offset:0!important;box-shadow:none!important;
+}
+#homePage :is(#daySelect,#hourSelect):focus-within,#orariPage :is(input,select):focus-within,#navigatorPage .navigator-field:focus-within,
+.versioni-search-label:focus-within,#versioniSearch:focus-within{outline:0!important;box-shadow:none!important}
+:is(#logoButton,#daySelect,#hourSelect,#versioniSearch,#navFrom,#navTo,#searchInput,#scheduleEntity,
+#scheduleQuickSearch,#scheduleSubnavToggle,#orariPage select,#orariPage input,#navigatorPage input,#navigatorPage select,
+#versioniPage input,#tutorialPage button,#finderQuestion,#finderClass):focus-visible{
+ outline:2px solid #e9ba68!important;outline-offset:2px!important;box-shadow:none!important;
+}
+#homePage .search-form:focus-within{outline:0!important;box-shadow:0 7px 20px #1a777618!important;border-color:#83cbb6!important}
+#homePage .search-form:has(input:focus-visible){outline:2px solid #e9ba68!important;outline-offset:2px}
+/* Logo enlargement without stacked square halos. */
+#logoButton,#logoButton:hover,#logoButton:active{
+ background:transparent!important;border:0!important;border-radius:50%!important;box-shadow:none!important;outline:none!important;
+}
+#logoButton:focus-visible{outline:2px solid #f3cb7a!important;outline-offset:4px!important;border-radius:50%!important}
+#logoButton:hover img{filter:drop-shadow(0 0 7px #a0f6ec91);transform:scale(1.035)}
+#logoButton img{transition:filter .35s ease,transform .42s cubic-bezier(.22,.7,.2,1)}
+#logoDialog,#logoDialog:modal,#logoDialog img{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
+#logoDialog:modal{overflow:visible!important}
+#logoDialog::backdrop{background:radial-gradient(ellipse at 45% 45%,#0a4249d4,#061b2df5)!important}
+/* Desktop and mobile Orari subnav arrow, readable in light and dark. */
+#scheduleSubnavToggle{display:flex!important;flex:0 0 39px!important;align-items:center;justify-content:center;min-height:39px;
+ background:#d8eee9!important;border:1px solid #83c7bf!important;color:#164b5c!important;border-radius:10px!important;
+ opacity:1!important;visibility:visible!important;margin-left:4px}
+#scheduleSubnavToggle svg{stroke:currentColor!important;stroke-width:2.8!important;width:20px;height:20px}
+#scheduleSubnavToggle:hover{background:#b9e9de!important;filter:brightness(1.04)}
+html[data-theme="dark"] #scheduleSubnavToggle{background:#205261!important;color:#dcfff9!important;border-color:#508e94!important}
+#sidebar .schedule-subnav:not([hidden]){background:linear-gradient(145deg,#f1fffc,#e8f4fc)!important;border:1px solid #b5ded9;border-left:3px solid #4aa9a9;border-radius:12px;padding:10px!important;margin-top:6px!important}
+#sidebar .schedule-subnav button{color:#184853!important;font-weight:750;min-height:38px}
+#sidebar .schedule-subnav button:hover,#sidebar .schedule-subnav button.is-active{background:linear-gradient(105deg,#bdf0e7,#dcdafb)!important;color:#163f4d!important}
+html[data-theme="dark"] #sidebar .schedule-subnav:not([hidden]){background:linear-gradient(145deg,#112e3c,#1b384d)!important;border-color:#437a85}
+html[data-theme="dark"] #sidebar .schedule-subnav button{color:#e2fff9!important}
+html[data-theme="dark"] #sidebar .schedule-subnav button:hover,html[data-theme="dark"] #sidebar .schedule-subnav button.is-active{background:linear-gradient(110deg,#24616a,#444b81)!important;color:#fff!important}
+/* Tutorial: seven step names never overflow or drift, FAQ toggle stays geometrically centered. */
+#tutorialPage .af48-tour-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+#tutorialPage .af48-tour-tab{min-width:0!important;max-width:100%;display:flex;align-items:center;justify-content:center!important;gap:6px;
+ padding:9px 5px!important;text-align:center!important;font-size:clamp(10px,1.2vw,12px)!important;line-height:1.3;white-space:normal;overflow-wrap:anywhere;min-height:52px}
+#tutorialPage .af48-tour-tab>span{flex:0 0 22px;width:22px;height:22px;display:grid;place-items:center;margin:0}
+#tutorialPage .af52-live-guide{margin-top:8px;border-color:#68c8c2}
+#tutorialPage .af52-guide-instructions{padding:17px clamp(15px,3vw,25px);background:linear-gradient(113deg,#ebfcf7,#e9f3ff,#f2ecff)}
+#tutorialPage .af52-guide-instructions h3{font-size:clamp(18px,2.2vw,24px);color:#173f4e;margin:5px 0 7px}
+#tutorialPage .af52-guide-instructions p{font-size:14px;line-height:1.65;max-width:900px;color:#3b5b66;margin:0}
+#tutorialPage .af52-guide-caption{font-size:12px;color:#275b66;padding:10px 16px;background:#e4f9f3;margin:0;line-height:1.5}
+#tutorialPage .af51-live-frame{height:clamp(465px,70vh,860px);border-top:1px solid #72c7bd}
+html[data-theme="dark"] #tutorialPage .af52-guide-instructions{background:linear-gradient(110deg,#103444,#213b59,#2b355a)}
+html[data-theme="dark"] #tutorialPage .af52-guide-instructions :is(h3,p){color:#effff9}
+html[data-theme="dark"] #tutorialPage .af52-guide-caption{background:#15404b;color:#e4fff7}
+#tutorialPage .tutorial-faq summary>span{flex:0 0 26px;width:26px;height:26px;line-height:0!important;
+ position:relative;display:grid;place-items:center;overflow:hidden;color:transparent!important;font-size:0!important;transform-origin:center center}
+#tutorialPage .tutorial-faq summary>span::before,#tutorialPage .tutorial-faq summary>span::after{
+ content:'';position:absolute;top:calc(50% - 1px);left:calc(50% - 7px);width:14px;height:2px;border-radius:2px;background:#167b83;
+}
+#tutorialPage .tutorial-faq summary>span::after{transform:rotate(90deg)}
+#tutorialPage .tutorial-faq details[open] summary>span{transform:rotate(45deg)!important}
+#tutorialPage .tutorial-faq details[open] summary>span::after{transform:rotate(90deg)}
+/* Guided iframe: the actual UI is interactive but its navigation is step-locked. */
+.af52-in-demo #siteFooter .footer-admin-button,.af52-in-demo #sidebar,.af52-in-demo #menuButton{pointer-events:none!important;opacity:.45!important}
+.af52-in-demo #siteFooter a[href],.af52-in-demo #siteFooter button[data-page],.af52-in-demo #logoButton{pointer-events:none!important}
+.af52-in-demo #finderLaunch{pointer-events:none!important}
+.af52-in-demo[data-af52-demo-step="4"] #finderLaunch{pointer-events:auto!important}
+.af52-in-demo[data-af52-demo-step="6"] #siteFooter{opacity:1!important}
+.af52-in-demo #appLoading{display:none!important}
+/* Navigatore: always center start/end glyphs at room geometric centers. */
+#navRouteResult .nav-route-polyline{stroke-linecap:round!important;stroke-linejoin:round!important}
+#navigatorPage .navigator-field:focus-within{border-color:#79bfb7!important}
+#navigatorPage input:focus,#navigatorPage input:focus-visible{filter:none}
+/* Versioni: relevant text visible even if individual record is collapsed. */
+#versioniList .versioni-entry>summary{flex-wrap:wrap!important}
+#versioniList .af52-match-summary{flex:1 0 100%;display:block;margin:4px 0 2px 31px;min-width:0;
+ font-size:12px;font-weight:600;line-height:1.5;color:#39606a;white-space:normal;overflow-wrap:anywhere}
+html[data-theme="dark"] #versioniList .af52-match-summary{color:#c5e7e1}
+#versioniList .af52-preview-badge{position:absolute!important;top:11px;right:11px;width:36px!important;height:36px!important;
+ object-fit:contain!important;z-index:2;border-radius:10px!important;padding:3px;background:#092c3ecb;
+ box-shadow:0 2px 9px #071e2966;pointer-events:none;opacity:.91}
+#versioniSearch:focus{border-color:#82b9af!important}
+/* Fullscreen original maps: fit, center, preserve original fill and label contrast. */
+.af49-map-viewer-scene{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0;min-height:0;
+ background:linear-gradient(155deg,#e8f8f5,#e7f1f9)!important}
+.af49-map-viewer-stage{margin:auto!important;flex-shrink:0!important}
+.af49-map-viewer svg.plan text{stroke:none!important;text-shadow:none!important}
+.af49-map-viewer svg.plan .entrance-room .entrance-box{fill:#fff!important;stroke:#19404a!important;stroke-width:.5!important}
+.af49-map-viewer svg.plan .entrance-room .map-entrance-label{fill:#143e48!important;font-weight:800!important}
+html[data-theme="dark"] .af49-map-viewer-scene{background:linear-gradient(155deg,#102937,#172d49)!important}
+html[data-theme="dark"] .af49-map-viewer svg.plan .entrance-room .entrance-box{fill:#2a515e!important;stroke:#95c6c8!important}
+html[data-theme="dark"] .af49-map-viewer svg.plan .entrance-room .map-entrance-label{fill:#f4fffe!important}
+/* Intro: match entire gradient field (mobile and desktop); gently blend the video edges. */
+.app-loading,.app-loading:fullscreen{background:linear-gradient(115deg,#071f32 0%,#115367 36%,#176b77 57%,#285b83 85%,#0c314b 100%)!important;isolation:isolate}
+.app-loading::before{content:'';position:absolute;inset:-25px;z-index:0;pointer-events:none;
+ background:linear-gradient(118deg,#071d30,#11596c 40%,#247181 66%,#13344e)!important;
+ filter:none!important;transform:none!important;opacity:1!important}
+.app-loading-video{z-index:1;max-width:100%;-webkit-mask-image:radial-gradient(ellipse 78% 75% at 50% 50%,#000 52%,transparent 100%);
+ mask-image:radial-gradient(ellipse 78% 75% at 50% 50%,#000 52%,transparent 100%)}
+/* Finder orb composited, centered and user-pin control. */
+#finderLaunch,#finderLaunch .finder-launch-icon,#finderPanel .finder-head-orb video{backface-visibility:hidden;transform:translateZ(0)}
+#finderLaunch .finder-launch-icon{object-fit:cover!important;object-position:center!important;display:block;margin:auto!important;animation:af52-orb-breathe 4.8s ease-in-out infinite}
+#finderPanel .finder-head-orb{display:grid;place-items:center;overflow:hidden;border-radius:50%}
+#finderPanel .finder-head-orb video{width:100%;height:100%;object-fit:cover;object-position:center;animation:af52-orb-breathe 5.8s ease-in-out infinite}
+@keyframes af52-orb-breathe{0%,100%{filter:brightness(.94) saturate(1.05)}50%{filter:brightness(1.16) saturate(1.22)}}
+#finderPanel{will-change:transform,opacity;contain:layout style;border-radius:20px!important}
+#finderPanel .finder-window-controls .af52-finder-pin{display:grid;place-items:center}
+.af52-orb-pinned #finderLaunch{cursor:pointer!important;touch-action:manipulation!important}
+.af52-orb-pinned #finderLaunch::before{border-color:#ffd37e!important}
+.af52-finder-pin[aria-pressed="true"]{color:#ffd983!important;background:#1a5761!important}
+/* Local Admin metrics. */
+.af52-admin-insights{margin:17px 0 8px;border:1px solid #6cbdb6b8;border-radius:17px;padding:clamp(12px,2vw,21px);
+ background:linear-gradient(125deg,#0a3043,#1b4563,#333f64);box-shadow:0 10px 26px #05182633}
+.af52-admin-insights h3{font-size:17px;font-weight:850;margin:0 0 14px;color:#f3fffa;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.af52-admin-local{font-size:10px;letter-spacing:.13em;padding:4px 7px;border:1px solid #8beddb;border-radius:99px;color:#8beddb}
+.af52-admin-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.af52-admin-stat-grid>div{border:1px solid #ffffff2c;background:#ffffff12;border-radius:12px;padding:14px 8px;display:flex;flex-direction:column;gap:3px;text-align:center}
+.af52-admin-stat-grid strong{font-size:clamp(20px,2.5vw,30px);color:#94ffec;font-weight:900;font-variant-numeric:tabular-nums}
+.af52-admin-stat-grid span{font-size:11px;color:#e5fcf5}
+.af52-admin-history{margin-top:15px;border-top:1px solid #ffffff32;padding-top:12px}
+.af52-admin-history h4{font-size:13px;margin:0 0 8px;color:#f5fffe}
+.af52-admin-history ol{margin:0;padding-left:23px;max-height:130px;overflow:auto;color:#daf9f2;font-size:12px;line-height:1.7}
+/* Better small-device fidelity. */
+@media(max-width:900px){#tutorialPage .af48-tour-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:680px){
+ .site-header,html[data-theme="dark"] .site-header{background:linear-gradient(114deg,#0a3549,#19676e 48%,#31577d)!important}
+ html[data-theme="dark"] .site-header{background:linear-gradient(114deg,#071f30,#104653 48%,#263e67)!important}
+ #tutorialPage .af48-tour-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #tutorialPage .af48-tour-tab{justify-content:center!important;font-size:12px!important;min-height:45px}
+ #tutorialPage .af51-live-frame{height:clamp(480px,76dvh,680px)}
+ #homePage #freeRoomsShortcut,#homePage #freeTeachersShortcut{min-height:70px!important}
+ #siteFooter .footer-bottom{justify-content:space-between!important;align-items:center!important}
+ #siteFooter .footer-admin-button{margin-left:auto!important}
+ .app-loading-video{width:100%;height:min(68svh,520px);object-fit:cover;object-position:center;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 17%,#000 83%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 17%,#000 83%,transparent 100%)}
+ .af52-admin-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+ #finderLaunch .finder-launch-icon,#finderPanel .finder-head-orb video{animation:none!important}
+ .site-header::before,.home-search-area::before,#siteFooter::before{transition:none!important}
+ #homePage .free-rooms-shortcut::before{transition:none!important}
+}
+.af52-offscreen.versioni-list::before,.af52-offscreen#finderLaunch,.af52-offscreen#siteFooter::before{animation-play-state:paused!important}
+
+/* V52: zero stacked input focus frames; the underlined amber cue is keyboard-friendly. */
+#versioniSearch:focus,#versioniSearch:focus-visible,#navFrom:focus,#navTo:focus,#orariPage input:focus,#orariPage select:focus,
+#daySelect:focus,#hourSelect:focus{outline:0!important;box-shadow:inset 0 -2px 0 #e6bc76!important;border-color:#80bdb6!important}
+#versioniPage .versioni-search-label:focus-within,#versioniPage .versioni-toolbar:focus-within{outline:0!important;box-shadow:none!important}
+
+/* V52: single focus indicator for Versioni, no turquoise or doubled rectangles. */
+#versioniPage #versioniSearch:is(:focus,:focus-visible){outline:none!important;outline-offset:0!important;box-shadow:inset 0 -3px 0 #d2aa67!important;border-color:#a0c6bb!important}
