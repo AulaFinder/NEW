@@ -1,4 +1,15 @@
-# CHANGELOG · AulaFinder
+# Registro delle versioni di AulaFinder
+
+## V49 · Il salto di qualità (18 novembre 2026)
+
+- **Tutorial autonomo:** tutte le sette tappe si provano senza lasciare il tutorial, con lezioni e piantine originali.
+- **Versioni:** ricostruzione V1–V49 da fonti storiche, anteprime delle Home apribili e ricerca più tollerante a sigle, sinonimi ed errori.
+- **Finder:** più richieste in linguaggio naturale, aiuto per preparare lo zaino, interfaccia e comandi di finestra migliorati, orb in ciclo e domande raggruppate.
+- **Piantine:** fullscreen e ingrandimento con layout mobile orizzontale e fallback per i browser senza blocco orientamento.
+- **Navigatore:** gradienti animati, legenda ad alto contrasto, miglior centratura dell'arrivo e indicatore di partenza della Palestra entro l'aula; fix al percorso cancellato dal blur.
+- **Interfaccia e accessibilità:** effetto luminoso dei loghi su mobile, feedback tocco/focus, miglioramento del menu Orari e delle scorciatoie Home; movimento ridotto rispettato.
+- **Avvio:** miglior gestione dei fallimenti autoplay, suono locale opzionale all'introduzione e PWA cache V49.
+- **Verifiche e documentazione:** test automatici, note tecniche, suggerimenti futuri e limiti di compatibilità dichiarati.
 
 > Storico ricostruito da file di rilascio effettivamente disponibili. Le versioni senza una fonte puntuale sono segnalate e non hanno modifiche inventate.
 
@@ -48,7 +59,7 @@
 
 ## V44 · Icona del menu mobile
 
-- L’icona hamburger testuale del menu mobile è diventata una SVG.
+- L’icona testuale del menu del menu mobile è diventata una SVG.
 - Cache aggiornata.
 
 *Fonte: Confronto archivi V43/V44 riportato nella documentazione ricostruita*

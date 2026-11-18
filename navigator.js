@@ -422,7 +422,14 @@
         x1:fmt(gradientFrom.x),y1:fmt(gradientFrom.y),
         x2:fmt(gradientTo.x+(noSpan?1:0)),y2:fmt(gradientTo.y+(noSpan?1:0))
       });
-      [['0%','#FFF2A8'],['36%','#FFE348'],['70%','#FFC324'],['100%','#FFE37D']].forEach(([offset,color])=>grad.append(svgNode('stop',{offset,'stop-color':color})));
+      [['0%','#65F0F5'],['33%','#A68BFF'],['67%','#FAD46B'],['100%','#65F0F5']].forEach(([offset,color],i)=>{
+        const stop=svgNode('stop',{offset,'stop-color':color});
+        if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+          const anim=svgNode('animate',{attributeName:'stop-color',values:i===2?'#FAD46B;#F994C9;#65F0F5;#FAD46B':'#65F0F5;#A68BFF;#FAD46B;#65F0F5',dur:'5s',repeatCount:'indefinite',begin:(i*-.9)+'s'});
+          stop.append(anim);
+        }
+        grad.append(stop);
+      });
       defs.append(grad);layer.append(defs);
       if(unique.length>1){
         layer.append(svgNode('path',{d,class:'nav-route-shadow'}));
@@ -436,7 +443,16 @@
       // Partenza: doppio cerchio; scale ENTRATA e USCITA: unico cerchio verde acqua;
       // arrivo: SOLO il pin delle aule, senza cerchio né sfondo.
       const markers=[];
-      if(a&&start)markers.push({p:a,kind:'departure'});
+      if(a&&start){
+        const r=start.rect;
+        const inside=start.id==='Palestra'&&r?point(r.x+r.w/2,r.y+r.h/2):a;
+        markers.push({p:inside,kind:'departure'});
+        // Accesso al corridoio: è una breve connessione visiva dal centro
+        // della palestra al punto di ingresso usato dall'algoritmo invariato.
+        if(start.id==='Palestra'&&distance(inside,a)>.5){
+          layer.append(svgNode('path',{d:`M ${fmt(inside.x)} ${fmt(inside.y)} L ${fmt(a.x)} ${fmt(a.y)}`,class:'nav-room-entrance-spur'}));
+        }
+      }
       if(entryPoint)markers.push({p:entryPoint,kind:'stairs'});
       if(transfer&&(exitPoint||b))markers.push({p:exitPoint||b,kind:'stairs'});
       if(b&&end){
@@ -447,6 +463,9 @@
           ? point(box.x+box.w/2,box.y+box.h/2)
           : point(end.cx,end.cy);
         markers.push({p:center,kind:'destination'});
+        if(end.id==='Palestra'&&distance(center,b)>.5){
+          layer.append(svgNode('path',{d:`M ${fmt(center.x)} ${fmt(center.y)} L ${fmt(b.x)} ${fmt(b.y)}`,class:'nav-room-entrance-spur'}));
+        }
       }
       if(markers.length){
         const overlay=svgNode('g',{class:'nav-transfer-marker-layer nav-point-marker-layer','aria-hidden':'true'});
@@ -458,7 +477,7 @@
         dedup.forEach(({p,kind})=>{
           if(kind==='destination'){
             // La mappa è già ruotata di 180°; contro-ruotiamo solo l'icona dell'arrivo.
-            const pin=svgNode('g',{class:'nav-point-destination',transform:`translate(${fmt(p.x)} ${fmt(p.y)}) rotate(180) scale(.75) translate(-12 -12)`});
+            const pin=svgNode('g',{class:'nav-point-destination',transform:`translate(${fmt(p.x)} ${fmt(p.y)}) rotate(180) scale(.75) translate(-12 -10)`});
             pin.append(svgNode('path',{d:arrivalPath,'fill-rule':'evenodd'}));
             overlay.append(pin);
           }else{
@@ -635,7 +654,8 @@
   $('#navSwap').addEventListener('click',()=>{const value=from.value;from.value=to.value;to.value=value;hideSuggestions(from);hideSuggestions(to);invalidateRoute()});
   $('#navTravelMode').addEventListener('change',invalidateRoute);
   [from,to].forEach(input=>{
-    input.addEventListener('change',()=>{hideSuggestions(input);invalidateRoute();});
+    // L'evento change puo scattare sul blur DOPO il submit: non cancellare il percorso appena calcolato.
+    input.addEventListener('change',()=>{hideSuggestions(input);});
     input.addEventListener('input',invalidateRoute);
   });
   // Prevent the existing Piantina click/keyboard handlers from selecting copied SVG elements.
@@ -664,6 +684,7 @@
     setDestination:(destination)=>{const loc=lookup(destination);if(!loc)return false;to.value=loc.id;hideSuggestions(to);
       invalidateRoute();notice(`Destinazione: ${loc.id}. ${lookup(from.value)?'Premi Visualizza percorso.':'Ora scegli da quale ambiente partire.'}`);
       return true;},
+    previewRoute:(origin,destination,mode="stairs")=>{const a=lookup(origin),b=lookup(destination);return a&&b&&a.id!==b.id?bestRoute(a,b,mode):null;},
     getRooms:()=>selectable.map(x=>x.id)
   };
 })();
