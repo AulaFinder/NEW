@@ -1,3 +1,9 @@
+# V52 ricostruita dalla V51 senza conversioni delle immagini e dei video originali
+
+Consulta `README_V52_RIFATTA.md` e `VERIFICHE_V52_RIFATTA.md` per il rilascio corrente, la pubblicazione semplice e i limiti delle verifiche.
+
+---
+
 # AulaFinder V52 · Note di rilascio
 
 **Versione:** V52 · 19 novembre 2026.  **Sorgente:** AulaFinder V51 consegnata dall’utente.  **Cartella:** `AulaFinderV52/`.

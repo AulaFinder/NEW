@@ -129,6 +129,7 @@ html[data-theme="dark"] #versioniList .af52-match-summary{color:#c5e7e1}
 .af49-map-viewer-scene{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0;min-height:0;
  background:linear-gradient(155deg,#e8f8f5,#e7f1f9)!important}
 .af49-map-viewer-stage{margin:auto!important;flex-shrink:0!important}
+/* La piantina fullscreen resta leggibile ma non modifica la tinta della mappa originale. */
 .af49-map-viewer svg.plan text{stroke:none!important;text-shadow:none!important}
 .af49-map-viewer svg.plan .entrance-room .entrance-box{fill:#fff!important;stroke:#19404a!important;stroke-width:.5!important}
 .af49-map-viewer svg.plan .entrance-room .map-entrance-label{fill:#143e48!important;font-weight:800!important}

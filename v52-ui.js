@@ -92,6 +92,20 @@
   },{passive:true});
  }
 
+ // Immagini: in caso di cache difettosa tenta una sola lettura di rete con URL aggiornato.
+ // Non cambia formato, non comprime e non nasconde l'errore persistente.
+ const imageRetried=new WeakSet();
+ document.addEventListener('error',event=>{
+  const img=event.target;
+  if(!(img instanceof HTMLImageElement)||imageRetried.has(img))return;
+  if(!img.src||img.src.startsWith('data:'))return;
+  let url;
+  try{url=new URL(img.currentSrc||img.src,document.baseURI);}catch(_){return;}
+  if(url.origin!==location.origin)return;
+  imageRetried.add(img);
+  url.searchParams.set('af52-retry','1');
+  img.src=url.href;
+ },true);
  // Offscreen animation policy: pause ornamental gradient if the element isn't visible.
  if('IntersectionObserver' in window){
   const watch=new IntersectionObserver(entries=>{

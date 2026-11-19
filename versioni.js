@@ -41,6 +41,8 @@
   if(!terms.length)return 0;
   let total=0;
   for(const term of terms){
+   // Finder è un nome proprio della funzione: non abbinarlo a parole simili per errore.
+   if(term==='finder' && !tokens.includes('finder'))return -1;
    const alternatives=[term,...(synonyms[term]||[])];
    let best=-1;
    for(const alt of alternatives){
