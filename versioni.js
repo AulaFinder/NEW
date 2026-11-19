@@ -98,7 +98,7 @@
    img.dataset.src=v.preview;
    const caption=make('figcaption','',v.number===52?'Anteprima del sito V52.':'Anteprima conservata dai file archiviati per '+v.version+'.');
    const large=make('button','af50-version-fullscreen');large.type='button';large.setAttribute('aria-label','Apri a schermo intero la Home '+v.version);large.append(img);
-   const logo=make('img','af52-preview-badge');logo.src='assets/logo-aulafinder.webp';logo.alt='';logo.loading='lazy';logo.setAttribute('aria-hidden','true');
+   const logo=make('img','af52-preview-badge');logo.src='assets/logo-aulafinder.png';logo.alt='';logo.loading='lazy';logo.setAttribute('aria-hidden','true');
    large.append(logo);panel.append(large,caption);
    if(v.number===8){
     const alt=make('img');alt.loading='lazy';alt.decoding='async';alt.alt='Seconda variante storica della Home V8a';alt.dataset.src='assets/versioni-home/V8a.webp';

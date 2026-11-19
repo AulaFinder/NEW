@@ -1,164 +1,63 @@
-/* AulaFinder PWA: caching statico per la consultazione offline.
-   Gli orari vengono inclusi perché sono già nei file JS; non sono dati in tempo reale.
-   A ogni pubblicazione di una nuova versione, aggiornare il nome cache. */
+/* AulaFinder V52 originali · cache offline resistente agli upload parziali.
+   La vecchia precache obbligatoria di >100 file poteva fallire se GitHub
+   riceveva un upload parziale. Risorse sempre aggiornate dalla rete; cache fallback offline. */
 const CACHE_PREFIX = 'aulafinder-pwa-';
-const CACHE_NAME = 'aulafinder-pwa-v52';
-const APP_SHELL = [
-  "./index.html",
-  "./style.css",
-  "./piantina.css",
-  "./data.js",
-  "./admin-data.js",
-  "./admin-ui.js",
-  "./v51-ui.js",
-  "./v52-ui.js",
-  "./tutorial-v52.js",
-  "./v51.css",
-  "./v52.css",
-  "./config-docenti.js",
-  "./script.js",
-  "./map-orientation.js",
-  "./piantina.js",
-  "./navigator.js",
-  "./footer.js",
-  "./pwa.js",
-  "./loading.js",
-  "./finder.js",
-  "./versioni.js",
-  "./v48-ui.js",
-  "./v48.css",
-  "./v49-ui.js",
-  "./v49.css",
-  "./v50.css",
-  "./v50-ui.js",
-  "./versioni-data.json",
-  "./assets/finder-orb.webm",
-  "./assets/finder-orb-loop.mp4",
-  "./assets/finder-orb-loop.webp",
-  "./assets/finder-icon.png",
-  "./assets/versioni-home/V1.webp",
-  "./assets/versioni-home/V2.webp",
-  "./assets/versioni-home/V3.webp",
-  "./assets/versioni-home/V4.webp",
-  "./assets/versioni-home/V5.webp",
-  "./assets/versioni-home/V6.webp",
-  "./assets/versioni-home/V7.webp",
-  "./assets/versioni-home/V8.webp",
-  "./assets/versioni-home/V9.webp",
-  "./assets/versioni-home/V10.webp",
-  "./assets/versioni-home/V11.webp",
-  "./assets/versioni-home/V12.webp",
-  "./assets/versioni-home/V13.webp",
-  "./assets/versioni-home/V14.webp",
-  "./assets/versioni-home/V15.webp",
-  "./assets/versioni-home/V16.webp",
-  "./assets/versioni-home/V17.webp",
-  "./assets/versioni-home/V18.webp",
-  "./assets/versioni-home/V19.webp",
-  "./assets/versioni-home/V20.webp",
-  "./assets/versioni-home/V21.webp",
-  "./assets/versioni-home/V22.webp",
-  "./assets/versioni-home/V23.webp",
-  "./assets/versioni-home/V24.webp",
-  "./assets/versioni-home/V25.webp",
-  "./assets/versioni-home/V26.webp",
-  "./assets/versioni-home/V27.webp",
-  "./assets/versioni-home/V28.webp",
-  "./assets/versioni-home/V29.webp",
-  "./assets/versioni-home/V30.webp",
-  "./assets/versioni-home/V31.webp",
-  "./assets/versioni-home/V32.webp",
-  "./assets/versioni-home/V33.webp",
-  "./assets/versioni-home/V34.webp",
-  "./assets/versioni-home/V35.webp",
-  "./assets/versioni-home/V36.webp",
-  "./assets/versioni-home/V37.webp",
-  "./assets/versioni-home/V38.webp",
-  "./assets/versioni-home/V39.webp",
-  "./assets/versioni-home/V40.webp",
-  "./assets/versioni-home/V41.webp",
-  "./assets/versioni-home/V42.webp",
-  "./assets/versioni-home/V43.webp",
-  "./assets/versioni-home/V44.webp",
-  "./assets/versioni-home/V45.webp",
-  "./assets/versioni-home/V46.webp",
-  "./assets/versioni-home/V47.webp",
-  "./assets/versioni-home/V48.webp",
-  "./assets/versioni-home/V49.webp",
-  "./assets/versioni-home/V50.webp",
-  "./assets/versioni-home/V51.webp",
-  "./assets/versioni-home/V52.webp",
-  "./assets/versioni-home/V8a.webp",
-  "./assets/versioni-home/V8b.webp",
-  "./assets/finder-orb-poster.webp",
-  "./sitemap.xml",
-  "./assets/aulafinder-caricamento.jpg",
-  "./assets/aulafinder-caricamento.mp4",
-  "./manifest.webmanifest",
-  "./assets/logo-aulafinder.png",
-  "./assets/logo-aulafinder.webp",
-  "./assets/liceo-grassi-carboncino.webp",
-  "./assets/avatar_edo.webp",
-  "./assets/avatar_fiadi.webp",
-  "./assets/avatar_fuso.webp",
-  "./assets/avatar_lona.webp",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon-180.png"
+const CACHE_NAME = 'aulafinder-pwa-v52-originali-2';
+const CORE = [
+  './index.html', './style.css', './piantina.css',
+  './v48.css', './v49.css', './v50.css', './v51.css', './v52.css',
+  './data.js', './admin-data.js', './admin-ui.js',
+  './config-docenti.js', './script.js', './map-orientation.js',
+  './piantina.js', './navigator.js', './footer.js', './pwa.js',
+  './loading.js', './finder.js', './tutorial-v52.js',
+  './versioni.js', './v48-ui.js', './v49-ui.js',
+  './v50-ui.js', './v51-ui.js', './v52-ui.js'
 ];
-
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // Un solo 404 non deve impedire l'attivazione di una nuova versione.
+    await Promise.allSettled(CORE.map(async path => {
+      const response = await fetch(path, {cache: 'reload'});
+      if (!response.ok) throw new Error(`Impossibile precaricare ${path}: ${response.status}`);
+      await cache.put(path, response);
+    }));
+    await self.skipWaiting();
+  })());
 });
-
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
-        .map(key => caches.delete(key))
-    )).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME).map(name => caches.delete(name)));
+    await self.clients.claim();
+  })());
 });
-
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
-  // File MP4: lascia al browser le richieste Range (206) necessarie alla riproduzione.
-  if (request.headers.has('range') || new URL(request.url).pathname.endsWith('.mp4')) return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  // Keep requests outside the app's actual folder untouched.
   if (!url.pathname.startsWith(new URL(self.registration.scope).pathname)) return;
-
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).then(response => {
-        if (response.ok) {
-          const copy = response.clone();
-          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy)));
-        }
-        return response;
-      }).catch(async () => {
-        const cached = await caches.match('./index.html');
-        return cached || Response.error();
-      })
-    );
-    return;
-  }
-
-  // All bundled code and images are cached to make the whole app usable offline.
-  event.respondWith(
-    caches.match(request, {ignoreSearch:true}).then(cached => cached || fetch(request).then(response => {
-      if (response.ok && response.type === 'basic') {
-        const copy = response.clone();
-        event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(request, copy)));
+  // Il browser gestisce direttamente i Range dei video; non interferiamo.
+  if (request.headers.has('range') || /\.(?:mp4|webm)$/i.test(url.pathname)) return;
+  event.respondWith((async () => {
+    try {
+      // Network-first: non serviamo vecchi CSS/JS dopo un nuovo deploy.
+      const network = await fetch(request);
+      if (network.ok && network.type !== 'opaque') {
+        const cache = await caches.open(CACHE_NAME);
+        // Il caching non deve rallentare o compromettere la risposta della pagina.
+        event.waitUntil(cache.put(request, network.clone()).catch(() => {}));
       }
-      return response;
-    }))
-  );
+      return network;
+    } catch (error) {
+      const cached = await caches.match(request);
+      if (cached) return cached;
+      if (request.mode === 'navigate') {
+        const home = await caches.match('./index.html');
+        if (home) return home;
+      }
+      return Response.error();
+    }
+  })());
 });
